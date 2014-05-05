@@ -1,0 +1,71 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Tango device generator JSON canonical format",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["servers"],
+    "properties": {
+        "_version": {
+            "enum": [0]
+        },
+        "servers": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+                "^[.\\w]+/[.\\w]+$": {
+                    "$ref": "#definitions/instance"
+                }
+            }
+        },
+        "classes": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#definitions/device"
+            }
+        }
+    },
+    "definitions": {
+        "instance": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#definitions/class"
+            }
+        },
+        "class": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+                "^[.\\-\\w]+/[.\\-\\w]+/[.\\-\\w]+$": {
+                    "$ref": "#definitions/device"
+                }
+            }
+        },
+        "device": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "properties": {
+                    "$ref": "#definitions/property"
+                },
+                "attribute_properties": {
+                    "$ref": "#definitions/attribute_property"
+                }
+            }
+        },
+        "property": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            }
+        },
+        "attribute_property": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object"
+            }
+        }
+    }
+}
