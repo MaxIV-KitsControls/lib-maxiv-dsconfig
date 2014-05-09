@@ -28,6 +28,7 @@ import io
 import sys
 import re
 from TangoProperties import TANGO_PROPERTIES
+from PowerSupplyMap import POWER_SUPPLY_MAP
 
 class SuperDict(defaultdict):
     "A recursive defaultdict with extra bells & whistles"
@@ -61,6 +62,10 @@ class LatticeFileItem:
         # find a name
         colon_pos = _line.find(':')
         self.itemName = _line[:colon_pos].lstrip().rstrip().upper()
+
+        #self.itemName = self.itemName.replace('.','-')
+
+        print "name", self.itemName
         
         # what left to be parsed
         line_left = _line[colon_pos + 1:].lstrip()        
@@ -153,10 +158,11 @@ class LatticeFileItem:
                 #if not a required property or attribue then pop it
                 if k.lower() not in lattice_properties_l:
                     self.parameters.pop(k)
+
                 #otherwise rename key if an attribute
                 if k.lower() in lattice_properties_l:
                     print "KEY ", k, TANGO_PROPERTIES[devclass][1][k], self.parameters[k]
-                    self.parameters[TANGO_PROPERTIES[devclass][1][k]] = self.parameters.pop(k)
+                    self.parameters[TANGO_PROPERTIES[devclass][1][k]] = [self.parameters.pop(k)]
                     #if the property defines a dynamic attribute then set the value
                     if 'DYNAMIC_PROPERTIES' in TANGO_PROPERTIES[devclass][1][k]:
                         print "found dynamic property", TANGO_PROPERTIES[devclass][1][k]
@@ -166,6 +172,9 @@ class LatticeFileItem:
                         value=self.parameters[TANGO_PROPERTIES[devclass][1][k]]
                         self.parameters['DYNAMIC_PROPERTIES'] = self.parameters['DYNAMIC_PROPERTIES'] + (TANGO_PROPERTIES[devclass][1][k].split(':')[1].replace('XXX',value)) + ("\n")
                         self.parameters.pop(TANGO_PROPERTIES[devclass][1][k])
+
+
+
             # add the fixed properties
             self.parameters.update(TANGO_PROPERTIES[devclass][0])
 
@@ -173,6 +182,7 @@ class LatticeFileItem:
         else:
             for k in self.parameters.keys():
                 self.parameters.pop(k)
+
 
         print "parameters are now", self.parameters
         print "properties are now", self.properties
@@ -200,24 +210,33 @@ class LatticeFileItem:
                 subsystem = name_items.group('subsystem')
                 location = name_items.group('location')
                 device = name_items.group('device')
-                num = name_items.group('num')
+                num = name_items.group('num')   
                 if num == None: num = ''
                 # print "Parsed elements: "+system+", "+subsystem+ ", "+location+","+device+","+num
+
+                num2 =  "%02d" % int(num)
 
                 #store the parameters we need (attributes and properties)
                 #print "PJB parameter",  self.itemName, self.parameters
                 self.match_properties()
 
                 # create device for json output
-                name = (system+"."+location + '/' + subsystem + '/' + device + num).encode('ascii', 'ignore')
+                name = (system+"-"+location + '/' + subsystem + '/' + device + "-" +num2).encode('ascii', 'ignore')
                 devclass = types_classes[self.itemType].encode('ascii', 'ignore')
-                server = devclass + '/' + system+"."+location
+                server = devclass + '/' + system+"-"+location
                 print "+++++++++++++++++ Creating device server : " + server + " for " + devclass + " (name= " + name    + ")" 
                 print "+++++++++ With properties : ", self.parameters
                 #print "+++++++++ With attributes : ", self.parameters
                 # Dont actually write attributes to DB, only properties
                 # see if this class exists and append if so, or create
-                devdict = sdict.servers["%s/%s" % (devclass, system+"."+location)][devclass][name]
+                devdict = sdict.servers["%s/%s" % (devclass, system+"-"+location)][devclass][name]
+
+                if "MAG" in name:
+                    print "FOUND MAGNET", name
+                    powersupplyname = POWER_SUPPLY_MAP[name]
+                    self.parameters["PowerSupply"] = [powersupplyname]
+                    #print  item.properties["powersupply"]
+            
                 devdict.properties = self.parameters
 
                 
@@ -269,12 +288,14 @@ if __name__ == '__main__':
     
     # define classes for lattice elements
     types_classes = {}
-    types_classes["dip"] = "VAMagnet"
-    types_classes["csrcsbend"] = "VAMagnet"
-    types_classes["kquad"] = "VAMagnet"
-    types_classes["sext"] = "VAMagnet"
-    types_classes["hkick"] = "VACorrector"
-    types_classes["vkick"] = "VACorrector"
+    types_classes["dip"] = "Magnet"
+    types_classes["csrcsbend"] = "Magnet"
+    types_classes["kquad"] = "Magnet"
+    types_classes["sext"] = "Magnet"
+    types_classes["hkick"] = "Magnet" 
+    types_classes["vkick"] = "Magnet"
+    #types_classes["hkick"] = "VACorrector"
+    #types_classes["vkick"] = "VACorrector"
     types_classes["monitor"] = "VABPM"
     types_classes["watch"] = "VAYAGScreen"
     types_classes["rfcw"] = "VARfCavity"
