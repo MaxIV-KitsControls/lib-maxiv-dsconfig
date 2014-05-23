@@ -29,6 +29,7 @@ import sys
 import re
 from TangoProperties import TANGO_PROPERTIES
 from PowerSupplyMap import POWER_SUPPLY_MAP
+import copy
 
 class SuperDict(defaultdict):
     "A recursive defaultdict with extra bells & whistles"
@@ -146,9 +147,15 @@ class LatticeFileItem:
 
         
         devclass = types_classes[self.itemType]
-        print "in match_properties for class", devclass,  self.itemType
+        print "in match_properties for class", devclass,  self.itemName
+
+        if "CIR" in self.itemName:
+            print "properties for magnet circuit"
+            #self.parameters["powersupply"] = ""
+            #self.parameters["magnets"] = ""
+
         # for given item type, look up required attributes and properties of tango
-        if devclass in TANGO_PROPERTIES:
+        elif devclass in TANGO_PROPERTIES:
             fixed_properties_l =  list(TANGO_PROPERTIES[devclass][0].keys())
             print "fixed tango properties are ", fixed_properties_l
             lattice_properties_l = list(TANGO_PROPERTIES[devclass][1].keys())
@@ -183,11 +190,13 @@ class LatticeFileItem:
             for k in self.parameters.keys():
                 self.parameters.pop(k)
 
+        if "MAG" in self.itemName:
+            self.parameters["Type"] = self.itemType
 
         print "parameters are now", self.parameters
         print "properties are now", self.properties
             
-
+    #def add_device(self, sdict, name_parsing_string='(?P<system>[a-zA-Z0-9]+)\.(?P<location>[a-zA-Z0-9]+)\.(?P<subsystem>[a-zA-Z0-9]+)\.(?P<device>[a-zA-Z0-9]+)\.(?P<num>[0-9]+)\.(?P<cir>[a-zA-Z0-9]+)'):
     def add_device(self, sdict, name_parsing_string='(?P<system>[a-zA-Z0-9]+)\.(?P<location>[a-zA-Z0-9]+)\.(?P<subsystem>[a-zA-Z0-9]+)\.(?P<device>[a-zA-Z0-9]+)\.(?P<num>[0-9]+)'):
         '''
         Updates json file
@@ -195,7 +204,7 @@ class LatticeFileItem:
         # prepare pattern for parsing name
         pattern = re.compile(name_parsing_string)  
 
-        #print "Item: " + self.itemName + " as " + self.itemType
+        print "Item: " + self.itemName + " as " + self.itemType
         # only when we know class for certain element 
 
         if types_classes.has_key(self.itemType):
@@ -211,6 +220,10 @@ class LatticeFileItem:
                 location = name_items.group('location')
                 device = name_items.group('device')
                 num = name_items.group('num')   
+                #circuit = name_items.group('cir')   
+                
+                #print "circuit is ", circuit
+
                 if num == None: num = ''
                 # print "Parsed elements: "+system+", "+subsystem+ ", "+location+","+device+","+num
 
@@ -218,12 +231,23 @@ class LatticeFileItem:
 
                 #store the parameters we need (attributes and properties)
                 #print "PJB parameter",  self.itemName, self.parameters
+                print "++++++++++++++++++++++++++++ DEALING WITH: " + self.itemName
+
                 self.match_properties()
 
                 # create device for json output
                 name = (system+"-"+location + '/' + subsystem + '/' + device + "-" +num2).encode('ascii', 'ignore')
                 devclass = types_classes[self.itemType].encode('ascii', 'ignore')
                 server = devclass + '/' + system+"-"+location
+
+                #hack for circuits
+                if "CIR" in self.itemName:
+                    print "orig name",self.itemName, name
+                    #name = name.split("-",1)[-1] + "-CIR" +  "-" +num2
+                    name = name.rsplit("-",1)[0] + "-CIR" +  "-" +num2
+                    #pdevclass = "Circuit"
+                    devclass = "MagnetCircuit"
+
                 print "+++++++++++++++++ Creating device server : " + server + " for " + devclass + " (name= " + name    + ")" 
                 print "+++++++++ With properties : ", self.parameters
                 #print "+++++++++ With attributes : ", self.parameters
@@ -231,10 +255,70 @@ class LatticeFileItem:
                 # see if this class exists and append if so, or create
                 devdict = sdict.servers["%s/%s" % (devclass, system+"-"+location)][devclass][name]
 
-                if "MAG" in name:
-                    print "FOUND MAGNET", name
+                if "MAG" in self.itemName and "CIR" not in self.itemName:
+                    print "-------------------- FOUND MAGNET", self.itemName
+
+                    #see what is the ps of the magnet
                     powersupplyname = POWER_SUPPLY_MAP[name]
-                    self.parameters["PowerSupply"] = [powersupplyname]
+
+                    #create circuit device for each new ps
+                    print "circuit_ps_list", circuit_ps_list
+
+                    #copy the magnet and call recursively add device!
+                    magnetcircuit = copy.deepcopy(self)
+                    magnetcircuit.itemName = self.itemName + ".CIR"
+
+                    magnetcircuit.parameters = {}
+                    magnetcircuit.parameters['PowerSupply'] = [powersupplyname]
+                    magnetcircuit.parameters['Magnets'] = [name]
+                    
+                    #assign circuit name as property of magnet device
+                    #no regex to fix name here so do by hand
+                    #e.g. I.BC1.MAG.COEX.4.CIR -> I-BC1/MAG/COEX-CIR-04
+                    cname = magnetcircuit.itemName.replace(".","/")
+                    cname = cname.replace("/","-",1)
+                    cname = name.rsplit("/CIR",1)[0]
+                    cname = cname.rsplit("-",1)[0] + "-CIR-" + cname.rsplit("-",1)[1]
+
+                    #only add one circuit device per ps
+                    if powersupplyname not in circuit_ps_list:
+                        
+                        magnetcircuit.add_device(sdict)
+                        circuit_ps_list[powersupplyname] = cname 
+
+                        print "adding circuit name ", magnetcircuit.itemName, cname
+
+                        self.parameters['Circuit'] = [cname]
+                        
+                    else:
+                        #if we aleady made this circuit device, add it to this magnet properties
+                        print "!!!ALART!!! already added a circuit device for ", self.itemName
+                        
+                        self.parameters['Circuit'] = [circuit_ps_list[powersupplyname]]
+
+                        #need to get the name of the circuit device from the ps dict though
+                        print "exiting circuit device is", circuit_ps_list[powersupplyname]
+                        
+                        
+                        #current_mags = sdict.servers["%s/%s" % (devclass, system+"-"+location)][devclass][circuit_ps_list[powersupplyname]].properties
+                        current_mags = sdict.servers["%s/%s" % ("MagnetCircuit", system+"-"+location)]["MagnetCircuit"][circuit_ps_list[powersupplyname]].properties
+                        current_mags['Magnets'].append(name)
+                        
+
+                        print "props", current_mags['Magnets']
+
+                        #if already have a circuit device, magnet must have sisters
+                        #self.parameters['Sisters'].append('bill')
+
+                
+                    #circuitname = name + "circuit"
+                    #circuitdevclass = devclass + "circuit"
+                    #circuitserver = server+ "circuit"
+                    #
+
+
+                    #self.parameters["PowerSupply"] = [powersupplyname]
+                    # self.parameters["Circuit"] = [powersupplyname]
                     #print  item.properties["powersupply"]
             
                 devdict.properties = self.parameters
@@ -290,8 +374,9 @@ if __name__ == '__main__':
     types_classes = {}
     types_classes["dip"] = "Magnet"
     types_classes["csrcsbend"] = "Magnet"
+    types_classes["sole"] = "Magnet"
     types_classes["kquad"] = "Magnet"
-    types_classes["sext"] = "Magnet"
+    types_classes["ksext"] = "Magnet"
     types_classes["hkick"] = "Magnet" 
     types_classes["vkick"] = "Magnet"
     #types_classes["hkick"] = "VACorrector"
@@ -300,6 +385,8 @@ if __name__ == '__main__':
     types_classes["watch"] = "VAYAGScreen"
     types_classes["rfcw"] = "VARfCavity"
     
+    circuit_ps_list = {}
+
     #read arguments
     for par in sys.argv[1:]:
         #if par[0:2] == '--':
@@ -331,9 +418,19 @@ if __name__ == '__main__':
         #    #print "found circuit device magnet", magnet, circuit
         #    # if it is a circuit, add the circuit as a property!
         #    item.properties["circuit"] = circuit
+        if "MAG" in item.itemName:
+            print "----------------------- found magnet device", item.itemName
+         #    # hence also create a magnet circuit device
             
+
         item.add_device(json_dict)
     #print json.dumps(json_dict, indent=4)
+
+    #now we have the dict, loop over again and sort out magnets, power supplies and circuits
+
+    print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
+    print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ "
+    print json_dict.servers
 
     outfile = open('lattice.json', 'w')
     json.dump(json_dict, outfile, indent=4)

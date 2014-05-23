@@ -1,10 +1,10 @@
 TANGO_PROPERTIES = {
     'Magnet' : [
         {                                                 #Properties deduced from lattice or filled later
-            'Energy':[], 
-            'PowerSupply':[''], 
-            'IsCircuit':[''], 
-            'Sisters':[''], 
+            'Energy':[0.0], 
+            'Circuit':[''], 
+            #'IsCircuit':[''], 
+            #''Sisters':[], 
             'Type':[''], 
         },     
         {

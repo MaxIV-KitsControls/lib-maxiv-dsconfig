@@ -1,4 +1,31 @@
 POWER_SUPPLY_MAP = {
+#gun
+'I-G00/MAG/COIY-01'  : 'i-k00/mag/PSIA-09',
+'I-G00/MAG/COIX-01'  : 'i-k00/mag/PSIA-10',
+'I-S00/MAG/SOLT-01'  : 'i-k00/mag/PSPJ-01',
+'I-G00/MAG/COIY-02'  : 'i-k00/mag/PSIA-11',
+'I-G00/MAG/COIX-02'  : 'i-k00/mag/PSIA-12',
+'I-G00/MAG/COIY-03'  : 'i-k00/mag/PSIA-13',
+'I-G00/MAG/COIX-03'  : 'i-k00/mag/PSIA-14',
+'I-S00/MAG/SOLT-02'  : 'i-k00/mag/PSPJ-02',
+'I-G00/MAG/COHY-01'  : 'i-k00/mag/PSIA-15',
+'I-G00/MAG/COHX-01'  : 'i-k00/mag/PSIA-16',
+'I-S00/MAG/QST-01'   : 'i-k00/mag/PSPB-01',
+'I-S00/MAG/COFX-01'  : 'i-k00/mag/PSIA-03',
+'I-S00/MAG/QST-02'   : 'i-k00/mag/PSPB-02',
+'I-S00/MAG/COFY-01'  : 'i-k00/mag/PSIA-04',
+'I-S00/MAG/DIPT-01'  : 'i-k00/mag/PSPC-01', #series 
+'I-S00/MAG/QT-01'    : 'i-k00/mag/PSPB-03',
+'I-S00/MAG/COBX-01'  : 'i-k00/mag/PSIA-01',
+'I-S00/MAG/COBY-02'  : 'i-k00/mag/PSIA-02',
+'I-S00/MAG/DIPT-02'  : 'i-k00/mag/PSPC-01', #series
+'I-S00/MAG/QST-03'   : 'i-k00/mag/PSPB-04',
+'I-S00/MAG/COFX-02'  : 'i-k00/mag/PSIA-05',
+'I-S00/MAG/QST-04'   : 'i-k00/mag/PSPB-05',
+'I-S00/MAG/COFY-02'  : 'i-k00/mag/PSIA-06',
+'I-G00/MAG/COHY-02'  : 'i-k00/mag/PSIA-17',
+'I-G00/MAG/COHX-02'  : 'i-k00/mag/PSIA-18',
+#01 to BC1
 'I-S01A/MAG/QE-01'   : 'I-K01/MAG/PSPB-01',
 'I-S01A/MAG/COEY-01' : 'I-K01/MAG/PSIA-01',
 'I-S01A/MAG/QE-02'   : 'I-K01/MAG/PSPB-02',
