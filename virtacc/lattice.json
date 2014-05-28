@@ -1,0 +1,779 @@
+{
+    "servers": {
+        "VABPM/I-S01B": {
+            "VABPM": {
+                "I-S01B/DIA/BPL-01": {
+                    "properties": {}
+                }
+            }
+        }, 
+        "VAYAGScreen/I-S01A": {
+            "VAYAGScreen": {
+                "I-S01A/DIA/SCRN-01": {
+                    "properties": {
+                        "image": [
+                            "\"%s-I_S01a_DIA_SCRN_1.w1\""
+                        ]
+                    }
+                }
+            }
+        }, 
+        "Magnet/I-S01A": {
+            "Magnet": {
+                "I-S01A/MAG/COEY-01": {
+                    "properties": {
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-S01A/MAG/COEY-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-S01A/MAG/COEX-CIR-01": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-K01/MAG/PSIA-02"
+                        ], 
+                        "Magnets": [
+                            "I-S01A/MAG/COEX-01"
+                        ]
+                    }
+                }, 
+                "I-S01A/MAG/QE-CIR-01": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-K01/MAG/PSPB-01"
+                        ], 
+                        "Magnets": [
+                            "I-S01A/MAG/QE-01"
+                        ]
+                    }
+                }, 
+                "I-S01A/MAG/QE-CIR-02": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-K01/MAG/PSPB-02"
+                        ], 
+                        "Magnets": [
+                            "I-S01A/MAG/QE-02"
+                        ]
+                    }
+                }, 
+                "I-S01A/MAG/COEX-01": {
+                    "properties": {
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-S01A/MAG/COEX-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-S01A/MAG/QE-02": {
+                    "properties": {
+                        "Length": [
+                            "0.07000000000000001"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-S01A/MAG/QE-CIR-02"
+                        ]
+                    }
+                }, 
+                "I-S01A/MAG/QE-01": {
+                    "properties": {
+                        "Length": [
+                            "0.07000000000000001"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-S01A/MAG/QE-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-S01A/MAG/COEY-CIR-01": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-K01/MAG/PSIA-01"
+                        ], 
+                        "Magnets": [
+                            "I-S01A/MAG/COEY-01"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "Magnet/I-S01B": {
+            "Magnet": {
+                "I-S01B/MAG/QE-CIR-04": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-K01/MAG/PSPB-04"
+                        ], 
+                        "Magnets": [
+                            "I-S01B/MAG/QE-04"
+                        ]
+                    }
+                }, 
+                "I-S01B/MAG/QE-04": {
+                    "properties": {
+                        "Length": [
+                            "0.07000000000000001"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-S01B/MAG/QE-CIR-04"
+                        ]
+                    }
+                }, 
+                "I-S01B/MAG/QE-03": {
+                    "properties": {
+                        "Length": [
+                            "0.07000000000000001"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-S01B/MAG/QE-CIR-03"
+                        ]
+                    }
+                }, 
+                "I-S01B/MAG/QE-CIR-03": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-K01/MAG/PSPB-03"
+                        ], 
+                        "Magnets": [
+                            "I-S01B/MAG/QE-03"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "Magnet/I-MS1": {
+            "Magnet": {
+                "I-MS1/MAG/COEY-CIR-01": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-K01/MAG/PSIA-04"
+                        ], 
+                        "Magnets": [
+                            "I-MS1/MAG/COEY-01"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/COEY-CIR-02": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-K01/MAG/PSIA-06"
+                        ], 
+                        "Magnets": [
+                            "I-MS1/MAG/COEY-02"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/QB-03": {
+                    "properties": {
+                        "Length": [
+                            "0.2"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-MS1/MAG/QB-CIR-03"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/QB-02": {
+                    "properties": {
+                        "Length": [
+                            "0.2"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-MS1/MAG/QB-CIR-02"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/QB-01": {
+                    "properties": {
+                        "Length": [
+                            "0.2"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-MS1/MAG/QB-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/QB-04": {
+                    "properties": {
+                        "Length": [
+                            "0.2"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-MS1/MAG/QB-CIR-04"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/COEY-02": {
+                    "properties": {
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-MS1/MAG/COEY-CIR-02"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/COEX-CIR-02": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-K01/MAG/PSIA-05"
+                        ], 
+                        "Magnets": [
+                            "I-MS1/MAG/COEX-02"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/COEY-01": {
+                    "properties": {
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-MS1/MAG/COEY-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/COEX-01": {
+                    "properties": {
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-MS1/MAG/COEX-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/COEX-02": {
+                    "properties": {
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-MS1/MAG/COEX-CIR-02"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/QB-CIR-04": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-KBC1/MAG/PSPB-04"
+                        ], 
+                        "Magnets": [
+                            "I-MS1/MAG/QB-04"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/COEX-CIR-01": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-K01/MAG/PSIA-03"
+                        ], 
+                        "Magnets": [
+                            "I-MS1/MAG/COEX-01"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/QB-CIR-01": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-KBC1/MAG/PSPB-01"
+                        ], 
+                        "Magnets": [
+                            "I-MS1/MAG/QB-01"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/QB-CIR-02": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-KBC1/MAG/PSPB-02"
+                        ], 
+                        "Magnets": [
+                            "I-MS1/MAG/QB-02"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/QB-CIR-03": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-KBC1/MAG/PSPB-03"
+                        ], 
+                        "Magnets": [
+                            "I-MS1/MAG/QB-03"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "Magnet/I-BC1": {
+            "Magnet": {
+                "I-BC1/MAG/COEX-02": {
+                    "properties": {
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-BC1/MAG/COEX-CIR-02"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEX-03": {
+                    "properties": {
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-BC1/MAG/COEX-CIR-03"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/QD-04": {
+                    "properties": {
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-BC1/MAG/QD-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEX-01": {
+                    "properties": {
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-BC1/MAG/COEX-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/QD-02": {
+                    "properties": {
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-BC1/MAG/QD-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/QD-03": {
+                    "properties": {
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-BC1/MAG/QD-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEX-04": {
+                    "properties": {
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-BC1/MAG/COEX-CIR-04"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/QD-01": {
+                    "properties": {
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-BC1/MAG/QD-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEY-CIR-02": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-KBC1/MAG/PSIA-04"
+                        ], 
+                        "Magnets": [
+                            "I-BC1/MAG/COEY-02"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEY-CIR-03": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-KBC1/MAG/PSIA-05"
+                        ], 
+                        "Magnets": [
+                            "I-BC1/MAG/COEY-03"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEY-CIR-01": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-KBC1/MAG/PSIA-02"
+                        ], 
+                        "Magnets": [
+                            "I-BC1/MAG/COEY-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEY-CIR-04": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-KBC1/MAG/PSIA-08"
+                        ], 
+                        "Magnets": [
+                            "I-BC1/MAG/COEY-04"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEX-CIR-04": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-KBC1/MAG/PSIA-07"
+                        ], 
+                        "Magnets": [
+                            "I-BC1/MAG/COEX-04"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEX-CIR-01": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-KBC1/MAG/PSIA-01"
+                        ], 
+                        "Magnets": [
+                            "I-BC1/MAG/COEX-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEX-CIR-03": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-KBC1/MAG/PSIA-06"
+                        ], 
+                        "Magnets": [
+                            "I-BC1/MAG/COEX-03"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEX-CIR-02": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-KBC1/MAG/PSIA-03"
+                        ], 
+                        "Magnets": [
+                            "I-BC1/MAG/COEX-02"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/QD-CIR-01": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-KBC1/MAG/PDPD-01"
+                        ], 
+                        "Magnets": [
+                            "I-BC1/MAG/QD-01", 
+                            "I-BC1/MAG/QD-02", 
+                            "I-BC1/MAG/QD-03", 
+                            "I-BC1/MAG/QD-04"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEY-04": {
+                    "properties": {
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-BC1/MAG/COEY-CIR-04"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEY-01": {
+                    "properties": {
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-BC1/MAG/COEY-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEY-03": {
+                    "properties": {
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-BC1/MAG/COEY-CIR-03"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEY-02": {
+                    "properties": {
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-BC1/MAG/COEY-CIR-02"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/DIA-04": {
+                    "properties": {
+                        "Energy": [], 
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Circuit": [
+                            "I-BC1/MAG/DIA-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/DIA-05": {
+                    "properties": {
+                        "Energy": [], 
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Circuit": [
+                            "I-BC1/MAG/DIA-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/DIA-06": {
+                    "properties": {
+                        "Energy": [], 
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Circuit": [
+                            "I-BC1/MAG/DIA-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/DIA-07": {
+                    "properties": {
+                        "Energy": [], 
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Circuit": [
+                            "I-BC1/MAG/DIA-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/DIA-01": {
+                    "properties": {
+                        "Energy": [], 
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Circuit": [
+                            "I-BC1/MAG/DIA-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/DIA-02": {
+                    "properties": {
+                        "Energy": [], 
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Circuit": [
+                            "I-BC1/MAG/DIA-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/DIA-03": {
+                    "properties": {
+                        "Energy": [], 
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Circuit": [
+                            "I-BC1/MAG/DIA-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/DIA-08": {
+                    "properties": {
+                        "Energy": [], 
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Circuit": [
+                            "I-BC1/MAG/DIA-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/QB-CIR-02": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-KBC1/MAG/PSPB-06"
+                        ], 
+                        "Magnets": [
+                            "I-BC1/MAG/QB-02"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/QB-CIR-01": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-KBC1/MAG/PSPB-05"
+                        ], 
+                        "Magnets": [
+                            "I-BC1/MAG/QB-01", 
+                            "I-BC1/MAG/QB-03"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/QB-01": {
+                    "properties": {
+                        "Length": [
+                            "0.2"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-BC1/MAG/QB-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/QB-02": {
+                    "properties": {
+                        "Length": [
+                            "0.2"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-BC1/MAG/QB-CIR-02"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/QB-03": {
+                    "properties": {
+                        "Length": [
+                            "0.2"
+                        ], 
+                        "Energy": [], 
+                        "Circuit": [
+                            "I-BC1/MAG/QB-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/DIA-CIR-01": {
+                    "properties": {
+                        "PowerSupply": [
+                            "I-KBC1/MAG/PSPG-01"
+                        ], 
+                        "Magnets": [
+                            "I-BC1/MAG/DIA-01", 
+                            "I-BC1/MAG/DIA-02", 
+                            "I-BC1/MAG/DIA-03", 
+                            "I-BC1/MAG/DIA-04", 
+                            "I-BC1/MAG/DIA-05", 
+                            "I-BC1/MAG/DIA-06", 
+                            "I-BC1/MAG/DIA-07", 
+                            "I-BC1/MAG/DIA-08"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VABPM/I-BC1": {
+            "VABPM": {
+                "I-BC1/DIA/BPD-01": {
+                    "properties": {}
+                }
+            }
+        }, 
+        "VABPM/I-MS1": {
+            "VABPM": {
+                "I-MS1/DIA/BPD-01": {
+                    "properties": {}
+                }, 
+                "I-MS1/DIA/BPL-02": {
+                    "properties": {}
+                }, 
+                "I-MS1/DIA/BPL-03": {
+                    "properties": {}
+                }
+            }
+        }, 
+        "VAYAGScreen/I-BC1": {
+            "VAYAGScreen": {
+                "I-BC1/DIA/SCRN-01": {
+                    "properties": {
+                        "image": [
+                            "\"%s-I_BC1_DIA_SCRN_1.w1\""
+                        ]
+                    }
+                }, 
+                "I-BC1/DIA/SCRN-02": {
+                    "properties": {
+                        "image": [
+                            "\"%s-I_BC1_DIA_SCRN_2.w1\""
+                        ]
+                    }
+                }, 
+                "I-BC1/DIA/SCRN-03": {
+                    "properties": {
+                        "image": [
+                            "\"%s-I_BC1_DIA_SCRN_3.w1\""
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VAYAGScreen/I-MS1": {
+            "VAYAGScreen": {
+                "I-MS1/DIA/CT-01": {
+                    "properties": {
+                        "image": [
+                            "\"%s-I_MS1_DIA_CT_1.ct\""
+                        ]
+                    }
+                }, 
+                "I-MS1/DIA/SCRN-01": {
+                    "properties": {
+                        "image": [
+                            "\"%s-I_MS1_DIA_SCRN_1.w1\""
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
