@@ -260,7 +260,7 @@ class CaselessDict(dict):
 
     def copy(self):
         """Create a new caselessDict object that is a copy of this one."""
-        return caselessDict(self)
+        return CaselessDict(self)
 
     def dict(self):
         """Create a dictionary version of this caselessDict."""
