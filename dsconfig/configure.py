@@ -118,7 +118,7 @@ def print_diff(dbdict, data):
             print ptr
             db_value = resolve_pointer(dbdict, d["path"])
             print REMOVE + dump_value(db_value) + ENDC
-            print ADD + d["value"] + ENDC
+            print ADD + str(d["value"]) + ENDC
             ops["replace"] += 1
         if d["op"] == "add":
             print "ADD:"

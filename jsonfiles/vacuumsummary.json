@@ -1,0 +1,348 @@
+{
+    "_version": 1, 
+    "_source": "VacuumSummary.xls", 
+    "_title": "MAX-IV Tango JSON intermediate format", 
+    "_date": "2014-06-02 13:09:01.850443", 
+    "servers": {
+        "VacuumSummary/I-K00": {
+            "VacuumSummary": {
+                "I-K00/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K00"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K00/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K01": {
+            "VacuumSummary": {
+                "I-K01/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K01"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K01/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K02": {
+            "VacuumSummary": {
+                "I-K02/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K02"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K02/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K03": {
+            "VacuumSummary": {
+                "I-K03/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K03"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K03/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K04": {
+            "VacuumSummary": {
+                "I-K04/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K04"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K04/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K05": {
+            "VacuumSummary": {
+                "I-K05/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K05"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K05/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K06": {
+            "VacuumSummary": {
+                "I-K06/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K06"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K06/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K07": {
+            "VacuumSummary": {
+                "I-K07/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K07"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K07/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K08": {
+            "VacuumSummary": {
+                "I-K08/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K08"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K08/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K09": {
+            "VacuumSummary": {
+                "I-K09/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K09"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K09/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K18": {
+            "VacuumSummary": {
+                "I-K18/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K18"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K18/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K14": {
+            "VacuumSummary": {
+                "I-K14/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K14"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K14/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K11": {
+            "VacuumSummary": {
+                "I-K11/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K11"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K11/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K17": {
+            "VacuumSummary": {
+                "I-K17/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K17"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K17/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K10": {
+            "VacuumSummary": {
+                "I-K10/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K10"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K10/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K12": {
+            "VacuumSummary": {
+                "I-K12/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K12"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K12/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K13": {
+            "VacuumSummary": {
+                "I-K13/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K13"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K13/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K19": {
+            "VacuumSummary": {
+                "I-K19/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K19"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K19/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K15": {
+            "VacuumSummary": {
+                "I-K15/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K15"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K15/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "VacuumSummary/I-K16": {
+            "VacuumSummary": {
+                "I-K16/VAC/IPCUA": {
+                    "properties": {
+                        "PumpFamily": [
+                            "I-K16"
+                        ], 
+                        "VacuumInterlockPyAttProcName": [
+                            "I-K16/vac/interlock"
+                        ], 
+                        "PumpClassName": [
+                            "GammaSPCe"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

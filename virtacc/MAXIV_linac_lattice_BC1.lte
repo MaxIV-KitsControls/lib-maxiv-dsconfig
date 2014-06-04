@@ -1,0 +1,1803 @@
+!++++++++++++++++++++++ CHANGE LOG +++++++++++++++++++++++++++++++++++++
+!2011-11-21 	AW regarding transfer lines:
+!			- 523 from 15IP to center of first ring bpm was set
+!			- YAG at the bottom of TL was placed
+!			- the length of the monitors (BPL-NE) (= striplines without electronic or partial electronic ) was set
+!			- the strength of the quads was adjusted to match the optics(in the order of 0.1%)
+!2011-11-24 	MS regarding SPF:
+! 			- returned matching section 3 to correct location before BC2
+!2011-12-01 	MS regarding transfer lines:
+! 			- added 1 horizontal corrector to each transfer line to improve the tuning range for injection position and angle
+!2011-12-06 	MS+NC regarding screens:
+! 			- added YAG screens in intrasections
+!   			- NOTE: screen was not added in first intrasection due to confusion
+!       			regarding where ASTRA lattice ends and elegant lattice begins.
+!       			Possible missing BPM identified (present in intrasection item list but not in the elegant lattice. Is it present in ASTRA lattice?)
+! 			- set YAG screens as watch points (simulation implication only)
+! 			- set YAG screens to be 0.2 m long. 
+!   				- exception: YAG screens in storage rings
+!   				- resulted in slightly shifted corrector locations in main linac
+!   				- resulted in shifted stripline before 1.5 GeV extraction point
+! 			- shifted YAG screens to follow adjacent BPMs in most locations
+!   				- includes transfer lines
+!   				- excludes extraction points due to desire to keep symmetry with YAG screen in storage ring, which meant there was no space available.
+! 			- added 0.4m placeholder for electro-optical detector
+!2011-12-07 	MS+AW regarding screens:
+! 			- moved transfer line YAG screens to overlap with minimum dispersion, and to be closer to the first dispersion maximum
+!2011-12-08 	MS regarding 1.5 GeV launching section:
+! 			- moved striplines to before the kicker magnets, due to feedback from R. Nilsson that the different vacuum chamber 
+!			   cross-sections would necessitate quite a bit of extra work and also risk reducing stripline accuracy.
+! 			- The launching section solution is now -similar- to the 3.0 GeV launching section. 
+!2011-12-08 	ST Made three different accelerating sections, since both phase and voltage will differ between the the modes in the end.
+!2011-12-08 	ST The two quads after the last BC2 dipole belongs to the SPF lattice, but are staying in this lattice for practical reasons. 
+!2011-12-15 	MS regarding transfer lines:
+! 			- added one horizontal corrector to each of the transfer lines, due to a 
+! 			- smaller than previously assumed aperture. This led to a higher requirement on kick strength to reach the same tuning range.
+!2011-12-16 	MS+EM+ML regarding striplines for current measurement
+! 			- Two extra striplines were added for current measurements. They will not be used for trajectory correction and so will have simpler electronics.
+!2011-12-19 	AW renamed the drifts and beamlines in TLs keeping convention, adjusted quads strength
+!2012-01-02 	MS adjusted corrector locations in IS1a and IS1b due to physical overlaps (input from AB).
+!---RELEASE OF v3.2.2---
+!2012-02-06 	MS adjusted TL stripline locations to place them before the dispersive maximum and the associated screen.
+!2012-03-07 	MS adjusted TL corrector locations away from the dispersive maxima, in order to allow a wider vacuum chamber and thus a larger momentum acceptance.
+!2012-03-20 	MS adjusted MS3 200 mm upstream in order to make the injector fit in the building
+!2012-03-21 	MS introduced markers for the beginning of each "location area" as defined in the naming convention. The aim is to ease automated conversion of the elegant lattice into an excel version.
+!  			MS started converting the lattice into following the MAX IV naming convention
+!2012-03-28 	MS adjusted all intrasections to match the CAD layout provided by AB.
+!2012-04-05 	MS adjusted MS1 to make space for an ion pump for L01b. Machine optics were refitted to previous values at BC1 entry.
+!2012-04-10 	MS adjusted MS1 to match the CAD layout provided by AB.
+!2012-04-17 	MS added 35.25 mm to I.EX3 in order to match the linac to the previously determined reference points used by builders, et.c.
+!---RELEASE OF v3.3.0---
+!2012-04-20 	MS adjusted EX3 and MS3 to match the CAD layout provided by AB.
+!			MS removed a number of striplines in a cost-saving exercise/review.
+!2012-04-26 	MS renamed correctors to follow the naming convention.
+!2012-05-02 	MS adjusted I.MAG.COEp correctors (low-energy corrector variant) to have the correct magnetic length
+!			MS removed a number of correctors from the correction system; note that these are still present in the lattice file.
+!2012-05-03 	MS changed all I.MAG.COCp correctors (TL corrector variant) to the standard I.MAG.CODp type
+!			MS changed TR3 striplines to unique elements following the naming convention
+!			MS changed all TL correctors to unique elements following the naming convention
+!2012-05-10	MS changed I.BC2 region to correspond with preliminary CAD layout provided by AB.
+!2012-06-05	MS updated YAG screen names to conform with the official naming convention
+!2012-06-06	MS updated linac structure names to conform with the official naming convention
+!2012-06-13	MS updated extraction kicker magnets to the new I.MAG.DIPH design
+!2012-07-27	MS updated stripline elements according to decisions taken during the oak acid meeting (see StriplineReview document)
+!			MS updated stripline elements to conform with the official naming convention, including instance numbers for "lonely" elements
+!			MS updated corrector magnets to conform with the official naming convention, including instance numbers for "lonely" elements
+!2012-07-30	MS added beam dumps for the 1.5 GeV transfer line
+!			MS added BC1 scraper positions
+!			MS corrected inactive CODp type corrector lengths (error introduced during the 2012-07-27 update)
+!			MS updated screen elements according to decisions taken during the oak acid meeting
+!			MS updated screen elements to conform with the official naming convention, including instance numbers
+!2012-07-31	MS marked elements removed in the oak acid meeting as RESERVED
+!			MS marked EOD detector as RESERVED
+!			MS added mirror for THz radiation extraction
+!---RELEASE OF v3.3.2---
+!2012-08-13	MS updated magnet declarations to include power supply circuits via RPN expressions; note that this is only applied during lattice declaration. Runtime changes will still require implementation of a element linking file
+!2012-08-16	MS added a MALIGN element to represent bunch delays/shifts due to time jitter in the photocathode gun laser system.
+!2012-08-20	MS updated the SP02 lattice to match preliminary OPA lattice (source H. Enqvist)
+!			MS added RPN physics variables (c; relativistic beta and gamma; total, kinetic and rest energy for electrons)
+!2012-08-23	MS updated IS1a-IS19b against technical drawings
+!			MS updated BC1 correctors to thick elements
+!			MS updated BC1 corrector locations to match assembly drawing BC1.SLDASM 2012-08-15
+!2012-08-27	MS adjusted position of I.MAG.EX1.CODY.2 further downstream due to physical collision with the septum magnet; this corrector is essential
+!			MS adjusted corrector status to minimize corrector strengths:
+!				- status of I.MAG.BC2.CODY.2 changed to RESERVED
+!				- status of I.MAG.EX3.CODY.2 changed from RESERVED to active
+!			MS reduced the total length of I.EX3 by 300 mm as a result of the decision to shift BC2 and the SPF lines forward.
+!			MS rematched the optics in I.MS3 to reproduce the old machine functions in BC2
+!2012-09-03	MS updated BC1 to match BC1 Components drawing no. 202123 rev 01. This included:
+!				- inserting I.DIA.BC1.BP$ inside the quad-sext-quad sandwich. NOTE: now thin element adjacent to first quad.
+!				- changing screen locations to allow mechanical assembly
+!			MS updated MS1 to match assembly drawing no. 202162 rev 01. This included:
+!				- minor adjustment of corrector, stripline and screen locations
+!			MS updated MS2 to match assembly drawing no. 202164 rev 01. This included:
+!				- minor adjustment of corrector, stripline and screen locations
+!			MS updated SP02 to match total length from I.MAG.BC2.DIB.8 to I.MAG.SP02.DIPBD with the building drawings; total length 25.610958 m. Note that useable length is lower due to space margins to the aforementioned dipoles.
+!			MS updated SP02 quad strengths to minimize the transverse beam size inside the phase 1 insertion devices (two undulators)
+!2012-09-11	MS revised the SP02 lattice:
+!				- corrected the dump bend magnet length (2.4m is the floor projection).  WARNING! Total length is changed. No clarity on where the main dump will be positioned. Check dump magnet end when checking length changes
+!				- adjusted quadrupole locations and strengths, three different settings available depending on ID loadout and gap
+!				- inserted additional screens, striplines and current transformers
+!				- inserted space for a future third undulator
+!				- reduced the number of corrector magnets
+!				- cleared a 40 cm contingency space before undulators, which may be needed for lead shielding of bremsstrahlung in the first screen
+!				- inserted space for standard dimension valves and bellows
+!2012-09-13	MS updated matching sections:
+!				- inserted current transformer in MS1 (assembly drawing 202162 rev. 1)
+!				- inserted current transformer in MS2 (assembly drawing 202164 rev. 1)
+!			MS updated section lengths to match the PDM system:
+!				- I.EX3 section reduced by 200.15 mm to a total of 4383.60 mm
+!				- I.MS3 section extended by 200 mm to a total of 7200 mm
+!			MS added Faraday cups in I.TR1 and I.SP02
+!2012-09-20	MS altered QUAD and SEXT element types to kquad and ksext, respectively. This is in order to be able to include higher order multipole errors in the simulation.
+!2012-09-21	MS added sextupole field data to DIA dipoles.
+!2012-09-24	MS updated I.EX3 up to extraction point to conform with assembly drawing (202275 rev. 1):
+!				- minor location adjustments
+!				- addition of ceramic gap for current transformer
+!			MS updated I.MS3 to conform with assembly drawing (202291 rev. 1)
+!			MS updated SP02 quadrupole strengths:
+!				- new strengths have a safety margin allowing their use at 3.4 GeV particle energy before magnet saturates. This is in line with the design assumption.
+!2012-09-25	MS updated remainder of I.EX3 to conform with assembly drawing (202275 rev. 1):
+!				- location adjustment of correctors (formerly located inside the septum)
+!2012-09-27	MS updated BC2 to conform with assembly drawing 202347 rev. 1, dated 20120927
+!				- slight position shifts for corrector magnets
+!			MS adjusted position of I.MAG.TR1.CODX.1
+!			MS updated TR3 to conform with assembly drawing 202337 rev. 1, dated 20120927:
+!				- added beam dumps
+!				- added current transformer
+!				- added Faraday cups
+!				- adjusted stripline and corrector locations
+!			MS updated EX1 and TR1 to conform with assembly drawing 202171 rev. 2:
+!				- adjusted locations of correctors, screens and stripline BPMs
+!				- added current transformer
+!---RELEASE OF 3.4.0---
+!2012-10-03	MS updated corrector sextupole field components
+!			MS updated corrector placement in TR1 and TR3 to meet requirements on injection tuning angle:
+!				- two extra CODX added to TR1
+!				- correctors I.MAG.TR1.CODX.3 to 6 shifted 5 cm closer to the bending magnet (requires a double check in the PDM system)
+!				- I.MAG.TR3.CODX.6 shifted to lie between I.MAG.TR3.DID and 3.MAG.01L.SM3B
+!				- I.MAG.TR3.CODX.4 to 5 shifted to be as close as possible to I.MAG.TR3.DID
+!2012-10-04	MS updated lattice according to linac component meeting 2012-10-04:
+!				- adjusted locations of stripline bpms in I.S04b, I.S06a, I.S16b
+!				- adjusted locations of stripline bpms in I.S08a, I.S19b to be directly adjacent to the linac structure
+!				- (REVERTED 2012-10-05) shifted corrector types in I.S06b and I.S07b to COD
+!				- (REVERTED 2012-10-05) shifted corrector types in I.S16b and I.S14b to COE (lack of mechanical space)
+!				- adjusted location of I.DIA.S12a.SCR
+!				- adjusted location of I.MAG.S14b.COEX.1
+!				- added vertical scrapers to BC1
+!			Intrasection updated with changes in assembly drawings:
+!				- 202010 rev. 2
+!				- 202020 rev. 2
+!				- 202023 rev. 2
+!				- 202026 rev. 2
+!				- 202029 rev. 2
+!				- 202043 rev. 2
+!				- 202052 rev. 2
+!				- 202055 rev. 2
+!				- 202058 rev. 2
+!				- 202059 rev. 2
+!				- 202065 rev. 2
+!2012-10-11	MS updated the lattice according to the naming convention changes
+!			MS updated magnet circuit names and knob names
+!2012-11-05	MS updated extraction dipoles of type DIH to include sextupole components
+!2012-11-15	MS updated I.SP02:
+!				- ID lengths altered to match the Hitachi design
+!				- Matching part of I.SP02 altered to relax quadrupole strengths and ensure symmetry with the end of I.MS3
+!				- Matching part of I.SP02 rematched to preserve optics.
+!			MS updated all quadrupoles and sextupoles, EXCEPT transfer line QC quadrupoles:
+!				- Inclusion of systematic multipole errors, and switch to KQUAD element type; motivated by consistency with 
+!				  dipole and corrector treatment, i.e. known static multipole errors are always included.
+!2012-11-16	MS redefined I.MS3 to go all the way up to the first dipole in BC2
+!			MS moved two screens to flank BC2, this entailed:
+!				- moving the screens
+!				- moving I.MS3.QF.5 and 6, rematching optics at BC2 entry
+!				- moving I.SP02.QF.1 and 2, rematching optics in SP02
+!2012-11-19	MS renamed RF structures to follow the naming convention
+!			MS corrected ring elements to follow the naming convention
+!---RELEASE OF 3.4.1---
+!2012-11-21	MS corrected transfer line quadrupoles to be of type QF; type QC was cancelled
+!2012-11-28	MS corrected magnetic length of FemtoMAX undulators
+!2012-12-05	MS adjusted accelerating voltages using RPN calculations. This
+!				- ensures correct particle energies at end of the accelerator for all three modes
+!				- adjusts the mechanical phase shifters in an optics free region to ensure the same particle energy profile in regions with optical elements regardless of mode, i.e. the magnet settings should be fully mode independent now.
+!				- energy in BC1 is identical regardless of mode
+!2012-12-06	MS added a MAGNIFY element for the preinjector to support jitter studies
+!------------OFFICIAL HANDOVER OF LATTICE TO S. THORIN---------------
+!2012-12-14	MS changed all beam dumps to ECOL elements, with 1.0 meter cylindrical half-aperture. To close, move the aperture in DX with 10.0 meters
+!			MS inserted vertical scrapers in BC2
+!2012-12-20	ST changed sextupoles to close dispersion
+!			ST changed linac phases to make a much longer but still usuable SPF pulse.
+!2013-01-16	ST changed sextupoles to minimize emittance
+!2013-01-22	ST moved correctors CODY.1 and CODx.1 50 mm forward in TR1
+!			ST added N_KICKS = 32 in element types kquad and ksext
+!			ST added the SP02 concrete wall to BC2
+!			MS moved correctors I.TR1.MAG.CODX.3 to 6 by 65 mm upstream (mechanical design considerations)
+
+
++++++++++++++++++ TO DO LIST ++++++++++++++++++++++++++
+!	Create SDDS file containing aperture data
+!	- Use csv2sdds. An excel sheet or csv file containing the aperture information along the linac will be needed
+!	Insert beam dumps in BC2
+!
+
+!+++++++++++++++++ NOTE ON USAGE +++++++++++++++++++++++++++++++++++++++++
+!	Element links are implemented in separate files (i.e. magnets sharing the same power supply, linac structures on the MDL, et.c.)
+!	- This will be a setup command in an elegant runfile, rather than in the lattice. How to link in a separate command file is still unclear.
+!	Element errors are implemented in separate files (i.e. multipole errors, misalignments, et.c.)
+!	- These files are setup commands for elegant runfiles, rather than in lattice format.
+!	- Files are ordered by system and whether they are static or dynamic
+!	- Some errors require supporting SDDS data files (multipole errors)
+!	- Error commands assume that element links have been set-up; if neglecting the link files, be certain to double-check that the applied errors corresponds to what is expected
+!
+!	To create the elegant runfile, concatenate the various error files:
+!		cat runsetup.ele > run.ele
+!		cat staticerrors.ele >> run.ele
+!		cat moreerrors.ele >> run.ele
+!		cat runcommand.ele >> run.ele
+!		elegant run.ele
+!	Apparently the windows equivalent would be
+!		copy /y runsetup.ele+staticerrors.ele+moreerrors.ele+runcommand.ele > run.ele
+!		elegant run.ele
+
+
+!+++++++++++++++++ NOTE ON ELEMENT NAMES +++++++++++++++++++++++++++++++++++
+! Any physical element will be named according to its location, as specified in the MAX IV naming convention. However, in the lattice each element name consists of several parts separated by an underscore '_' or a hyphen '-'. The first part, up to the underscore, is the name of the physical device according to the MAX IV naming convention. For magnets this means that individual magnets that are powered in series will have different names. The second part, between the underscore and the hyphen, is a linking name. The link name will be used to distinguish various component interdependencies, such as common powersupplies for magnets. This eases the elegant setup of links for various simulations. To be more specific, the link name will:
+!	- be identical for magnet units that make up a single 'knob'. I.e. two magnets sharing the same powersupply will have identical second parts in their names. This makes it possible to properly tune the machine in elegant using wildcards such as '*' and '?', while at the same time being clear on what physical elements are found where. It should be noted that magnets sharing the same powersupply but having the opposite sign currently do not have identical "second part names". One such example is the bunch compressor bends.
+! The last part of the element name, i.e. after the hyphen, is only used as a note that will be kept during the conversion to a human readable .csv lattice. Examples include using the note to
+!	- indicate the electronics type for the stripline detectors; E means it is capable of providing position data, NE means 'No Electronics'.
+!	- indicate a reserved space in case the lattice name is RESERVED
+!
+! In general, editing the lattice is MUCH, MUCH easier if the user utilizes regular expressions for search and replace, i.e. pattern-based search and replace. An editor that supports regular expressions, such as Scite, is therefore highly recommended.
+!
+!
+
+
+
+!+++++++++++++++++ GENERAL ELEMENTS AND DEFINITIONS++++++++++++++++++++++++++
+! In this section all generic elements are declared that share the same name throughout the entire lattice.
+
+! Natural constants
+% 299792458				sto	c
+% 510998.918				sto	E0
+
+! Energies
+!  This value must be altered in case the average incoming particle energy changes
+% 185 185 * 1 + sqrt E0 *	sto 	Einput
+
+!--- Stripline BPM margins (mechanical size)
+STRIPD:     	drift, l = 0.025
+
+!--- Current transformer margins (mechanical size)
+CTda:		drift, l = 0.09825
+CTdb:		drift, l = 0.04175
+
+!--- Screen margins (approximate and more exact mechanical size)
+SCRNd:     	drift, l = 0.10
+SCRNa:		drift, l = 0.073
+SCRNb:		drift, l = 0.127
+
+!--- Bunch delays/shifts/blow-up due to jitter et.c. in the preinjector
+PREINJ_POS:	MALIGN
+PREINJ_SIZE:	MAGNIFY
+PREINJ:		line=(PREINJ_SIZE, PREINJ_POS)
+
+!--- Charge definition
+CH: 			CHARGE,TOTAl = 100e-12
+
+!--- Watch points (used for simulation only)
+"W-INIT": 		WATCH,FILENAME="./w-init.sdds"
+"W-ACHR1A": 	WATCH,FILENAME="./w-achr1a.sdds"
+"W-END": 	WATCH,FILENAME="..\wp\w-end.sdds"
+
+!--- Fit points (used for matching simulations, et.c.)
+BCFIT2:     	marker, FITPOINT=1
+!BC1START:   	marker
+BC1END:     	marker
+BC2START:   	marker, FITPOINT=1
+BC2END:     	marker
+PUNKT1:     	marker, FITPOINT=1
+FIT1:       		marker, FITPOINT=1
+FIT2:       		marker, FITPOINT=1
+FIT3:       		marker, FITPOINT=1
+15INJ:      		marker
+3INJ:       		marker
+IP15:       		marker
+IP3:        		marker
+
+
+
+
+! ##################Acceleration #####################
+! USAGE NOTES:
+! Altering the parameter definitions will alter all elements.
+
+! General linac structure parameters
+% 0.033333333        	sto cav_l
+% 2998e6			sto frequency
+% 0.033333333 156 * 	sto section_l
+
+! At BC1 entry the energy should stay the same regardless of mode as this means we don't have to readjust BC1 at all depending on mode.
+! This means adjusting the SLED loading time, and thus the linac structure voltage, to reach the same energy regardless of the chirp phase for the mode.
+! Assuming the maximum chirp we want for bunch compression is at 122 degrees, or 35 degrees off-crest, and a maximum voltage of 156*6.44e5, this means
+% 90 							sto	phi_L1_INJ15
+% 90 							sto	phi_L1_INJ3
+% 90 32 +							sto	phi_L1_SPF
+% 90 32.0 +						sto	phi_max
+
+% phi_max dsin 6.44e5 156 * * 2 * 		sto	E_gain_L1
+% E_gain_L1 phi_L1_INJ15 dsin / 2 /		sto	V_L1_INJ15
+% E_gain_L1 phi_L1_INJ3 dsin / 2 /		sto	V_L1_INJ3
+% E_gain_L1 phi_L1_SPF dsin / 2 /		sto	V_L1_SPF
+
+! Between RF section 6 and 14 there are no focusing elements. This means sections 7-13 are free to fit the "energy gain at zero chirp up to EX1 and to EX3" by 
+! using the slow phase shifters, as there's no optics effect from playing with the energy gain profile here. Of course this will reduce the efficiency in terms of particle 
+! energy gain per meter. For SPF mode this must then be compensated by raising the voltage.
+% 1.5e9							sto 	E_EX1
+% 3.0e9							sto 	E_EX3
+% 90							sto 	phi_MDL_INJ15
+% 90							sto 	phi_MDL_INJ3
+% 90 7 +						sto 	phi_MDL_SPF
+
+% E_EX1 E_gain_L1 - Einput -			sto	E_gain_BC1_to_EX1
+% E_EX3 E_EX1 					sto	E_gain_EX1_to_EX3
+
+! The phasing of RF stations 8 and 9 are used to reduce the accelerating voltage to match the energy at the 1.5 GeV extraction. The phase adjustment is phi_adj_pt1.
+! The phasing of RF stations 10 and 11 may be used to reduce the accelerating voltage to match the energy profile up to the 3.0 GeV extraction. The phase adjustment is phi_adj_pt2.
+! It is recommended to not insert any optical element (quadrupoles) in these sections.
+% E_gain_BC1_to_EX1 E_gain_EX1_to_EX3 / 3 2 sqrt + * 3 - dacos 	sto	phi_adj_pt1
+% 0												 	sto	phi_adj_pt2
+
+% E_gain_BC1_to_EX1 phi_MDL_INJ15 dsin / 6 phi_adj_pt1 dcos 2 * + / 2 /	sto	V_MDL_INJ15
+% E_gain_BC1_to_EX1 phi_MDL_INJ3 dsin / 6 phi_adj_pt1 dcos 2 * + / 2 /		sto	V_MDL_INJ3
+% E_gain_BC1_to_EX1 phi_MDL_SPF dsin / 6 phi_adj_pt1 dcos 2 * + / 2 /		sto	V_MDL_SPF
+
+
+! SPF mode:
+! Compute end values for SPF
+!% 3e9							sto	EkinSPF
+!% EkinSPF E0 + 					sto	EtotSPF
+!% EtotSPF E0 / EtotSPF E0 / * 1 - sqrt	sto	gammabetaSPF
+!% 2 EtotSPF E0 / EtotSPF E0 / * + sqrt 	sto 	gammaSPF
+!% gammabetaSPF gammaSPF /		sto	betaSPF
+
+! 1.5 GeV injection mode:
+! Compute end values for 1.5 GeV injection
+!% 1.5e9							sto	Ekin15
+!% Ekin15 E0 + 					sto	Etot15
+!% Etot15 E0 / Etot15 E0 / * 1 - sqrt		sto	gammabeta15
+!% 2 Etot15 E0 / Etot15 E0 / * + sqrt 	sto 	gamma15
+!% gammabeta15 gamma15 /			sto	beta15
+
+! 3.0 GeV injection mode:
+! Compute end values for 3 GeV injection
+!% 3e9							sto	Ekin3
+!% Ekin3 E0 + 						sto	Etot3
+!% Etot3 E0 / Etot3 E0 / * 1 - sqrt		sto	gammabeta3
+!% 2 Etot3 E0 / Etot3 E0 / * + sqrt 		sto 	gamma3
+!% gammabeta3 gamma3 /			sto	beta3
+
+
+
+lin1spf: 	rfcw, freq = "frequency" ,&
+		cell_length="cav_l",l="section_l", volt="V_L1_SPF",&
+		phase="phi_L1_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+               
+linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+
+lin115: 	rfcw, freq = "frequency" ,&
+		cell_length="cav_l",l="section_l", volt="V_L1_INJ15",&
+		phase="phi_L1_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+               
+
+lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+	
+lin13: 	rfcw, freq = "frequency" ,&
+		cell_length="cav_l",l="section_l", volt="V_L1_INJ3",&
+		phase="phi_L1_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+               
+
+lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+
+
+! SPF mode definitions
+
+
+I.L01a_lin1spf:	rfcw, freq = "frequency" ,&
+		cell_length="cav_l",l="section_l", volt="V_L1_SPF",&
+		phase="phi_L1_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+               
+I.L01b_lin1spf:	rfcw, freq = "frequency" ,&
+		cell_length="cav_l",l="section_l", volt="V_L1_SPF",&
+		phase="phi_L1_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L02a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L02b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L03a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L03b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L04a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L04b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L05a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L05b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L06a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L06b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L07a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L07b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L08a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF phi_adj_pt1 +",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L08b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF phi_adj_pt1 +",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L09a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF phi_adj_pt1 -",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L09b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF phi_adj_pt1 -",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L10a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF phi_adj_pt2 +",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L10b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF phi_adj_pt2 +",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L11a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF phi_adj_pt2 -",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L11b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF phi_adj_pt2 -",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L12a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L12b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L13a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L13b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L14a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L14b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L15a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L15b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L16a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF 2 sqrt /",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L16b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF 2 sqrt /",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L17a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF 2 sqrt /",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L17b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF 2 sqrt /",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L18a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF 2 sqrt /",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L18b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF 2 sqrt /",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L19a_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF 2 sqrt /",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L19b_linspf: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_SPF 2 sqrt /",&
+		phase="phi_MDL_SPF",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+
+
+
+! 1.5 GeV mode definitions
+
+I.L01a_lin115: 	rfcw, freq = "frequency" ,&
+		cell_length="cav_l",l="section_l", volt="V_L1_INJ15",&
+		phase="phi_L1_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L01b_lin115: 	rfcw, freq = "frequency" ,&
+		cell_length="cav_l",l="section_l", volt="V_L1_INJ15",&
+		phase="phi_L1_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+               
+I.L02a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L02b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L03a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L03b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L04a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L04b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L05a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L05b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L06a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L06b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L07a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L07b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L08a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15 phi_adj_pt1 +",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L08b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15 phi_adj_pt1 +",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L09a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15 phi_adj_pt1 -",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L09b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15 phi_adj_pt1 -",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L10a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L10b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L11a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L11b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L12a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L12b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L13a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L13b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L14a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L14b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L15a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L15b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ15",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L16a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_L1_INJ15 2 sqrt /",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L16b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_L1_INJ15 2 sqrt /",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L17a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_L1_INJ15 2 sqrt /",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L17b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_L1_INJ15 2 sqrt /",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L18a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_L1_INJ15 2 sqrt /",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L18b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_L1_INJ15 2 sqrt /",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L19a_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_L1_INJ15 2 sqrt /",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L19b_lin15: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_L1_INJ15 2 sqrt /",&
+		phase="phi_MDL_INJ15",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+
+
+! 3 GeV mode definitions
+
+I.L01a_lin13: 	rfcw, freq = "frequency" ,&
+		cell_length="cav_l",l="section_l", volt="V_L1_INJ3",&
+		phase="phi_L1_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+               
+I.L01b_lin13: 	rfcw, freq = "frequency" ,&
+		cell_length="cav_l",l="section_l", volt="V_L1_INJ3",&
+		phase="phi_L1_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+               
+
+I.L02a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L02b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L03a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L03b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L04a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L04b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L05a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L05b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L06a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L06b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L07a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L07b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L08a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3 phi_adj_pt1 +",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L08b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3 phi_adj_pt1 +",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L09a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3 phi_adj_pt1 -",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L09b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3 phi_adj_pt1 -",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L10a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3 phi_adj_pt2 +",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L10b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3 phi_adj_pt2 +",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L11a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3 phi_adj_pt2 -",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L11b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3 phi_adj_pt2 -",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L12a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L12b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L13a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L13b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L14a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L14b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L15a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L15b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L16a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3 2 sqrt /",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L16b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3 2 sqrt /",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L17a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3 2 sqrt /",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L17b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3 2 sqrt /",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L18a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3 2 sqrt /",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L18b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3 2 sqrt /",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L19a_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3 2 sqrt /",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+I.L19b_lin3: 	rfcw, freq = "frequency",&
+		cell_length="cav_l",l="section_l", volt="V_MDL_INJ3 2 sqrt /",&
+		phase="phi_MDL_INJ3",&
+		change_p0=1,&
+		end1_focus=1, end2_focus=1,&
+		zwake=1, trwake=1,&
+		zwakefile="wakefieldlong.sdds",tColumn="t",wzColumn="W",n_bins=0,change_p0=1,&
+		trwakefile="wakefieldtran.sdds",tColumn="t",wxColumn="W",n_bins=0
+
+
+
+
+!+++++++++++++++++++++ PRE-BC1 REGION +++++++++++++++++++++++++++++++++++++
+
+!---Quadrupoles
+I.S01a.MAG.QE.1:     Kquad, l = 0.07000000000000001, K1 = 5.379721400783739, SYSTEMATIC_MULTIPOLES="Systematic_multipole_content_QE.sdds", N_KICKS=32
+I.S01a.MAG.QE.2:     Kquad, l = 0.07000000000000001, K1 = -6.026075975262641, SYSTEMATIC_MULTIPOLES="Systematic_multipole_content_QE.sdds", N_KICKS=32
+I.S01b.MAG.QE.3:     Kquad, l = 0.07000000000000001, K1 = 4.330872997381297, SYSTEMATIC_MULTIPOLES="Systematic_multipole_content_QE.sdds", N_KICKS=32
+I.S01b.MAG.QE.4:     Kquad, l = 0.07000000000000001, K1 = -4.586726542100229, SYSTEMATIC_MULTIPOLES="Systematic_multipole_content_QE.sdds", N_KICKS=32
+
+!---Drifts
+linD020:	drift, l = 0.20
+linD035:  	drift, l = 0.35
+linD048:  	drift, l = 0.48
+linD008:  	drift, l = 0.08
+linD028: 	drift, l = 0.28
+linD038:  	drift, l = 0.38
+!linD013:	drift, l = 0.13
+linD018:  	drift, l = 0.18
+linD0175:	drift, l = 0.175
+linD026:	drift, l = 0.26
+linD027:  	drift, l = 0.27
+linD015:  	drift, l = 0.15
+linD0112:	drift, l = 0.112
+linD0038:	drift, l = 0.038
+linD013:  	drift, l = 0.130
+linD002:	drift, l = 0.020
+linD005:	drift, l = 0.050
+linD006:	drift, l = 0.060
+linD0305:	drift, l = 0.305
+linD0125:	drift, l = 0.125
+linD0105:	drift, l = 0.105
+linD0075:	drift, l = 0.075
+linD0035:	drift, l = 0.035
+linD0055:	drift, l = 0.055
+linD0095:	drift, l = 0.095
+linD0145:	drift, l = 0.145
+
+!--- Marker
+I.S01a:	marker
+I.L01a:	marker
+I.S01b:	marker
+I.L01b:	marker
+
+!--- Corrector magnets
+I.MAG.CODp: 					drift, l = 0.005
+I.MAG.COEp: 					drift, l = 0.04
+I.S01a.MAG.COEX.1: 			HKICK, l = 0.07, B2 = 6.944
+I.S01a.MAG.COEY.1: 				VKICK, l = 0.07, B2 = 6.944
+I.S01b.MAG.COEX.2-RESERVED: 	drift, l = 0.07
+I.S01b.MAG.COEY.2-RESERVED: 	drift, l = 0.07
+
+!--- Stripline BPM located inside the IS01b.QE.2 quadrupole, with electronics. 
+! Physical length is 0.2 m (estimate); stripline length is 0.15 m but is approximated as a thin detector.
+I.S01b.DIA.BPL.1-E:  			monitor, l = 0.0, weight = 1   
+
+!--- Screens
+I.S01a.DIA.SCRN.1:				WATCH,FILENAME="%s-I_S01a_DIA_SCRN_1.w1"
+I.S01a.DIA.SCR.1:				line = (SCRNd, I.S01a.DIA.SCRN.1, SCRNd)
+!I.S01b.DIA.SCRN.2:				WATCH,FILENAME="%s-I_S01b_DIA_SCRN_2.w1"
+I.S01b.DIA.SCRN.2-RESERVED: 	marker
+I.S01b.DIA.SCR.2:				line = (SCRNd, I.S01b.DIA.SCRN.2-RESERVED, SCRNd)
+
+PreBC1:     line = (I.S01a,LIND035,I.S01a.MAG.QE.1,linD002, I.S01a.DIA.SCR.1,linD006,I.MAG.COEp,I.S01a.MAG.COEY.1,I.MAG.COEp,linD013,I.S01a.MAG.QE.2,linD0075,I.MAG.COEp,I.S01a.MAG.COEX.1,I.MAG.COEp,linD0125,&
+			I.L01a,I.L01a_lin1spf,&
+			I.S01b,LIND035,I.S01b.MAG.QE.3,linD008,I.MAG.COEp,I.S01b.MAG.COEX.2-RESERVED,I.MAG.COEp,linD0035,I.MAG.COEp,I.S01b.MAG.COEY.2-RESERVED,I.MAG.COEp,linD0145,I.S01b.MAG.QE.4,I.S01b.DIA.BPL.1-E,linD0095, I.S01b.DIA.SCR.2,linD0055,&
+			I.L01b,I.L01b_lin1spf)
+
+
+PreBC1Inj15:  line = (I.S01a,LIND035,I.S01a.MAG.QE.1,linD002, I.S01a.DIA.SCR.1,linD006,I.MAG.COEp,I.S01a.MAG.COEY.1,I.MAG.COEp,linD013,I.S01a.MAG.QE.2,linD0075,I.MAG.COEp,I.S01a.MAG.COEX.1,I.MAG.COEp,linD0125,&
+			I.L01a,I.L01a_lin115,&
+			I.S01b,LIND035,I.S01b.MAG.QE.3,linD008,I.MAG.COEp,I.S01b.MAG.COEX.2-RESERVED,I.MAG.COEp,linD0035,I.MAG.COEp,I.S01b.MAG.COEY.2-RESERVED,I.MAG.COEp,linD0145,I.S01b.MAG.QE.4,I.S01b.DIA.BPL.1-E,linD0095, I.S01b.DIA.SCR.2,linD0055,&
+			I.L01b,I.L01b_lin115)
+
+
+PreBC1Inj3:  line =  (I.S01a,LIND035,I.S01a.MAG.QE.1,linD002, I.S01a.DIA.SCR.1,linD006,I.MAG.COEp,I.S01a.MAG.COEY.1,I.MAG.COEp,linD013,I.S01a.MAG.QE.2,linD0075,I.MAG.COEp,I.S01a.MAG.COEX.1,I.MAG.COEp,linD0125,&
+			I.L01a,I.L01a_lin13,&
+			I.S01b,LIND035,I.S01b.MAG.QE.3,linD008,I.MAG.COEp,I.S01b.MAG.COEX.2-RESERVED,I.MAG.COEp,linD0035,I.MAG.COEp,I.S01b.MAG.COEY.2-RESERVED,I.MAG.COEp,linD0145,I.S01b.MAG.QE.4,I.S01b.DIA.BPL.1-E,linD0095, I.S01b.DIA.SCR.2,linD0055,&
+			I.L01b,I.L01b_lin13)
+
+
+
+
+!++++++++++++ Matching section 1 ++++++++++++++++++++++++++++++++++++++++++
+
+!---Quadrupoles
+I.MS1.MAG.QB.1: 	Kquad, l = 0.2, K1 = -4.211643826464711, SYSTEMATIC_MULTIPOLES="Systematic_multipole_content_QB.sdds", N_KICKS=32
+I.MS1.MAG.QB.2: 	Kquad, l = 0.2, K1 = 4.447351841641614, SYSTEMATIC_MULTIPOLES="Systematic_multipole_content_QB.sdds", N_KICKS=32
+I.MS1.MAG.QB.3: 	Kquad, l = 0.2, K1 = -2.610066616707631, SYSTEMATIC_MULTIPOLES="Systematic_multipole_content_QB.sdds", N_KICKS=32
+I.MS1.MAG.QB.4: 	Kquad, l = 0.2, K1 = 3.628310502149575, SYSTEMATIC_MULTIPOLES="Systematic_multipole_content_QB.sdds", N_KICKS=32
+
+!---Drifts
+I.MS1_D015: 		drift, l = 0.15
+I.MS1_D07: 		drift, l = 0.7
+I.MS1_D010: 		drift, l = 0.1
+I.MS1_D050: 		drift, l = 0.5
+I.MS1_D035: 		drift, l = 0.35
+I.MS1_D008:  		drift, l = 0.08
+I.MS1_D056: 		drift, l = 0.56
+I.MS1_D006: 		drift, l = 0.06
+I.MS1_D0125: 		drift, l = 0.125
+I.MS1_D0010: 		drift, l = 0.010
+I.MS1_D0040: 		drift, l = 0.040
+I.MS1_D0025: 		drift, l = 0.025
+I.MS1_D0075: 		drift, l = 0.075
+I.MS1_D0017: 		drift, l = 0.017
+I.MS1_D0050: 		drift, l = 0.050
+I.MS1_D0003:		drift, l = 0.003
+I.MS1_D0207:		drift, l = 0.207
+LASERHEATER-RESERVED: 	drift, l = 2.6      ! Reserved space for the laser heater
+
+
+!--- Free-standing stripline BPM, with electronics. Physical length is 0.2 m (estimate)
+I.MS1.DIA.BPD.1:   	monitor, l = 0.15, weight = 0
+I.MS1.DIA.BPL.2-E:   monitor, l = 0.15, weight = 1		! Launcher BPM for BC1
+I.MS1.DIA.BPL.3-E:   monitor, l = 0.15, weight = 1		! Launcher BPM for BC1
+
+!--- Corrector magnets
+I.MS1.MAG.COEX.1: 	HKICK, l = 0.07, B2 = 6.944, steering = 1
+I.MS1.MAG.COEY.1: 	VKICK, l = 0.07, B2 = 6.944, steering = 1
+I.MS1.MAG.COEX.2: 	HKICK, l = 0.07, B2 = 6.944
+I.MS1.MAG.COEY.2: 	VKICK, l = 0.07, B2 = 6.944
+
+!--- Screens
+SCRNdistA:		drift, l = 0.063
+SCRNdistB:		drift, l = 0.137
+I.MS1.DIA.SCRN.1:   	WATCH,FILENAME="%s-I_MS1_DIA_SCRN_1.w1"
+I.MS1.DIA.SCR.1:	line = (SCRNdistA, I.MS1.DIA.SCRN.1, SCRNdistB)
+
+!--- Current transformers
+I.MS1.DIA.CT.1:		WATCH,FILENAME="%s-I_MS1_DIA_CT_1.ct"
+I.MS1.DIA.CTR.1:	line = (CTda,I.MS1.DIA.CT.1,CTdb)
+
+!---Markers
+I.MS1:			marker
+
+
+
+! Note that the extra correctors are in here for a reason; I'm assuming the 
+! machine optics in this matching section are not well defined. Therefore,
+! there is no use in optimizing corrector locations by machine functions
+! and phases. Instead, the first quadrupoles gets a corrector pair each for
+! "magnet-to-magnet" correction. The last two quadrupoles gets a stripline 
+! BPM each, which also acts as a (fairly short but sufficient) launching
+! section.
+
+match1: line = (I.MS1,I.MS1_D035,&
+			I.MS1.MAG.QB.1,&
+			I.MS1_D010,STRIPD,I.MS1.DIA.BPD.1,STRIPD,I.MS1_D0025,I.MAG.COEp,I.MS1.MAG.COEX.1,I.MAG.COEp,I.MS1_D0025,I.MAG.COEp,I.MS1.MAG.COEY.1,I.MAG.COEp,I.MS1_D0050,&
+			I.MS1.MAG.QB.2,&
+			I.MS1_D0050,LASERHEATER-RESERVED,I.MAG.COEp,I.MS1.MAG.COEX.2,I.MAG.COEp,I.MS1_D0025,I.MAG.COEp,I.MS1.MAG.COEY.2,I.MAG.COEp,I.MS1_D0125,&
+			I.MS1.MAG.QB.3,&
+			I.MS1_D015,STRIPD,I.MS1.DIA.BPL.2-E,STRIPD,I.MS1_D0003,I.MS1.DIA.CTR.1,I.MS1_D0207,&
+			I.MS1.MAG.QB.4,&
+			I.MS1_D010,STRIPD,I.MS1.DIA.BPL.3-E,STRIPD,I.MS1_D0010,I.MS1.DIA.SCR.1,I.MS1_D0040)
+
+
+!++++++++++++++++++++++ BUNCH COMPRESSOR 1 ++++++++++++++++++++++++++++++++
+
+! Dipole circuit knob
+! Note that all BC1 dipoles are powered by the same power supply
+% 1   			sto knob_I.BC1.MAG.CRDI
+
+! Nominal dipole field strengths
+% 4.4 180 / pi *   	sto nominal_DIA_ANGLE
+% -3    			sto nominal_DIA_K1
+% 3.13588		sto nominal_DIA_K2
+
+I.BC1.MAG.DIA.1_I.BC1.MAG.CRDI:	csrcsbend,angle="nominal_DIA_ANGLE knob_I.BC1.MAG.CRDI *",l=0.1,&
+					e1="nominal_DIA_ANGLE 2 / knob_I.BC1.MAG.CRDI *",e2="nominal_DIA_ANGLE 2 / knob_I.BC1.MAG.CRDI *",&
+					K1="nominal_DIA_K1 knob_I.BC1.MAG.CRDI *",K2="nominal_DIA_K2 knob_I.BC1.MAG.CRDI *"&
+					nonlinear=1,n_kicks=100,integration_order=4,&
+					bins=600,sg_halfwidth=1,&
+					hgap=0.001, fint=0.4,
+I.BC1.MAG.DIA.2_I.BC1.MAG.CRDI:	csrcsbend,angle="nominal_DIA_ANGLE knob_I.BC1.MAG.CRDI *",l=0.1,&
+					e1="nominal_DIA_ANGLE 2 / knob_I.BC1.MAG.CRDI *",e2="nominal_DIA_ANGLE 2 / knob_I.BC1.MAG.CRDI *",&
+					K1="nominal_DIA_K1 knob_I.BC1.MAG.CRDI *",K2="nominal_DIA_K2 knob_I.BC1.MAG.CRDI *"&
+					nonlinear=1,n_kicks=100,integration_order=4,&
+					bins=600,sg_halfwidth=1,&
+					hgap=0.001, fint=0.4,
+I.BC1.MAG.DIA.3_I.BC1.MAG.CRDI:	csrcsbend,angle="nominal_DIA_ANGLE knob_I.BC1.MAG.CRDI *",l=0.1,&
+					e1="nominal_DIA_ANGLE 2 / knob_I.BC1.MAG.CRDI *",e2="nominal_DIA_ANGLE 2 / knob_I.BC1.MAG.CRDI *",&
+					K1="nominal_DIA_K1 knob_I.BC1.MAG.CRDI *",K2="nominal_DIA_K2 knob_I.BC1.MAG.CRDI *"&
+					nonlinear=1,n_kicks=100,integration_order=4,&
+					bins=600,sg_halfwidth=1,&
+					hgap=0.001, fint=0.4,
+I.BC1.MAG.DIA.4_I.BC1.MAG.CRDI:	csrcsbend,angle="nominal_DIA_ANGLE knob_I.BC1.MAG.CRDI *",l=0.1,&
+					e1="nominal_DIA_ANGLE 2 / knob_I.BC1.MAG.CRDI *",e2="nominal_DIA_ANGLE 2 / knob_I.BC1.MAG.CRDI *",&
+					K1="nominal_DIA_K1 knob_I.BC1.MAG.CRDI *",K2="nominal_DIA_K2 knob_I.BC1.MAG.CRDI *"&
+					nonlinear=1,n_kicks=100,integration_order=4,&
+					bins=600,sg_halfwidth=1,&
+					hgap=0.001, fint=0.4,
+I.BC1.MAG.DIA.5_I.BC1.MAG.CRDI: 	csrcsbend,angle="nominal_DIA_ANGLE knob_I.BC1.MAG.CRDI * -1 *",l=0.1,&
+					e1="nominal_DIA_ANGLE 2 / knob_I.BC1.MAG.CRDI * -1 *",e2="nominal_DIA_ANGLE 2 / knob_I.BC1.MAG.CRDI * -1 *",&
+					K1="nominal_DIA_K1 knob_I.BC1.MAG.CRDI *",K2="nominal_DIA_K2 knob_I.BC1.MAG.CRDI *"&
+					nonlinear=1,n_kicks=100,integration_order=4,&
+					bins=600,sg_halfwidth=1,&
+					hgap=0.001, fint=0.4,
+I.BC1.MAG.DIA.6_I.BC1.MAG.CRDI: 	csrcsbend,angle="nominal_DIA_ANGLE knob_I.BC1.MAG.CRDI * -1 *",l=0.1,&
+					e1="nominal_DIA_ANGLE 2 / knob_I.BC1.MAG.CRDI * -1 *",e2="nominal_DIA_ANGLE 2 / knob_I.BC1.MAG.CRDI * -1 *",&
+					K1="nominal_DIA_K1 knob_I.BC1.MAG.CRDI *",K2="nominal_DIA_K2 knob_I.BC1.MAG.CRDI *"&
+					nonlinear=1,n_kicks=100,integration_order=4,&
+					bins=600,sg_halfwidth=1,&
+					hgap=0.001, fint=0.4,
+I.BC1.MAG.DIA.7_I.BC1.MAG.CRDI: 	csrcsbend,angle="nominal_DIA_ANGLE knob_I.BC1.MAG.CRDI * -1 *",l=0.1,&
+					e1="nominal_DIA_ANGLE 2 / knob_I.BC1.MAG.CRDI * -1 *",e2="nominal_DIA_ANGLE 2 / knob_I.BC1.MAG.CRDI * -1 *",&
+					K1="nominal_DIA_K1 knob_I.BC1.MAG.CRDI *",K2="nominal_DIA_K2 knob_I.BC1.MAG.CRDI *"&
+					nonlinear=1,n_kicks=100,integration_order=4,&
+					bins=600,sg_halfwidth=1,&
+					hgap=0.001, fint=0.4,
+I.BC1.MAG.DIA.8_I.BC1.MAG.CRDI: 	csrcsbend,angle="nominal_DIA_ANGLE knob_I.BC1.MAG.CRDI * -1 *",l=0.1,&
+					e1="nominal_DIA_ANGLE 2 / knob_I.BC1.MAG.CRDI * -1 *",e2="nominal_DIA_ANGLE 2 / knob_I.BC1.MAG.CRDI * -1 *",&
+					K1="nominal_DIA_K1 knob_I.BC1.MAG.CRDI *",K2="nominal_DIA_K2 knob_I.BC1.MAG.CRDI *"&
+					nonlinear=1,n_kicks=100,integration_order=4,&
+					bins=600,sg_halfwidth=1,&
+					hgap=0.001, fint=0.4,
+
+!---Quadrupoles
+! Quadrupole circuit knobs
+% 1   			sto knob_I.BC1.MAG.CRQM
+% 1   			sto knob_I.BC1.MAG.CRQ1
+% 1   			sto knob_I.BC1.MAG.CRQ2
+
+! Nominal quadrupole field strengths
+% 5.17189   		sto nominal_QM_K1
+% -0.5765   		sto nominal_QDEND_K1
+% 6.00634		sto nominal_QFEND_K1
+
+! Element declarations
+I.BC1.MAG.QD.1_I.BC1.MAG.CRQM:   	Kquad, l = 0.1, K1="nominal_QM_K1 knob_I.BC1.MAG.CRQM *", SYSTEMATIC_MULTIPOLES="Systematic_multipole_content_QD.sdds", N_KICKS=32
+I.BC1.MAG.QD.2_I.BC1.MAG.CRQM:   	Kquad, l = 0.1, K1="nominal_QM_K1 knob_I.BC1.MAG.CRQM *", SYSTEMATIC_MULTIPOLES="Systematic_multipole_content_QD.sdds", N_KICKS=32
+I.BC1.MAG.QD.3_I.BC1.MAG.CRQM:   	Kquad, l = 0.1, K1="nominal_QM_K1 knob_I.BC1.MAG.CRQM *", SYSTEMATIC_MULTIPOLES="Systematic_multipole_content_QD.sdds", N_KICKS=32
+I.BC1.MAG.QD.4_I.BC1.MAG.CRQM:   	Kquad, l = 0.1, K1="nominal_QM_K1 knob_I.BC1.MAG.CRQM *", SYSTEMATIC_MULTIPOLES="Systematic_multipole_content_QD.sdds", N_KICKS=32
+
+I.BC1.MAG.QB.1_I.BC1.MAG.CRQ1: 	Kquad, l = 0.2, K1="nominal_QDEND_K1 knob_I.BC1.MAG.CRQ1 *", SYSTEMATIC_MULTIPOLES="Systematic_multipole_content_QB.sdds", N_KICKS=32
+I.BC1.MAG.QB.2_I.BC1.MAG.CRQ2:  	Kquad, l = 0.2, K1="nominal_QFEND_K1 knob_I.BC1.MAG.CRQ2 *", SYSTEMATIC_MULTIPOLES="Systematic_multipole_content_QB.sdds", N_KICKS=32
+I.BC1.MAG.QB.3_I.BC1.MAG.CRQ1: 	Kquad, l = 0.2, K1="nominal_QDEND_K1 knob_I.BC1.MAG.CRQ1 *", SYSTEMATIC_MULTIPOLES="Systematic_multipole_content_QB.sdds", N_KICKS=32
+
+
+!---Sextupoles
+! Sextupole circuit knobs
+% 1   			sto knob_I.BC1.MAG.CRSX
+
+! Nominal sextupole field strengths
+!% 50.43   		sto nominal_SXL_K2
+% 53   		sto nominal_SXL_K2
+!% 50  		sto nominal_SXL_K2
+
+
+! Element declarations
+I.BC1.MAG.SXL.1_I.BC1.MAG.CRSX:      	Ksext, l = 0.1, K2="nominal_SXL_K2 knob_I.BC1.MAG.CRSX *", SYSTEMATIC_MULTIPOLES="Systematic_multipole_content_SXL.sdds", N_KICKS=32
+I.BC1.MAG.SXL.2_I.BC1.MAG.CRSX:      	Ksext, l = 0.1, K2="nominal_SXL_K2 knob_I.BC1.MAG.CRSX * -1 *", SYSTEMATIC_MULTIPOLES="Systematic_multipole_content_SXL.sdds", N_KICKS=32
+
+
+!---Drifts
+I.BC1_D006:      	drift, l = 0.06
+I.BC1_D122:      	drift, l = 1.22
+I.BC1_D014:      	drift, l = 0.14
+I.BC1_D020:      	drift, l = 0.2
+I.BC1_D040:      	drift, l = 0.4
+I.BC1_D00535:      	drift, l = 0.0535
+I.BC1_D005:      	drift, l = 0.05
+I.BC1_D0604:		drift, l = 0.604
+I.BC1_D0025:      	drift, l = 0.025
+I.BC1_D0132:      	drift, l = 0.132
+I.BC1_D130:      	drift, l = 1.3
+I.BC1_D0075: 		drift, l = 0.075
+I.BC1_D0125: 		drift, l = 0.125
+I.BC1_D015: 		drift, l = 0.15
+I.BC1_D107: 		drift, l = 1.07
+I.BC1_D110: 		drift, l = 1.1
+I.BC1_D090: 		drift, l = 0.9
+I.BC1_D054: 		drift, l = 0.54
+I.BC1_D044: 		drift, l = 0.44
+I.BC1_D024: 		drift, l = 0.24
+I.BC1_D086: 		drift, l = 0.86
+I.BC1_D10465:		drift, l = 1.0465
+I.BC1_D01785:		drift, l = 0.1785
+I.BC1_D01855:		drift, l = 0.1855
+I.BC1_D0066:		drift, l = 0.066
+I.BC1_D082:		drift, l = 0.82
+I.BC1_D0845:		drift, l = 0.845
+I.BC1_D08485:		drift, l = 0.8485
+
+!--- Screens
+I.BC1.DIA.SCRN.1:   	WATCH,FILENAME="%s-I_BC1_DIA_SCRN_1.w1"
+I.BC1.DIA.SCR.1:	line = (SCRNd, I.BC1.DIA.SCRN.1, SCRNd)
+
+I.BC1.DIA.SCRN.2:   	WATCH,FILENAME="%s-I_BC1_DIA_SCRN_2.w1"
+I.BC1.DIA.SCR.2:	line = (SCRNd, I.BC1.DIA.SCRN.2, SCRNd)
+
+I.BC1.DIA.SCRN.3:   	WATCH,FILENAME="%s-I_BC1_DIA_SCRN_3.w1"
+I.BC1.DIA.SCR.3:	line = (SCRNd, I.BC1.DIA.SCRN.3, SCRNd)
+
+!--- Free-standing stripline BPM, with electronics. Physical length is 0.2 m (estimate)
+I.BC1.DIA.BP$.1-E:  	monitor, l = 0.0, weight = 1
+I.BC1.DIA.BPD.1:  	monitor, l = 0.15, weight = 0
+I.BC1.DIA.BP$.2-E:  	monitor, l = 0.0, weight = 1
+
+!--- Scrapers
+I.BC1.VAC.BS.1:	scraper, l = 0.00, insert_from = "+x", position = 0.05
+I.BC1.VAC.BS.2:	scraper, l = 0.00, insert_from = "-x", position = -0.05
+I.BC1.VAC.BS.3:	scraper, l = 0.00, insert_from = "+y", position = 0.05
+I.BC1.VAC.BS.4:	scraper, l = 0.00, insert_from = "-y", position = -0.05
+
+!---Corrector magnets
+I.BC1.MAG.COEX.1: 	HKICK, l = 0.07, B2 = 6.944, steering = 1
+I.BC1.MAG.COEY.1: 	VKICK, l = 0.07, B2 = 6.944, steering = 1
+I.BC1.MAG.COEX.2: 	HKICK, l = 0.07, B2 = 6.944, steering = 1
+I.BC1.MAG.COEY.2: 	VKICK, l = 0.07, B2 = 6.944, steering = 1
+I.BC1.MAG.COEX.3: 	HKICK, l = 0.07, B2 = 6.944, steering = 1
+I.BC1.MAG.COEY.3: 	VKICK, l = 0.07, B2 = 6.944, steering = 1
+I.BC1.MAG.COEX.4: 	HKICK, l = 0.07, B2 = 6.944, steering = 1
+I.BC1.MAG.COEY.4: 	VKICK, l = 0.07, B2 = 6.944, steering = 1
+
+!---Markers
+I.BC1:			marker, FITPOINT = 1
+
+
+BC1Achr1: line = (I.BC1.MAG.DIA.1_I.BC1.MAG.CRDI,I.BC1_D005,I.MAG.COEp,I.BC1.MAG.COEX.1,I.MAG.COEp,I.BC1_D082,I.MAG.COEp,I.BC1.MAG.COEY.1,I.MAG.COEp,I.BC1_D005,I.BC1.MAG.DIA.2_I.BC1.MAG.CRDI,&
+				I.BC1_D130,I.BC1.DIA.BP$.1-E,I.BC1.MAG.QD.1_I.BC1.MAG.CRQM,I.BC1_D006,I.BC1.MAG.SXL.1_I.BC1.MAG.CRSX,I.BC1_D006,I.BC1.MAG.QD.2_I.BC1.MAG.CRQM,&
+				I.BC1_D00535,I.BC1.DIA.SCR.1,I.BC1_D0132,I.BC1.VAC.BS.1,I.BC1_D0066,I.BC1.VAC.BS.2,I.BC1_D0604,I.BC1.VAC.BS.3,I.BC1_D0066,I.BC1.VAC.BS.4,I.BC1_D01785,&
+				I.BC1.MAG.DIA.3_I.BC1.MAG.CRDI,I.BC1_D005,I.MAG.COEp,I.BC1.MAG.COEX.2,I.MAG.COEp,I.BC1_D082,I.MAG.COEp,I.BC1.MAG.COEY.2,I.MAG.COEp,I.BC1_D005,I.BC1.MAG.DIA.4_I.BC1.MAG.CRDI,"W-ACHR1A")
+ 
+BC1CenterFocus: line = (I.BC1_D020,I.BC1.MAG.QB.1_I.BC1.MAG.CRQ1,I.BC1_D0125,STRIPD,I.BC1.DIA.BPD.1,STRIPD,I.BC1_D0075,I.BC1.MAG.QB.2_I.BC1.MAG.CRQ2,&
+				I.BC1_D006,I.BC1.DIA.SCR.2,I.BC1_D014,I.BC1.MAG.QB.3_I.BC1.MAG.CRQ1,I.BC1_D020)
+
+BC1Achr2: line = (I.BC1.MAG.DIA.5_I.BC1.MAG.CRDI,I.BC1_D005,I.MAG.COEp,I.BC1.MAG.COEY.3,I.MAG.COEp,I.BC1_D082,I.MAG.COEp,I.BC1.MAG.COEX.3,I.MAG.COEp,I.BC1_D005,I.BC1.MAG.DIA.6_I.BC1.MAG.CRDI,&
+				I.BC1_D130,I.BC1.DIA.BP$.2-E,I.BC1.MAG.QD.3_I.BC1.MAG.CRQM,I.BC1_D006,I.BC1.MAG.SXL.2_I.BC1.MAG.CRSX,I.BC1_D006,I.BC1.MAG.QD.4_I.BC1.MAG.CRQM,&
+				I.BC1_D00535,I.BC1.DIA.SCR.3,I.BC1_D10465,&
+				I.BC1.MAG.DIA.7_I.BC1.MAG.CRDI,I.BC1_D005,I.MAG.COEp,I.BC1.MAG.COEX.4,I.MAG.COEp,I.BC1_D0025,I.MAG.COEp,I.BC1.MAG.COEY.4,I.MAG.COEp,I.BC1_D0845,I.BC1.MAG.DIA.8_I.BC1.MAG.CRDI,BCFIT2,BC1END)
+
+BC1: line = (I.BC1,BC1Achr1,BC1CenterFocus,BC1Achr2)
+
+
+
+!==============OPERATION MODES====================
+
+temp: DRIFT,L=0.79
+
+INJ3:   	line = ( PREINJ,"W-INIT",CH,PreBC1Inj3, match1, BC1, match2, MainAcc15inj3, EX1off, MainAcc3inj3, EX3on, TR3, R3GEV)
+INJ15:	line = ( PREINJ,"W-INIT",CH,PreBC1Inj15, match1, BC1, match2, MainAcc15inj15, EX1on, TR1, R15GEV)
+SPF:    	line = ( PREINJ,"W-INIT",CH,PreBC1, match1, BC1, match2, MainAcc15SPF, EX1off, MainAcc3SPF, EX3off, PreBC2, match3, BC2,w-end, SP02,SP02dump)
