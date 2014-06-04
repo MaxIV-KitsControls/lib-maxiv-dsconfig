@@ -7,6 +7,7 @@ import sys
 
 from utils import find_device
 from appending_dict import AppendingDict
+from utils import CaselessDict
 
 
 def get_properties(row):
@@ -20,16 +21,16 @@ def get_properties(row):
         try:
             for prop in properties.split(";"):
                 name, value = prop.split("=")
-                prop_dict[name] = value
-        except ValueError as e:
-            raise ValueError("could not parse Properties.")
+                prop_dict[name.strip()] = value.strip()
+        except ValueError:
+            raise ValueError("could not parse Properties")
 
     # "Property:xyz" columns
     for col_name, value in row.items():
         match = re.match("property:(.*)", col_name, re.IGNORECASE)
         if match and value:
             name, = match.groups()
-            prop_dict[name] = value
+            prop_dict[name] = value.strip()
 
     return prop_dict
 
@@ -115,8 +116,8 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
             # problems. Those are caught and reported.
 
             # Filter out empty columns
-            row = dict((name.lower(), col)
-                       for name, col in zip(column_names, row_) if col)
+            row = CaselessDict(dict((str(name), col)
+                                    for name, col in zip(column_names, row_) if col))
 
             # Skip empty lines
             if not row:
