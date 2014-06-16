@@ -158,10 +158,13 @@ def main():
                       help="print out all db calls.")
 
     options, args = parser.parse_args()
-    json_file = args[0]
+    if len(args) == 0:
+        data = json.load(sys.stdin, object_hook=decode_dict)
+    else:
+        json_file = args[0]
+        with open(json_file) as f:
+            data = json.load(f, object_hook=decode_dict)
 
-    with open(json_file) as f:
-        data = json.load(f, object_hook=decode_dict)
     for key in data.keys():
         if key.startswith("_"):
             data.pop(key, None)  # remove any metadata
@@ -197,12 +200,12 @@ def main():
     if db.calls:
         if options.write:
             print >>sys.stderr, (
-                RED + "\n*** Data was written to the Tango DB ***")
+                RED + "\n*** Data was written to the Tango DB ***") + ENDC
         else:
             print >>sys.stderr, YELLOW +\
-                "\n*** Nothing was written to the Tango DB (use -w) ***"
+                "\n*** Nothing was written to the Tango DB (use -w) ***" + ENDC
     else:
-        print >>sys.stderr, GREEN + "\n*** No changes needed in Tango DB ***"
+        print >>sys.stderr, GREEN + "\n*** No changes needed in Tango DB ***" + ENDC
 
 
 if __name__ == "__main__":
