@@ -168,15 +168,19 @@ def xls_to_dict(xls_filename, pages=None, skip=False):
 
     """Make JSON out of an XLS sheet of device definitions."""
 
+
     import xlrd
 
     xls = xlrd.open_workbook(xls_filename)
     definitions = AppendingDict()
 
     if not pages:
-        pages = xls.sheet_names()[1:]
+        pages = xls.sheet_names()
+
 
     for page in pages:
+
+
         print >>sys.stderr, "\nPage: %s" % page
         sheet = xls.sheet_by_name(page)
         rows = [sheet.row_values(i)
@@ -242,6 +246,9 @@ def main():
 
     if not options.test:
         print json.dumps(data, indent=4)
+        outfile = open('config.json', 'w')
+        json.dump(data, outfile, indent=4)
+
     stats = get_stats(data)
 
     print >>sys.stderr, ("\n"
