@@ -1,0 +1,36 @@
+{
+    "properties": {
+        "AlarmList": [
+            "TemperatureInterlock_I_S00__MAG__SOLT_01", 
+            "TemperatureInterlock_I_S00__MAG__SOLT_01", 
+            "TemperatureInterlock_I_S00__MAG__SOLT_02", 
+            "TemperatureInterlock_I_S00__MAG__SOLT_02", 
+            "TemperatureInterlock_I_BC1__MAG__DIA_01", 
+            "TemperatureInterlock_I_BC1__MAG__DIA_02", 
+            "TemperatureInterlock_I_BC1__MAG__DIA_03", 
+            "TemperatureInterlock_I_BC1__MAG__DIA_04", 
+            "TemperatureInterlock_I_BC1__MAG__DIA_05", 
+            "TemperatureInterlock_I_BC1__MAG__DIA_06", 
+            "TemperatureInterlock_I_BC1__MAG__DIA_07", 
+            "TemperatureInterlock_I_BC1__MAG__DIA_08", 
+            "TemperatureInterlock_I_BC1__MAG__QD_01", 
+            "TemperatureInterlock_I_BC1__MAG__QD_02", 
+            "TemperatureInterlock_I_BC1__MAG__QD_03", 
+            "TemperatureInterlock_I_BC1__MAG__QD_04", 
+            "TemperatureInterlock_I_BC1__MAG__SXL_01", 
+            "TemperatureInterlock_I_BC1__MAG__SXL_02"
+        ]
+    }, 
+    "servers": {
+        "PyAlarm/I-MAG": {
+            "PyAlarm": {
+                "I-S00/MAG/ALARM": {
+                    "properties": {}
+                }, 
+                "I-BC1/MAG/ALARM": {
+                    "properties": {}
+                }
+            }
+        }
+    }
+}

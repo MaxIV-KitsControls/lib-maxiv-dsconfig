@@ -1,0 +1,2159 @@
+{
+    "servers": {
+        "MagnetCircuit/I-S01B": {
+            "MagnetCircuit": {
+                "I-S01B/MAG/QE-CIR-04": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-K01/MAG/PSPB-04"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "ExcitationCurveCurrents": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                6.3121999999999998, 
+                                5.6775666666666673, 
+                                5.0651708333333332, 
+                                4.421475, 
+                                3.8248458333333333, 
+                                3.166033333333333, 
+                                2.5223416666666663, 
+                                1.8917999999999999, 
+                                1.2811116666666666, 
+                                0.63825833333333337, 
+                                0.0
+                            ]
+                        ], 
+                        "ExcitationCurveFields": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                0.70483716321568446, 
+                                0.63976069513212241, 
+                                0.57325115541890104, 
+                                0.50205787675725067, 
+                                0.43503824268190999, 
+                                0.36171557200423732, 
+                                0.28958453273697332, 
+                                0.21876029022909838, 
+                                0.14955748424106066, 
+                                0.077043751531955473, 
+                                0.0050504615216207397
+                            ]
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "MagnetProxies": [
+                            "I-S01B/MAG/QE-04"
+                        ]
+                    }
+                }, 
+                "I-S01B/MAG/QE-CIR-03": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-K01/MAG/PSPB-03"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "ExcitationCurveCurrents": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                6.3003999999999998, 
+                                5.6751250000000004, 
+                                5.0831249999999999, 
+                                4.4215125000000004, 
+                                3.8142374999999999, 
+                                3.1747000000000001, 
+                                2.5228625, 
+                                1.8905000000000001, 
+                                1.2819125, 
+                                0.6312875, 
+                                0.0
+                            ]
+                        ], 
+                        "ExcitationCurveFields": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                0.70423114071642712, 
+                                0.63973527408141906, 
+                                0.57525490164286808, 
+                                0.50213573147724699, 
+                                0.43392642871553, 
+                                0.36244696350113498, 
+                                0.28973186914591204, 
+                                0.21846594453189302, 
+                                0.14952854664313101, 
+                                0.075551420734360997, 
+                                0.0046900814840960398
+                            ]
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "MagnetProxies": [
+                            "I-S01B/MAG/QE-03"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "Magnet/I-S01A": {
+            "Magnet": {
+                "I-S01A/MAG/QE-02": {
+                    "properties": {
+                        "Length": [
+                            "0.07000000000000001"
+                        ], 
+                        "CircuitProxies": [
+                            "I-S01A/MAG/QE-CIR-02"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "kquad"
+                    }
+                }, 
+                "I-S01A/MAG/QE-01": {
+                    "properties": {
+                        "Length": [
+                            "0.07000000000000001"
+                        ], 
+                        "CircuitProxies": [
+                            "I-S01A/MAG/QE-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "kquad"
+                    }
+                }, 
+                "I-S01A/MAG/COEX-01": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Type": "hkick", 
+                        "CircuitProxies": [
+                            "I-S01A/MAG/COEX-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-S01A/MAG/COEY-01": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Type": "vkick", 
+                        "CircuitProxies": [
+                            "I-S01A/MAG/COEY-CIR-01"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "Magnet/I-S01B": {
+            "Magnet": {
+                "I-S01B/MAG/QE-03": {
+                    "properties": {
+                        "Length": [
+                            "0.07000000000000001"
+                        ], 
+                        "CircuitProxies": [
+                            "I-S01B/MAG/QE-CIR-03"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "kquad"
+                    }
+                }, 
+                "I-S01B/MAG/QE-04": {
+                    "properties": {
+                        "Length": [
+                            "0.07000000000000001"
+                        ], 
+                        "CircuitProxies": [
+                            "I-S01B/MAG/QE-CIR-04"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "kquad"
+                    }
+                }
+            }
+        }, 
+        "MagnetCircuit/I-S01A": {
+            "MagnetCircuit": {
+                "I-S01A/MAG/COEX-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-K01/MAG/PSIA-02"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-S01A/MAG/COEX-01"
+                        ]
+                    }
+                }, 
+                "I-S01A/MAG/QE-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-K01/MAG/PSPB-01"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "ExcitationCurveCurrents": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                6.3167, 
+                                5.6757, 
+                                5.0307500000000003, 
+                                4.4208999999999996, 
+                                3.8452999999999999, 
+                                3.1463999999999999, 
+                                2.5179624999999999, 
+                                1.8892374999999999, 
+                                1.2808725000000001, 
+                                0.63988750000000016, 
+                                0.0
+                            ]
+                        ], 
+                        "ExcitationCurveFields": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                0.70470485548532313, 
+                                0.63908274382966312, 
+                                0.56946571499960408, 
+                                0.50203927491440703, 
+                                0.43686121069898298, 
+                                0.35966476443894108, 
+                                0.288993167760146, 
+                                0.21848942173091002, 
+                                0.14957521795596601, 
+                                0.077488874695939805, 
+                                0.0052044472873010797
+                            ]
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "MagnetProxies": [
+                            "I-S01A/MAG/QE-01"
+                        ]
+                    }
+                }, 
+                "I-S01A/MAG/QE-CIR-02": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-K01/MAG/PSPB-02"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "ExcitationCurveCurrents": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                6.3194999999999997, 
+                                5.6818749999999998, 
+                                5.0816375000000003, 
+                                4.4220125000000001, 
+                                3.8149999999999999, 
+                                3.177, 
+                                2.5261999999999998, 
+                                1.8956624999999998, 
+                                1.2805500000000001, 
+                                0.64360000000000006, 
+                                0.0
+                            ]
+                        ], 
+                        "ExcitationCurveFields": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                0.70557549344530313, 
+                                0.64046406748528506, 
+                                0.57503284961423096, 
+                                0.50199862388009808, 
+                                0.43432708863121705, 
+                                0.36303498807263601, 
+                                0.29002856130486204, 
+                                0.21932550442449203, 
+                                0.14956868812408503, 
+                                0.078090959165565604, 
+                                0.0052568557934651004
+                            ]
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "MagnetProxies": [
+                            "I-S01A/MAG/QE-02"
+                        ]
+                    }
+                }, 
+                "I-S01A/MAG/COEY-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-K01/MAG/PSIA-01"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-S01A/MAG/COEY-01"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "MagnetCircuit/I-G00": {
+            "MagnetCircuit": {
+                "I-G00/MAG/COIY-CIR-03": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSIA-13"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-G00/MAG/COIY-03"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COIX-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSIA-10"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-G00/MAG/COIX-01"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COIX-CIR-02": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSIA-12"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-G00/MAG/COIX-02"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COIX-CIR-03": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSIA-14"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-G00/MAG/COIX-03"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COHX-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSIA-16"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-G00/MAG/COHX-01"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COHX-CIR-02": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSIA-18"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-G00/MAG/COHX-02"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COHY-CIR-02": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSIA-17"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-G00/MAG/COHY-02"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COIY-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSIA-09"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-G00/MAG/COIY-01"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COHY-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSIA-15"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-G00/MAG/COHY-01"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COIY-CIR-02": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSIA-11"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-G00/MAG/COIY-02"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "MagnetCircuit/I-BC1": {
+            "MagnetCircuit": {
+                "I-BC1/MAG/QB-CIR-02": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KBC1/MAG/PSPB-06"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-BC1/MAG/QB-02"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/QB-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KBC1/MAG/PSPB-05"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-BC1/MAG/QB-01", 
+                            "I-BC1/MAG/QB-03"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEY-CIR-02": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KBC1/MAG/PSIA-04"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-BC1/MAG/COEY-02"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/SXL-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KBC1/MAG/PSPA-01"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-BC1/MAG/SXL-01", 
+                            "I-BC1/MAG/SXL-02"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEY-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KBC1/MAG/PSIA-02"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-BC1/MAG/COEY-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEY-CIR-03": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KBC1/MAG/PSIA-05"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-BC1/MAG/COEY-03"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEY-CIR-04": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KBC1/MAG/PSIA-08"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-BC1/MAG/COEY-04"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEX-CIR-04": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KBC1/MAG/PSIA-07"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-BC1/MAG/COEX-04"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/QD-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KBC1/MAG/PDPD-01"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-BC1/MAG/QD-01", 
+                            "I-BC1/MAG/QD-02", 
+                            "I-BC1/MAG/QD-03", 
+                            "I-BC1/MAG/QD-04"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEX-CIR-03": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KBC1/MAG/PSIA-06"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-BC1/MAG/COEX-03"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEX-CIR-02": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KBC1/MAG/PSIA-03"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-BC1/MAG/COEX-02"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/COEX-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KBC1/MAG/PSIA-01"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-BC1/MAG/COEX-01"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/DIA-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KBC1/MAG/PSPG-01"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-BC1/MAG/DIA-01", 
+                            "I-BC1/MAG/DIA-02", 
+                            "I-BC1/MAG/DIA-03", 
+                            "I-BC1/MAG/DIA-04", 
+                            "I-BC1/MAG/DIA-05", 
+                            "I-BC1/MAG/DIA-06", 
+                            "I-BC1/MAG/DIA-07", 
+                            "I-BC1/MAG/DIA-08"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "Magnet/I-G00": {
+            "Magnet": {
+                "I-G00/MAG/COHY-01": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "vkick", 
+                        "CircuitProxies": [
+                            "I-G00/MAG/COHY-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COHY-02": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "vkick", 
+                        "CircuitProxies": [
+                            "I-G00/MAG/COHY-CIR-02"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COHX-02": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "hkick", 
+                        "CircuitProxies": [
+                            "I-G00/MAG/COHX-CIR-02"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COIY-01": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "vkick", 
+                        "CircuitProxies": [
+                            "I-G00/MAG/COIY-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COIY-02": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "vkick", 
+                        "CircuitProxies": [
+                            "I-G00/MAG/COIY-CIR-02"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COIY-03": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "vkick", 
+                        "CircuitProxies": [
+                            "I-G00/MAG/COIY-CIR-03"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COIX-03": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "hkick", 
+                        "CircuitProxies": [
+                            "I-G00/MAG/COIX-CIR-03"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COIX-02": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "hkick", 
+                        "CircuitProxies": [
+                            "I-G00/MAG/COIX-CIR-02"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COIX-01": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "hkick", 
+                        "CircuitProxies": [
+                            "I-G00/MAG/COIX-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-G00/MAG/COHX-01": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "hkick", 
+                        "CircuitProxies": [
+                            "I-G00/MAG/COHX-CIR-01"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "Magnet/I-BC1": {
+            "Magnet": {
+                "I-BC1/MAG/COEX-02": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-BC1/MAG/COEX-CIR-02"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Type": "hkick"
+                    }
+                }, 
+                "I-BC1/MAG/COEX-03": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-BC1/MAG/COEX-CIR-03"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Type": "hkick"
+                    }
+                }, 
+                "I-BC1/MAG/QD-04": {
+                    "properties": {
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/QD-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "TemperatureInterlock": [
+                            "i-k04/mag/plc-01", 
+                            "B_I_BC1QD4_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
+                        "Type": "kquad"
+                    }
+                }, 
+                "I-BC1/MAG/COEX-01": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-BC1/MAG/COEX-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Type": "hkick"
+                    }
+                }, 
+                "I-BC1/MAG/QD-02": {
+                    "properties": {
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/QD-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "TemperatureInterlock": [
+                            "i-k04/mag/plc-01", 
+                            "B_I_BC1QD2_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
+                        "Type": "kquad"
+                    }
+                }, 
+                "I-BC1/MAG/QD-03": {
+                    "properties": {
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/QD-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "TemperatureInterlock": [
+                            "i-k04/mag/plc-01", 
+                            "B_I_BC1QD3_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
+                        "Type": "kquad"
+                    }
+                }, 
+                "I-BC1/MAG/COEX-04": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-BC1/MAG/COEX-CIR-04"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Type": "hkick"
+                    }
+                }, 
+                "I-BC1/MAG/QD-01": {
+                    "properties": {
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/QD-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "TemperatureInterlock": [
+                            "i-k04/mag/plc-01", 
+                            "B_I_BC1QD1_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
+                        "Type": "kquad"
+                    }
+                }, 
+                "I-BC1/MAG/SXL-02": {
+                    "properties": {
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/SXL-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "TemperatureInterlock": [
+                            "i-k04/mag/plc-01", 
+                            "B_I_BC1SXL2_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
+                        "Type": "ksext"
+                    }
+                }, 
+                "I-BC1/MAG/SXL-01": {
+                    "properties": {
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/SXL-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "TemperatureInterlock": [
+                            "i-k04/mag/plc-01", 
+                            "B_I_BC1SXL1_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
+                        "Type": "ksext"
+                    }
+                }, 
+                "I-BC1/MAG/COEY-04": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-BC1/MAG/COEY-CIR-04"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Type": "vkick"
+                    }
+                }, 
+                "I-BC1/MAG/COEY-01": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-BC1/MAG/COEY-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Type": "vkick"
+                    }
+                }, 
+                "I-BC1/MAG/COEY-03": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-BC1/MAG/COEY-CIR-03"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Type": "vkick"
+                    }
+                }, 
+                "I-BC1/MAG/COEY-02": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-BC1/MAG/COEY-CIR-02"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Type": "vkick"
+                    }
+                }, 
+                "I-BC1/MAG/DIA-04": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-BC1/MAG/DIA-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Type": "csrcsbend", 
+                        "TemperatureInterlock": [
+                            "i-k04/mag/plc-01", 
+                            "B_I_BC1DIA4_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/DIA-05": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-BC1/MAG/DIA-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Type": "csrcsbend", 
+                        "TemperatureInterlock": [
+                            "i-k04/mag/plc-01", 
+                            "B_I_BC1DIA5_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/DIA-06": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-BC1/MAG/DIA-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Type": "csrcsbend", 
+                        "TemperatureInterlock": [
+                            "i-k04/mag/plc-01", 
+                            "B_I_BC1DIA6_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/DIA-07": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-BC1/MAG/DIA-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Type": "csrcsbend", 
+                        "TemperatureInterlock": [
+                            "i-k04/mag/plc-01", 
+                            "B_I_BC1DIA7_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/DIA-01": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-BC1/MAG/DIA-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Type": "csrcsbend", 
+                        "TemperatureInterlock": [
+                            "i-k04/mag/plc-01", 
+                            "B_I_BC1DIA1_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/DIA-02": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-BC1/MAG/DIA-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Type": "csrcsbend", 
+                        "TemperatureInterlock": [
+                            "i-k04/mag/plc-01", 
+                            "B_I_BC1DIA2_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/DIA-03": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-BC1/MAG/DIA-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Type": "csrcsbend", 
+                        "TemperatureInterlock": [
+                            "i-k04/mag/plc-01", 
+                            "B_I_BC1DIA3_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/DIA-08": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-BC1/MAG/DIA-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.1"
+                        ], 
+                        "Type": "csrcsbend", 
+                        "TemperatureInterlock": [
+                            "i-k04/mag/plc-01", 
+                            "B_I_BC1DIA8_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ]
+                    }
+                }, 
+                "I-BC1/MAG/QB-01": {
+                    "properties": {
+                        "Length": [
+                            "0.2"
+                        ], 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/QB-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "kquad"
+                    }
+                }, 
+                "I-BC1/MAG/QB-02": {
+                    "properties": {
+                        "Length": [
+                            "0.2"
+                        ], 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/QB-CIR-02"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "kquad"
+                    }
+                }, 
+                "I-BC1/MAG/QB-03": {
+                    "properties": {
+                        "Length": [
+                            "0.2"
+                        ], 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/QB-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "kquad"
+                    }
+                }
+            }
+        }, 
+        "MagnetCircuit/I-S00": {
+            "MagnetCircuit": {
+                "I-S00/MAG/SOLT-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSPJ-01"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-S00/MAG/SOLT-01"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/QT-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSPB-03"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-S00/MAG/QT-01"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/SOLT-CIR-02": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSPJ-02"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-S00/MAG/SOLT-02"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/COBX-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSIA-01"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-S00/MAG/COBX-01"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/QST-CIR-02": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSPB-02"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-S00/MAG/QST-02"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/QST-CIR-03": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSPB-04"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-S00/MAG/QST-03"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/QST-CIR-04": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSPB-05"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-S00/MAG/QST-04"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/QST-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSPB-01"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-S00/MAG/QST-01"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/DIPT-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSPC-01"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-S00/MAG/DIPT-01", 
+                            "I-S00/MAG/DIPT-02"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/COFY-CIR-02": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSIA-06"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-S00/MAG/COFY-02"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/COFX-CIR-02": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSIA-05"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-S00/MAG/COFX-02"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/COBY-CIR-02": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSIA-02"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-S00/MAG/COBY-02"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/COFY-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSIA-04"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-S00/MAG/COFY-01"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/COFX-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "i-k00/mag/PSIA-03"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-S00/MAG/COFX-01"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "Magnet/I-S00": {
+            "Magnet": {
+                "I-S00/MAG/QT-01": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "kquad", 
+                        "CircuitProxies": [
+                            "I-S00/MAG/QT-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/COFX-01": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "hkick", 
+                        "CircuitProxies": [
+                            "I-S00/MAG/COFX-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/COFX-02": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "hkick", 
+                        "CircuitProxies": [
+                            "I-S00/MAG/COFX-CIR-02"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/DIPT-02": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "csrcsbend", 
+                        "CircuitProxies": [
+                            "I-S00/MAG/DIPT-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/QST-04": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "kquad", 
+                        "CircuitProxies": [
+                            "I-S00/MAG/QST-CIR-04"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/COFY-02": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "vkick", 
+                        "CircuitProxies": [
+                            "I-S00/MAG/COFY-CIR-02"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/COFY-01": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "vkick", 
+                        "CircuitProxies": [
+                            "I-S00/MAG/COFY-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/SOLT-02": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "sole", 
+                        "CircuitProxies": [
+                            "I-S00/MAG/SOLT-CIR-02"
+                        ], 
+                        "TemperatureInterlock": [
+                            "i-k04/mag/plc-01", 
+                            "B_I_S00SOLT2_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/COBX-01": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "hkick", 
+                        "CircuitProxies": [
+                            "I-S00/MAG/COBX-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/DIPT-01": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "csrcsbend", 
+                        "CircuitProxies": [
+                            "I-S00/MAG/DIPT-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/SOLT-01": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "sole", 
+                        "CircuitProxies": [
+                            "I-S00/MAG/SOLT-CIR-01"
+                        ], 
+                        "TemperatureInterlock": [
+                            "i-k04/mag/plc-01", 
+                            "B_I_S00SOLT1_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/QST-01": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "kquad", 
+                        "CircuitProxies": [
+                            "I-S00/MAG/QST-CIR-01"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/QST-03": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "kquad", 
+                        "CircuitProxies": [
+                            "I-S00/MAG/QST-CIR-03"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/QST-02": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "kquad", 
+                        "CircuitProxies": [
+                            "I-S00/MAG/QST-CIR-02"
+                        ]
+                    }
+                }, 
+                "I-S00/MAG/COBY-02": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "vkick", 
+                        "CircuitProxies": [
+                            "I-S00/MAG/COBY-CIR-02"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "Magnet/I-MS1": {
+            "Magnet": {
+                "I-MS1/MAG/QB-03": {
+                    "properties": {
+                        "Length": [
+                            "0.2"
+                        ], 
+                        "CircuitProxies": [
+                            "I-MS1/MAG/QB-CIR-03"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "kquad"
+                    }
+                }, 
+                "I-MS1/MAG/QB-02": {
+                    "properties": {
+                        "Length": [
+                            "0.2"
+                        ], 
+                        "CircuitProxies": [
+                            "I-MS1/MAG/QB-CIR-02"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "kquad"
+                    }
+                }, 
+                "I-MS1/MAG/QB-01": {
+                    "properties": {
+                        "Length": [
+                            "0.2"
+                        ], 
+                        "CircuitProxies": [
+                            "I-MS1/MAG/QB-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "kquad"
+                    }
+                }, 
+                "I-MS1/MAG/QB-04": {
+                    "properties": {
+                        "Length": [
+                            "0.2"
+                        ], 
+                        "CircuitProxies": [
+                            "I-MS1/MAG/QB-CIR-04"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Type": "kquad"
+                    }
+                }, 
+                "I-MS1/MAG/COEY-02": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Type": "vkick", 
+                        "CircuitProxies": [
+                            "I-MS1/MAG/COEY-CIR-02"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/COEY-01": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-MS1/MAG/COEY-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Type": "vkick"
+                    }
+                }, 
+                "I-MS1/MAG/COEX-01": {
+                    "properties": {
+                        "CircuitProxies": [
+                            "I-MS1/MAG/COEX-CIR-01"
+                        ], 
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Type": "hkick"
+                    }
+                }, 
+                "I-MS1/MAG/COEX-02": {
+                    "properties": {
+                        "Tilt": [
+                            0
+                        ], 
+                        "Length": [
+                            "0.07"
+                        ], 
+                        "Type": "hkick", 
+                        "CircuitProxies": [
+                            "I-MS1/MAG/COEX-CIR-02"
+                        ]
+                    }
+                }
+            }
+        }, 
+        "MagnetCircuit/I-MS1": {
+            "MagnetCircuit": {
+                "I-MS1/MAG/COEY-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-K01/MAG/PSIA-04"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-MS1/MAG/COEY-01"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/COEY-CIR-02": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-K01/MAG/PSIA-06"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-MS1/MAG/COEY-02"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/COEX-CIR-02": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-K01/MAG/PSIA-05"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-MS1/MAG/COEX-02"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/QB-CIR-04": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KBC1/MAG/PSPB-04"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-MS1/MAG/QB-04"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/COEX-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-K01/MAG/PSIA-03"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-MS1/MAG/COEX-01"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/QB-CIR-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KBC1/MAG/PSPB-01"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-MS1/MAG/QB-01"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/QB-CIR-02": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KBC1/MAG/PSPB-02"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-MS1/MAG/QB-02"
+                        ]
+                    }
+                }, 
+                "I-MS1/MAG/QB-CIR-03": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KBC1/MAG/PSPB-03"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-MS1/MAG/QB-03"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
