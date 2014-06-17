@@ -32,6 +32,7 @@ from PowerSupplyMap import POWER_SUPPLY_MAP
 import copy
 import numpy as np
 
+
 class SuperDict(defaultdict):
     "A recursive defaultdict with extra bells & whistles"
     	
@@ -51,14 +52,14 @@ class LatticeFileItem:
     itemType = ''
     parameters = {}
     properties = {}
-    
+    alpars= {}
+
     def __init__(self, _line=''):
         '''
         Construct an object parsing a _line from a lattice file
         '''
         # print "Creating an item for the line:" 
         self.parameters= {}
-        self.alpars= {}
         self.properties= {}
         # print _line
         
@@ -292,22 +293,64 @@ class LatticeFileItem:
                     magnetcircuit.parameters['CoilNames'] = [""]
 
                     #get alarm info from excel
-                    alnames = ""
+                    alname = ""
+
+                    devdictalarm = adict.servers["%s/%s" % ("PyAlarm", "I-MAG")]["PyAlarm"][system+"-"+location + '/MAG/ALARM']
                     for key in alarm_dict:
                         if compactname in key:
-                            print "FOUND ALARM INFO FOR ", key, alarm_dict[key]
+                            print "FOUND ALARM INFO FOR ", compactname, key, alarm_dict[key]
 
-                            if adict is not None:
-                                devdictalarm = adict.servers["%s/%s" % ("PyAlarm", "I-MAG")]["PyAlarm"][system+"-"+location + '/MAG/ALARM']
-                                alnames = 'TemperatureInterlock_'+system+"_"+location+'__'+'MAG'+'__'+ device + "_" +num2
-                                if "AlarmList" not in adict.properties:
-                                    adict.properties["AlarmList"] = []
-                                adict.properties['AlarmList'].append(alnames)
-                                devdictalarm.properties = self.alpars
-                            #use py att proc device with name like  i-bc1/dia/cooling
                             pyattname = "I-" + section + "/DIA/COOLING"
+
+                            #for the magnets json file
                             self.parameters['TemperatureInterlock'] = [pyattname, key, alarm_dict[key]]
                             #self.parameters['TemperatureInterlock'] = ["i-k04/mag/plc-01", key, alarm_dict[key]]
+
+                            #for the alarms json file
+
+                            if adict is not None:
+
+                                print "devdictalarm", devdictalarm
+                                alname = 'TemperatureInterlock'+key.split('_')[-2]+'_'+system+"_"+location+'__'+'MAG'+'__'+ device + "_" +num2
+                                alsev = alname+":"+"ALARM"
+                                alrec = alname+":"+"HTML"
+                                aldesc = alname+":"+alarm_dict[key]
+
+                            if "AlarmList" not in self.alpars:
+                                self.alpars["AlarmList"] = []
+                            self.alpars['AlarmList'].append(alname+":"+pyattname+"/"+key)
+
+                            if "AlarmSeverity" not in self.alpars:
+                                self.alpars["AlarmSeverity"] = []
+                            self.alpars['AlarmSeverity'].append(alsev)
+
+                            if "AlarmDescriptions" not in self.alpars:
+                                self.alpars["AlarmDescriptions"] = []
+                            self.alpars['AlarmDescriptions'].append(aldesc)
+
+                            if "AlarmReceivers" not in self.alpars:
+                                self.alpars["AlarmReceivers"] = []
+                            self.alpars['AlarmReceivers'].append(alrec)
+
+                            if "StartupDelay" not in self.alpars:
+                                self.alpars["StartupDelay"] = [0.0]
+                            if "AutoReset" not in self.alpars:
+                                self.alpars["AutoReset"] = [60.0]
+                            if "MaxMessagesPerAlarm" not in self.alpars:
+                                self.alpars["MaxMessagesPerAlarm"] = [1]
+                            if "PollingPeriod" not in self.alpars:
+                                self.alpars["PollingPeriod"] = [5]
+                            if "LogFile" not in self.alpars:
+                                self.alpars["LogFile"] = ["/tmp/pjb/log"]
+                            if "HtmlFolder" not in self.alpars:
+                                self.alpars["HtmlFolder"] = ["/tmp/pjb"]
+                            if "AlarmThreshold" not in self.alpars:
+                                self.alpars["AlarmThreshold"] = [1]
+
+
+
+                    devdictalarm.properties = self.alpars
+
 
                     #get calibration info from the excel
                     if self.itemName in calib_dict:
@@ -353,6 +396,8 @@ class LatticeFileItem:
                         magnetcircuit.parameters['ExcitationCurveFields']= fieldsmatrix
                         #magnetcircuit.parameters['Orientation'] = orientation
                         #magnetcircuit.parameters['Polarity']    = polarity
+                        self.parameters['Orientation'] = int(orientation)
+                        self.parameters['Polarity']    = int(polarity)
 
                     #assign circuit name as property of magnet device
                     #no regex to fix name here so do by hand
@@ -404,6 +449,7 @@ class LatticeFileItem:
                     #print  item.properties["powersupply"]
             
                 devdict.properties = self.parameters
+
 
                 
 class ElegantLatticeParser:
