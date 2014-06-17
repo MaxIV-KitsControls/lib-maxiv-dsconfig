@@ -158,11 +158,11 @@
             "Magnet": {
                 "I-S01A/MAG/QE-02": {
                     "properties": {
-                        "Polarity": 1.0, 
+                        "Polarity": 1, 
                         "Length": [
                             "0.07000000000000001"
                         ], 
-                        "Orientation": 1.0, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -174,11 +174,11 @@
                 }, 
                 "I-S01A/MAG/QE-01": {
                     "properties": {
-                        "Polarity": 1.0, 
+                        "Polarity": 1, 
                         "Length": [
                             "0.07000000000000001"
                         ], 
-                        "Orientation": -1.0, 
+                        "Orientation": -1, 
                         "Tilt": [
                             0
                         ], 
@@ -190,6 +190,8 @@
                 }, 
                 "I-S01A/MAG/COEX-01": {
                     "properties": {
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -204,6 +206,8 @@
                 }, 
                 "I-S01A/MAG/COEY-01": {
                     "properties": {
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -222,11 +226,11 @@
             "Magnet": {
                 "I-S01B/MAG/QE-03": {
                     "properties": {
-                        "Polarity": 1.0, 
+                        "Polarity": 1, 
                         "Length": [
                             "0.07000000000000001"
                         ], 
-                        "Orientation": -1.0, 
+                        "Orientation": -1, 
                         "Tilt": [
                             0
                         ], 
@@ -238,11 +242,11 @@
                 }, 
                 "I-S01B/MAG/QE-04": {
                     "properties": {
-                        "Polarity": 1.0, 
+                        "Polarity": 1, 
                         "Length": [
                             "0.07000000000000001"
                         ], 
-                        "Orientation": 1.0, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -907,10 +911,12 @@
             "Magnet": {
                 "I-G00/MAG/COHY-01": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "vkick", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-G00/MAG/COHY-CIR-01"
                         ]
@@ -918,10 +924,12 @@
                 }, 
                 "I-G00/MAG/COHY-02": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "vkick", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-G00/MAG/COHY-CIR-02"
                         ]
@@ -929,10 +937,12 @@
                 }, 
                 "I-G00/MAG/COHX-02": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "hkick", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-G00/MAG/COHX-CIR-02"
                         ]
@@ -940,10 +950,12 @@
                 }, 
                 "I-G00/MAG/COIY-01": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "vkick", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-G00/MAG/COIY-CIR-01"
                         ]
@@ -951,10 +963,12 @@
                 }, 
                 "I-G00/MAG/COIY-02": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "vkick", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-G00/MAG/COIY-CIR-02"
                         ]
@@ -962,10 +976,12 @@
                 }, 
                 "I-G00/MAG/COIY-03": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "vkick", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-G00/MAG/COIY-CIR-03"
                         ]
@@ -973,10 +989,12 @@
                 }, 
                 "I-G00/MAG/COIX-03": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "hkick", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-G00/MAG/COIX-CIR-03"
                         ]
@@ -984,10 +1002,12 @@
                 }, 
                 "I-G00/MAG/COIX-02": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "hkick", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-G00/MAG/COIX-CIR-02"
                         ]
@@ -995,10 +1015,12 @@
                 }, 
                 "I-G00/MAG/COIX-01": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "hkick", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-G00/MAG/COIX-CIR-01"
                         ]
@@ -1006,10 +1028,12 @@
                 }, 
                 "I-G00/MAG/COHX-01": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "hkick", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-G00/MAG/COHX-CIR-01"
                         ]
@@ -1021,40 +1045,43 @@
             "Magnet": {
                 "I-BC1/MAG/COEX-02": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-BC1/MAG/COEX-CIR-02"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Length": [
                             "0.07"
                         ], 
-                        "Type": "hkick"
+                        "Type": "hkick", 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/COEX-CIR-02"
+                        ]
                     }
                 }, 
                 "I-BC1/MAG/COEX-03": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-BC1/MAG/COEX-CIR-03"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Length": [
                             "0.07"
                         ], 
-                        "Type": "hkick"
+                        "Type": "hkick", 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/COEX-CIR-03"
+                        ]
                     }
                 }, 
                 "I-BC1/MAG/QD-04": {
                     "properties": {
+                        "Polarity": 1, 
                         "Length": [
                             "0.1"
                         ], 
-                        "CircuitProxies": [
-                            "I-BC1/MAG/QD-CIR-01"
-                        ], 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -1063,31 +1090,35 @@
                             "B_I_BC1QD4_DIA_TSW1_A", 
                             "Temp > 60 alarm to TANGO"
                         ], 
-                        "Type": "kquad"
+                        "Type": "kquad", 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/QD-CIR-01"
+                        ]
                     }
                 }, 
                 "I-BC1/MAG/COEX-01": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-BC1/MAG/COEX-CIR-01"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Length": [
                             "0.07"
                         ], 
-                        "Type": "hkick"
+                        "Type": "hkick", 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/COEX-CIR-01"
+                        ]
                     }
                 }, 
                 "I-BC1/MAG/QD-02": {
                     "properties": {
+                        "Polarity": 1, 
                         "Length": [
                             "0.1"
                         ], 
-                        "CircuitProxies": [
-                            "I-BC1/MAG/QD-CIR-01"
-                        ], 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -1096,17 +1127,19 @@
                             "B_I_BC1QD2_DIA_TSW1_A", 
                             "Temp > 60 alarm to TANGO"
                         ], 
-                        "Type": "kquad"
+                        "Type": "kquad", 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/QD-CIR-01"
+                        ]
                     }
                 }, 
                 "I-BC1/MAG/QD-03": {
                     "properties": {
+                        "Polarity": 1, 
                         "Length": [
                             "0.1"
                         ], 
-                        "CircuitProxies": [
-                            "I-BC1/MAG/QD-CIR-01"
-                        ], 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -1115,31 +1148,35 @@
                             "B_I_BC1QD3_DIA_TSW1_A", 
                             "Temp > 60 alarm to TANGO"
                         ], 
-                        "Type": "kquad"
+                        "Type": "kquad", 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/QD-CIR-01"
+                        ]
                     }
                 }, 
                 "I-BC1/MAG/COEX-04": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-BC1/MAG/COEX-CIR-04"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Length": [
                             "0.07"
                         ], 
-                        "Type": "hkick"
+                        "Type": "hkick", 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/COEX-CIR-04"
+                        ]
                     }
                 }, 
                 "I-BC1/MAG/QD-01": {
                     "properties": {
+                        "Polarity": 1, 
                         "Length": [
                             "0.1"
                         ], 
-                        "CircuitProxies": [
-                            "I-BC1/MAG/QD-CIR-01"
-                        ], 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -1148,17 +1185,19 @@
                             "B_I_BC1QD1_DIA_TSW1_A", 
                             "Temp > 60 alarm to TANGO"
                         ], 
-                        "Type": "kquad"
+                        "Type": "kquad", 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/QD-CIR-01"
+                        ]
                     }
                 }, 
                 "I-BC1/MAG/SXL-02": {
                     "properties": {
+                        "Polarity": 1, 
                         "Length": [
                             "0.1"
                         ], 
-                        "CircuitProxies": [
-                            "I-BC1/MAG/SXL-CIR-01"
-                        ], 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -1167,17 +1206,19 @@
                             "B_I_BC1SXL2_DIA_TSW1_A", 
                             "Temp > 60 alarm to TANGO"
                         ], 
-                        "Type": "ksext"
+                        "Type": "ksext", 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/SXL-CIR-01"
+                        ]
                     }
                 }, 
                 "I-BC1/MAG/SXL-01": {
                     "properties": {
+                        "Polarity": 1, 
                         "Length": [
                             "0.1"
                         ], 
-                        "CircuitProxies": [
-                            "I-BC1/MAG/SXL-CIR-01"
-                        ], 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -1186,70 +1227,80 @@
                             "B_I_BC1SXL1_DIA_TSW1_A", 
                             "Temp > 60 alarm to TANGO"
                         ], 
-                        "Type": "ksext"
+                        "Type": "ksext", 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/SXL-CIR-01"
+                        ]
                     }
                 }, 
                 "I-BC1/MAG/COEY-04": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-BC1/MAG/COEY-CIR-04"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Length": [
                             "0.07"
                         ], 
-                        "Type": "vkick"
+                        "Type": "vkick", 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/COEY-CIR-04"
+                        ]
                     }
                 }, 
                 "I-BC1/MAG/COEY-01": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-BC1/MAG/COEY-CIR-01"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Length": [
                             "0.07"
                         ], 
-                        "Type": "vkick"
+                        "Type": "vkick", 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/COEY-CIR-01"
+                        ]
                     }
                 }, 
                 "I-BC1/MAG/COEY-03": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-BC1/MAG/COEY-CIR-03"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Length": [
                             "0.07"
                         ], 
-                        "Type": "vkick"
+                        "Type": "vkick", 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/COEY-CIR-03"
+                        ]
                     }
                 }, 
                 "I-BC1/MAG/COEY-02": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-BC1/MAG/COEY-CIR-02"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Length": [
                             "0.07"
                         ], 
-                        "Type": "vkick"
+                        "Type": "vkick", 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/COEY-CIR-02"
+                        ]
                     }
                 }, 
                 "I-BC1/MAG/DIA-04": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-BC1/MAG/DIA-CIR-01"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -1261,14 +1312,16 @@
                             "I-BC1/DIA/COOLING", 
                             "B_I_BC1DIA4_DIA_TSW1_A", 
                             "Temp > 60 alarm to TANGO"
+                        ], 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/DIA-CIR-01"
                         ]
                     }
                 }, 
                 "I-BC1/MAG/DIA-05": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-BC1/MAG/DIA-CIR-01"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -1280,14 +1333,16 @@
                             "I-BC1/DIA/COOLING", 
                             "B_I_BC1DIA5_DIA_TSW1_A", 
                             "Temp > 60 alarm to TANGO"
+                        ], 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/DIA-CIR-01"
                         ]
                     }
                 }, 
                 "I-BC1/MAG/DIA-06": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-BC1/MAG/DIA-CIR-01"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -1299,14 +1354,16 @@
                             "I-BC1/DIA/COOLING", 
                             "B_I_BC1DIA6_DIA_TSW1_A", 
                             "Temp > 60 alarm to TANGO"
+                        ], 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/DIA-CIR-01"
                         ]
                     }
                 }, 
                 "I-BC1/MAG/DIA-07": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-BC1/MAG/DIA-CIR-01"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -1318,14 +1375,16 @@
                             "I-BC1/DIA/COOLING", 
                             "B_I_BC1DIA7_DIA_TSW1_A", 
                             "Temp > 60 alarm to TANGO"
+                        ], 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/DIA-CIR-01"
                         ]
                     }
                 }, 
                 "I-BC1/MAG/DIA-01": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-BC1/MAG/DIA-CIR-01"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -1337,14 +1396,16 @@
                             "I-BC1/DIA/COOLING", 
                             "B_I_BC1DIA1_DIA_TSW1_A", 
                             "Temp > 60 alarm to TANGO"
+                        ], 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/DIA-CIR-01"
                         ]
                     }
                 }, 
                 "I-BC1/MAG/DIA-02": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-BC1/MAG/DIA-CIR-01"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -1356,14 +1417,16 @@
                             "I-BC1/DIA/COOLING", 
                             "B_I_BC1DIA2_DIA_TSW1_A", 
                             "Temp > 60 alarm to TANGO"
+                        ], 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/DIA-CIR-01"
                         ]
                     }
                 }, 
                 "I-BC1/MAG/DIA-03": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-BC1/MAG/DIA-CIR-01"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -1375,14 +1438,16 @@
                             "I-BC1/DIA/COOLING", 
                             "B_I_BC1DIA3_DIA_TSW1_A", 
                             "Temp > 60 alarm to TANGO"
+                        ], 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/DIA-CIR-01"
                         ]
                     }
                 }, 
                 "I-BC1/MAG/DIA-08": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-BC1/MAG/DIA-CIR-01"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -1394,49 +1459,58 @@
                             "I-BC1/DIA/COOLING", 
                             "B_I_BC1DIA8_DIA_TSW1_A", 
                             "Temp > 60 alarm to TANGO"
+                        ], 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/DIA-CIR-01"
                         ]
                     }
                 }, 
                 "I-BC1/MAG/QB-01": {
                     "properties": {
+                        "Polarity": 1, 
                         "Length": [
                             "0.2"
                         ], 
-                        "CircuitProxies": [
-                            "I-BC1/MAG/QB-CIR-01"
-                        ], 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
-                        "Type": "kquad"
+                        "Type": "kquad", 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/QB-CIR-01"
+                        ]
                     }
                 }, 
                 "I-BC1/MAG/QB-02": {
                     "properties": {
+                        "Polarity": 1, 
                         "Length": [
                             "0.2"
                         ], 
-                        "CircuitProxies": [
-                            "I-BC1/MAG/QB-CIR-02"
-                        ], 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
-                        "Type": "kquad"
+                        "Type": "kquad", 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/QB-CIR-02"
+                        ]
                     }
                 }, 
                 "I-BC1/MAG/QB-03": {
                     "properties": {
+                        "Polarity": 1, 
                         "Length": [
                             "0.2"
                         ], 
-                        "CircuitProxies": [
-                            "I-BC1/MAG/QB-CIR-01"
-                        ], 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
-                        "Type": "kquad"
+                        "Type": "kquad", 
+                        "CircuitProxies": [
+                            "I-BC1/MAG/QB-CIR-01"
+                        ]
                     }
                 }
             }
@@ -1716,10 +1790,12 @@
             "Magnet": {
                 "I-S00/MAG/QT-01": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "kquad", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-S00/MAG/QT-CIR-01"
                         ]
@@ -1727,10 +1803,12 @@
                 }, 
                 "I-S00/MAG/COFX-01": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "hkick", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-S00/MAG/COFX-CIR-01"
                         ]
@@ -1738,10 +1816,12 @@
                 }, 
                 "I-S00/MAG/COFX-02": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "hkick", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-S00/MAG/COFX-CIR-02"
                         ]
@@ -1749,10 +1829,12 @@
                 }, 
                 "I-S00/MAG/DIPT-02": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "csrcsbend", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-S00/MAG/DIPT-CIR-01"
                         ]
@@ -1760,10 +1842,12 @@
                 }, 
                 "I-S00/MAG/QST-04": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "kquad", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-S00/MAG/QST-CIR-04"
                         ]
@@ -1771,10 +1855,12 @@
                 }, 
                 "I-S00/MAG/COFY-02": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "vkick", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-S00/MAG/COFY-CIR-02"
                         ]
@@ -1782,10 +1868,12 @@
                 }, 
                 "I-S00/MAG/COFY-01": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "vkick", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-S00/MAG/COFY-CIR-01"
                         ]
@@ -1793,26 +1881,30 @@
                 }, 
                 "I-S00/MAG/SOLT-02": {
                     "properties": {
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
-                        ], 
-                        "Type": "sole", 
-                        "CircuitProxies": [
-                            "I-S00/MAG/SOLT-CIR-02"
                         ], 
                         "TemperatureInterlock": [
                             "I-S00/DIA/COOLING", 
                             "B_I_S00SOLT2_DIA_TSW1_A", 
                             "Temp > 60 alarm to TANGO"
+                        ], 
+                        "Type": "sole", 
+                        "CircuitProxies": [
+                            "I-S00/MAG/SOLT-CIR-02"
                         ]
                     }
                 }, 
                 "I-S00/MAG/COBX-01": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "hkick", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-S00/MAG/COBX-CIR-01"
                         ]
@@ -1820,10 +1912,12 @@
                 }, 
                 "I-S00/MAG/DIPT-01": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "csrcsbend", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-S00/MAG/DIPT-CIR-01"
                         ]
@@ -1831,26 +1925,30 @@
                 }, 
                 "I-S00/MAG/SOLT-01": {
                     "properties": {
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
-                        ], 
-                        "Type": "sole", 
-                        "CircuitProxies": [
-                            "I-S00/MAG/SOLT-CIR-01"
                         ], 
                         "TemperatureInterlock": [
                             "I-S00/DIA/COOLING", 
                             "B_I_S00SOLT1_DIA_TSW1_A", 
                             "Temp > 60 alarm to TANGO"
+                        ], 
+                        "Type": "sole", 
+                        "CircuitProxies": [
+                            "I-S00/MAG/SOLT-CIR-01"
                         ]
                     }
                 }, 
                 "I-S00/MAG/QST-01": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "kquad", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-S00/MAG/QST-CIR-01"
                         ]
@@ -1858,10 +1956,12 @@
                 }, 
                 "I-S00/MAG/QST-03": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "kquad", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-S00/MAG/QST-CIR-03"
                         ]
@@ -1869,10 +1969,12 @@
                 }, 
                 "I-S00/MAG/QST-02": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "kquad", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-S00/MAG/QST-CIR-02"
                         ]
@@ -1880,10 +1982,12 @@
                 }, 
                 "I-S00/MAG/COBY-02": {
                     "properties": {
+                        "Polarity": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Type": "vkick", 
+                        "Orientation": 1, 
                         "CircuitProxies": [
                             "I-S00/MAG/COBY-CIR-02"
                         ]
@@ -1895,62 +1999,72 @@
             "Magnet": {
                 "I-MS1/MAG/QB-03": {
                     "properties": {
+                        "Polarity": 1, 
                         "Length": [
                             "0.2"
                         ], 
-                        "CircuitProxies": [
-                            "I-MS1/MAG/QB-CIR-03"
-                        ], 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
-                        "Type": "kquad"
+                        "Type": "kquad", 
+                        "CircuitProxies": [
+                            "I-MS1/MAG/QB-CIR-03"
+                        ]
                     }
                 }, 
                 "I-MS1/MAG/QB-02": {
                     "properties": {
+                        "Polarity": 1, 
                         "Length": [
                             "0.2"
                         ], 
-                        "CircuitProxies": [
-                            "I-MS1/MAG/QB-CIR-02"
-                        ], 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
-                        "Type": "kquad"
+                        "Type": "kquad", 
+                        "CircuitProxies": [
+                            "I-MS1/MAG/QB-CIR-02"
+                        ]
                     }
                 }, 
                 "I-MS1/MAG/QB-01": {
                     "properties": {
+                        "Polarity": 1, 
                         "Length": [
                             "0.2"
                         ], 
-                        "CircuitProxies": [
-                            "I-MS1/MAG/QB-CIR-01"
-                        ], 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
-                        "Type": "kquad"
+                        "Type": "kquad", 
+                        "CircuitProxies": [
+                            "I-MS1/MAG/QB-CIR-01"
+                        ]
                     }
                 }, 
                 "I-MS1/MAG/QB-04": {
                     "properties": {
+                        "Polarity": 1, 
                         "Length": [
                             "0.2"
                         ], 
-                        "CircuitProxies": [
-                            "I-MS1/MAG/QB-CIR-04"
-                        ], 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
-                        "Type": "kquad"
+                        "Type": "kquad", 
+                        "CircuitProxies": [
+                            "I-MS1/MAG/QB-CIR-04"
+                        ]
                     }
                 }, 
                 "I-MS1/MAG/COEY-02": {
                     "properties": {
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
@@ -1965,34 +2079,40 @@
                 }, 
                 "I-MS1/MAG/COEY-01": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-MS1/MAG/COEY-CIR-01"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Length": [
                             "0.07"
                         ], 
-                        "Type": "vkick"
+                        "Type": "vkick", 
+                        "CircuitProxies": [
+                            "I-MS1/MAG/COEY-CIR-01"
+                        ]
                     }
                 }, 
                 "I-MS1/MAG/COEX-01": {
                     "properties": {
-                        "CircuitProxies": [
-                            "I-MS1/MAG/COEX-CIR-01"
-                        ], 
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 
                         "Length": [
                             "0.07"
                         ], 
-                        "Type": "hkick"
+                        "Type": "hkick", 
+                        "CircuitProxies": [
+                            "I-MS1/MAG/COEX-CIR-01"
+                        ]
                     }
                 }, 
                 "I-MS1/MAG/COEX-02": {
                     "properties": {
+                        "Polarity": 1, 
+                        "Orientation": 1, 
                         "Tilt": [
                             0
                         ], 

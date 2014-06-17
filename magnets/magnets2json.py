@@ -351,7 +351,8 @@ class LatticeFileItem:
 
                     devdictalarm.properties = self.alpars
 
-
+                    polarity = 1
+                    orientation = 1
                     #get calibration info from the excel
                     if self.itemName in calib_dict:
                         print "FOUND CALIB INFO"
@@ -396,8 +397,8 @@ class LatticeFileItem:
                         magnetcircuit.parameters['ExcitationCurveFields']= fieldsmatrix
                         #magnetcircuit.parameters['Orientation'] = orientation
                         #magnetcircuit.parameters['Polarity']    = polarity
-                        self.parameters['Orientation'] = int(orientation)
-                        self.parameters['Polarity']    = int(polarity)
+                    self.parameters['Orientation'] = int(orientation)
+                    self.parameters['Polarity']    = int(polarity)
 
                     #assign circuit name as property of magnet device
                     #no regex to fix name here so do by hand
