@@ -30,6 +30,8 @@ def get_properties(row):
         match = re.match("property:(.*)", col_name, re.IGNORECASE)
         if match and value:
             name, = match.groups()
+            if isinstance(value, float):    # TODO: numeric values become floats, but what if we only want integers?
+                value = str(value)  
             prop_dict[name] = value.strip()
 
     return prop_dict
