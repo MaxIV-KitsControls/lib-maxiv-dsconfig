@@ -32,6 +32,8 @@ from PowerSupplyMap import POWER_SUPPLY_MAP
 import copy
 import numpy as np
 
+nextdev = True
+
 
 class SuperDict(defaultdict):
     "A recursive defaultdict with extra bells & whistles"
@@ -53,15 +55,16 @@ class LatticeFileItem:
     parameters = {}
     properties = {}
     alpars= {}
+    lastdev = "x"
 
     def __init__(self, _line=''):
         '''
         Construct an object parsing a _line from a lattice file
         '''
-        # print "Creating an item for the line:" 
         self.parameters= {}
         self.properties= {}
-        # print _line
+
+        print "IN INIT", self.lastdev
         
         # find a name
         colon_pos = _line.find(':')
@@ -69,7 +72,6 @@ class LatticeFileItem:
 
         #self.itemName = self.itemName.replace('.','-')
 
-        print "name", self.itemName
         
         # what left to be parsed
         line_left = _line[colon_pos + 1:].lstrip()        
@@ -92,7 +94,6 @@ class LatticeFileItem:
         
         # parse the rest for parameters      
         while line_left != '':
-            #print "PJB here1 ",  self.itemName, line_left, param_name
             if param_name != '':
                 # searching for a value
                 param_value = ''
@@ -109,7 +110,6 @@ class LatticeFileItem:
                     quote_pos = line_left.index('\"', 1)  # will rise an exception in case of badly formated line
                     # so, the value is (including quote):
                     param_value = line_left[:quote_pos + 1]
-                    #print "PJB here2 ",   param_value, param_name
 
                     # this is what left to be parsed 
                     line_left = line_left[quote_pos + 1:].lstrip()
@@ -122,7 +122,6 @@ class LatticeFileItem:
                     # the following left to be parsed
                     line_left = line_left[comma_pos + 1:].lstrip()
                 # store the parameter with the corresponding value 
-                # print "PJB adding", param_name, param_value
                 self.parameters[param_name] = param_value
                 # PJB reset name back to empty here to find next parameter!(to enter else below)
                 param_name=''
@@ -142,42 +141,39 @@ class LatticeFileItem:
                 # this is what left to be parsed
                 line_left = line_left[min(eq_pos, comma_pos) + 1:].lstrip()        
                              
-        #print "Item name: "+self.itemName
-        #print "Item type: "+self.itemType
-        #print "Item parameters: ", self.parameters
+
 
     def match_properties(self):
 
         
         devclass = types_classes[self.itemType]
-        print "in match_properties for class", devclass,  self.itemName
 
         if "CIR" in self.itemName:
-            print "properties for magnet circuit"
-            #self.parameters["powersupply"] = ""
-            #self.parameters["magnets"] = ""
+             print "dealing with magnet circuit"
+        #    #self.parameters["powersupply"] = ""
+        #    #self.parameters["magnets"] = ""
 
         # for given item type, look up required attributes and properties of tango
         elif devclass in TANGO_PROPERTIES:
 
             fixed_properties_l =  list(TANGO_PROPERTIES[devclass][0].keys())
-            print "fixed tango properties are ", fixed_properties_l
+            #print "fixed tango properties are ", fixed_properties_l
 
             # add the fixed properties
             self.parameters.update(TANGO_PROPERTIES[devclass][0])
 
             lattice_properties_l = list(TANGO_PROPERTIES[devclass][1].keys())
-            print "possible lattice tango properties are ", lattice_properties_l
+            #print "possible lattice tango properties are ", lattice_properties_l
             for k in self.parameters.keys():
-                print "key", k
+                #print "key", k
                 #if not a required property or attribue then pop it
                 if k.lower() not in lattice_properties_l and k not in  fixed_properties_l:
-                    print "popping ", k
+                    #print "popping ", k
                     self.parameters.pop(k)
 
                 #otherwise rename key if an attribute
                 if k.lower() in lattice_properties_l:
-                    print "KEY ", k.lower(), TANGO_PROPERTIES[devclass][1][k.lower()], self.parameters[k]
+                    #print "KEY ", k.lower(), TANGO_PROPERTIES[devclass][1][k.lower()], self.parameters[k]
                     self.parameters[TANGO_PROPERTIES[devclass][1][k.lower()]] = [self.parameters.pop(k)]
                     #if the property defines a dynamic attribute then set the value
                     #if 'DYNAMIC_PROPERTIES' in TANGO_PROPERTIES[devclass][1][k]:
@@ -199,8 +195,8 @@ class LatticeFileItem:
         if "MAG" in self.itemName and not "CIR" in self.itemName:
             self.parameters["Type"] = self.itemType
 
-        print "parameters are now", self.parameters
-        print "properties are now", self.properties
+        #print "parameters are now", self.parameters
+        #print "properties are now", self.properties
             
     #def add_device(self, sdict, name_parsing_string='(?P<system>[a-zA-Z0-9]+)\.(?P<location>[a-zA-Z0-9]+)\.(?P<subsystem>[a-zA-Z0-9]+)\.(?P<device>[a-zA-Z0-9]+)\.(?P<num>[0-9]+)\.(?P<cir>[a-zA-Z0-9]+)'):
     def add_device(self, sdict, adict, name_parsing_string='(?P<system>[a-zA-Z0-9]+)\.(?P<location>[a-zA-Z0-9]+)\.(?P<subsystem>[a-zA-Z0-9]+)\.(?P<device>[a-zA-Z0-9]+)\.(?P<num>[0-9]+)'):
@@ -210,10 +206,17 @@ class LatticeFileItem:
         # prepare pattern for parsing name
         pattern = re.compile(name_parsing_string)  
 
-        print "Item: " + self.itemName + " as " + self.itemType
+        print "In add device for item: " + self.itemName + " as " + self.itemType, self.lastdev, self.alpars
         # only when we know class for certain element 
 
+
+        #self.alpars = {}
+        devdictalarm = None
+
         if types_classes.has_key(self.itemType):
+
+            print "" 
+            print "" 
 
             # split name
             name_items = pattern.search(self.itemName) 
@@ -237,7 +240,7 @@ class LatticeFileItem:
 
                 #store the parameters we need (attributes and properties)
                 #print "PJB parameter",  self.itemName, self.parameters
-                print "++++++++++++++++++++++++++++ DEALING WITH: " + self.itemName
+                #print "++++++++++++++++++++++++++++ DEALING WITH: " + self.itemName
 
                 self.match_properties()
 
@@ -248,11 +251,12 @@ class LatticeFileItem:
 
                 #hack for circuits
                 if "CIR" in self.itemName:
-                    print "orig name",self.itemName, name
+                    #print "orig name",self.itemName, name
                     #name = name.split("-",1)[-1] + "-CIR" +  "-" +num2
                     name = name.rsplit("-",1)[0] + "-CIR" +  "-" +num2
                     #pdevclass = "Circuit"
                     devclass = "MagnetCircuit"
+
 
                 print "+++++++++++++++++ Creating device server : " + server + " for " + devclass + " (name= " + name    + ")" 
                 print "+++++++++ With properties : ", self.parameters
@@ -261,9 +265,10 @@ class LatticeFileItem:
                 # see if this class exists and append if so, or create
                 devdict = sdict.servers["%s/%s" % (devclass, system+"-"+location)][devclass][name]
 
-
                 if "MAG" in self.itemName and "CIR" not in self.itemName:
 
+
+                    
                     #compact name is to find tag in plc alarms
                     name_l = self.itemName.split(".")
                     section = name_l[1]
@@ -272,14 +277,15 @@ class LatticeFileItem:
                     compactname = "".join(name_l)
                     compactname = compactname.split("_")[0]
 
-                    print "-------------------- FOUND MAGNET", self.itemName,  compactname
-                    print section
+                        
+                    print "-------------------- magnet not circuit", self.itemName,  compactname
+                    #print section
 
                     #see what is the ps of the magnet
                     powersupplyname = POWER_SUPPLY_MAP[name]
 
                     #create circuit device for each new ps
-                    print "circuit_ps_list", circuit_ps_list
+                    #print "circuit_ps_list", circuit_ps_list
 
                     #copy the magnet and call recursively add device!
                     magnetcircuit = copy.deepcopy(self)
@@ -293,14 +299,27 @@ class LatticeFileItem:
                     magnetcircuit.parameters['CoilNames'] = [""]
 
                     #get alarm info from excel
-                    alname = ""
 
-                    devdictalarm = adict.servers["%s/%s" % ("PyAlarm", "I-MAG")]["PyAlarm"][system+"-"+location + '/MAG/ALARM']
+                    pyalarm = system+"-"+location + '/MAG/ALARM'
+                    devdictalarm = adict.servers["%s/%s" % ("PyAlarm", "I-MAG")]["PyAlarm"][pyalarm]
+
+
+                    #print "made dev dict ", devdictalarm
                     for key in alarm_dict:
                         if compactname in key:
-                            print "FOUND ALARM INFO FOR ", compactname, key, alarm_dict[key]
+
+
+                            print "alarm device ", pyalarm, self.lastdev
+                            self.nextdev=False
+                            if pyalarm!=self.lastdev:
+                                print "setting"
+                                self.lastdev = pyalarm
+                                self.nextdev = True
+                            print "new alarm ", self.nextdev, self.lastdev                            
 
                             pyattname = "I-" + section + "/DIA/COOLING"
+
+                            print "FOUND ALARM INFO FOR ", compactname, key, alarm_dict[key], pyattname, adict
 
                             #for the magnets json file
                             self.parameters['TemperatureInterlock'] = [pyattname, key, alarm_dict[key]]
@@ -308,48 +327,61 @@ class LatticeFileItem:
 
                             #for the alarms json file
 
-                            if adict is not None:
+                            #if adict is not None:
 
-                                print "devdictalarm", devdictalarm
-                                alname = 'TemperatureInterlock'+key.split('_')[-2]+'_'+system+"_"+location+'__'+'MAG'+'__'+ device + "_" +num2
-                                alsev = alname+":"+"ALARM"
-                                alrec = alname+":"+"HTML"
-                                aldesc = alname+":"+alarm_dict[key]
+                            #print "devdictalarm", devdictalarm
 
-                            if "AlarmList" not in self.alpars:
-                                self.alpars["AlarmList"] = []
-                            self.alpars['AlarmList'].append(alname+":"+pyattname+"/"+key)
+                            alname = 'TemperatureInterlock'+key.split('_')[-2]+'_'+system+"_"+location+'__'+'MAG'+'__'+ device + "_" +num2
+                            alsev = alname+":"+"ALARM"
+                            alrec = alname+":"+"HTML"
+                            aldesc = alname+":"+alarm_dict[key]
 
-                            if "AlarmSeverity" not in self.alpars:
-                                self.alpars["AlarmSeverity"] = []
-                            self.alpars['AlarmSeverity'].append(alsev)
+                            if pyalarm not in self.alpars:
+                                self.alpars[pyalarm] = {}
 
-                            if "AlarmDescriptions" not in self.alpars:
-                                self.alpars["AlarmDescriptions"] = []
-                            self.alpars['AlarmDescriptions'].append(aldesc)
+                            if "AlarmList" not in self.alpars[pyalarm]:
+                                self.alpars[pyalarm]["AlarmList"] = []
+                            self.alpars[pyalarm]['AlarmList'].append(alname+":"+pyattname+"/"+key)
 
-                            if "AlarmReceivers" not in self.alpars:
-                                self.alpars["AlarmReceivers"] = []
-                            self.alpars['AlarmReceivers'].append(alrec)
+                            if "AlarmSeverity" not in self.alpars[pyalarm]:
+                                self.alpars[pyalarm]["AlarmSeverity"] = []
+                            self.alpars[pyalarm]['AlarmSeverity'].append(alsev)
 
-                            if "StartupDelay" not in self.alpars:
-                                self.alpars["StartupDelay"] = [0.0]
-                            if "AutoReset" not in self.alpars:
-                                self.alpars["AutoReset"] = [60.0]
-                            if "MaxMessagesPerAlarm" not in self.alpars:
-                                self.alpars["MaxMessagesPerAlarm"] = [1]
-                            if "PollingPeriod" not in self.alpars:
-                                self.alpars["PollingPeriod"] = [5]
-                            if "LogFile" not in self.alpars:
-                                self.alpars["LogFile"] = ["/tmp/pjb/log"]
-                            if "HtmlFolder" not in self.alpars:
-                                self.alpars["HtmlFolder"] = ["/tmp/pjb"]
-                            if "AlarmThreshold" not in self.alpars:
-                                self.alpars["AlarmThreshold"] = [1]
+                            if "AlarmDescriptions" not in self.alpars[pyalarm]:
+                                self.alpars[pyalarm]["AlarmDescriptions"] = []
+                            self.alpars[pyalarm]['AlarmDescriptions'].append(aldesc)
 
+                            if "AlarmReceivers" not in self.alpars[pyalarm]:
+                                self.alpars[pyalarm]["AlarmReceivers"] = []
+                            self.alpars[pyalarm]['AlarmReceivers'].append(alrec)
 
+                            if "StartupDelay" not in self.alpars[pyalarm]:
+                                self.alpars[pyalarm]["StartupDelay"] = [0.0]
+                            
+                            if "AutoReset" not in self.alpars[pyalarm]:
+                                self.alpars[pyalarm]["AutoReset"] = [60.0]
+                            
+                            if "MaxMessagesPerAlarm" not in self.alpars[pyalarm]:
+                                self.alpars[pyalarm]["MaxMessagesPerAlarm"] = [1]
+                            
+                            if "PollingPeriod" not in self.alpars[pyalarm]:
+                                self.alpars[pyalarm]["PollingPeriod"] = [5]
+                            
+                            if "LogFile" not in self.alpars[pyalarm]:
+                                self.alpars[pyalarm]["LogFile"] = ["/tmp/pjb/log"]
+                            
+                            if "HtmlFolder" not in self.alpars[pyalarm]:
+                                self.alpars[pyalarm]["HtmlFolder"] = ["/tmp/pjb"]
+                            
+                            if "AlarmThreshold" not in self.alpars[pyalarm]:
+                                self.alpars[pyalarm]["AlarmThreshold"] = [1]
 
-                    devdictalarm.properties = self.alpars
+                                
+                    #if self.nextmag:       
+                        #print "FIX THE PROPERTIES for ", devdictalarm
+                            devdictalarm.properties = self.alpars[pyalarm]
+                        #reset alarm pars
+                     #self.alpars = {}
 
                     polarity = 1
                     orientation = 1
@@ -359,15 +391,15 @@ class LatticeFileItem:
                         #find max multipole expansions
                         dim = max(calib_dict[self.itemName].keys(), key=int)
 
-                        print "max order is", dim
+                        #print "max order is", dim
 
                         #create arrays of this dimensions
                         #other dimension is 11
 
                         fieldsmatrix = [[0 for x in xrange(11)] for x in xrange(2)] 
-                        print fieldsmatrix
+                        #print fieldsmatrix
                         currentsmatrix = [[0 for x in xrange(11)] for x in xrange(2)] 
-                        print currentsmatrix
+                        #print currentsmatrix
 
                         #fieldsmatrix = np.zeros(shape=(dim,11), dtype=float) 
                         #currentsmatrix = np.zeros(shape=(dim,11), dtype=float) 
@@ -375,20 +407,20 @@ class LatticeFileItem:
 
                         #iterate over keys and add to the array
                         for key in calib_dict[self.itemName]:
-                            print key, 'corresponds to', calib_dict[self.itemName][key]
+                            #print key, 'corresponds to', calib_dict[self.itemName][key]
                             currents = calib_dict[self.itemName][key][5:16]
                             fields   = calib_dict[self.itemName][key][16:27]
-                            print currents, fields
+                            #print currents, fields
 
                             fieldsmatrix[key-1]=fields
                             currentsmatrix[key-1]=currents
                             #key here is the multipole order. any one should have same polarity
                             polarity = calib_dict[self.itemName][key][2]
                             orientation = calib_dict[self.itemName][key][3]
-                            print "P, O", polarity, orientation
+                            #print "P, O", polarity, orientation
 
-                        print fieldsmatrix
-                        print currentsmatrix
+                        #print fieldsmatrix
+                        #print currentsmatrix
 
                         #currents = calib_dict[self.itemName][5:16]
                         #fields   = calib_dict[self.itemName][16:27]
@@ -414,7 +446,7 @@ class LatticeFileItem:
                         magnetcircuit.add_device(sdict,adict)
                         circuit_ps_list[powersupplyname] = cname 
 
-                        print "adding circuit name ", magnetcircuit.itemName, cname
+                        #print "adding circuit name ", magnetcircuit.itemName, cname
 
                         self.parameters['CircuitProxies'] = [cname]
                         
@@ -433,7 +465,7 @@ class LatticeFileItem:
                         current_mags['MagnetProxies'].append(name)
                         
 
-                        print "props", current_mags['MagnetProxies']
+                        #print "props", current_mags['MagnetProxies']
 
                         #if already have a circuit device, magnet must have sisters
                         #self.parameters['Sisters'].append('bill')
@@ -449,8 +481,10 @@ class LatticeFileItem:
                     # self.parameters["Circuit"] = [powersupplyname]
                     #print  item.properties["powersupply"]
             
-                devdict.properties = self.parameters
+                else:
+                    print "NOT A MAGNET"
 
+                devdict.properties = self.parameters
 
                 
 class ElegantLatticeParser:
@@ -613,9 +647,9 @@ if __name__ == '__main__':
         #    #print "found circuit device magnet", magnet, circuit
         #    # if it is a circuit, add the circuit as a property!
         #    item.properties["circuit"] = circuit
-        if "MAG" in item.itemName:
-            print "----------------------- found magnet device", item.itemName
-         #    # hence also create a magnet circuit device
+        #if "MAG" in item.itemName:
+        #    print "----------------------- found magnet device", item.itemName
+        #    # hence also create a magnet circuit device
             
 
         item.add_device(json_dict,json_dict_alarms)
