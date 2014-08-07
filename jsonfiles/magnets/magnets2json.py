@@ -33,7 +33,9 @@ import copy
 import numpy as np
 
 nextdev = True
-
+testpjb = 999
+#lastcir = "xxx"
+#currentcir = ""
 
 class SuperDict(defaultdict):
     "A recursive defaultdict with extra bells & whistles"
@@ -57,12 +59,15 @@ class LatticeFileItem:
     alpars= {}
     lastdev = "x"
 
+    
     def __init__(self, _line=''):
         '''
         Construct an object parsing a _line from a lattice file
         '''
         self.parameters= {}
         self.properties= {}
+
+
 
         print "IN INIT", self.lastdev
         
@@ -206,7 +211,7 @@ class LatticeFileItem:
         # prepare pattern for parsing name
         pattern = re.compile(name_parsing_string)  
 
-        print "In add device for item: " + self.itemName + " as " + self.itemType, self.lastdev, self.alpars
+        print "In add device for item: " + self.itemName + " as " + self.itemType, self.lastdev, self.alpars, testpjb
         # only when we know class for certain element 
 
 
@@ -279,6 +284,10 @@ class LatticeFileItem:
 
                         
                     print "-------------------- magnet not circuit", self.itemName,  compactname
+
+                    #global lastcir
+                    #global currentcir
+                           
                     #print section
 
                     #see what is the ps of the magnet
@@ -386,19 +395,19 @@ class LatticeFileItem:
                     polarity = 1
                     orientation = 1
                     #get calibration info from the excel
-                    if self.itemName in calib_dict:
-                        print "FOUND CALIB INFO"
+                    if self.itemName.split("_")[0] in calib_dict:
+                        print "FOUND CALIB INFO", self.itemName
                         #find max multipole expansions
-                        dim = max(calib_dict[self.itemName].keys(), key=int)
+                        dim = max(calib_dict[self.itemName.split("_")[0]].keys(), key=int)
 
-                        #print "max order is", dim
+                        print "--- max order is", dim
 
                         #create arrays of this dimensions
                         #other dimension is 11
 
-                        fieldsmatrix = [[0 for x in xrange(11)] for x in xrange(2)] 
+                        fieldsmatrix = [[0 for x in xrange(11)] for x in xrange(dim)] 
                         #print fieldsmatrix
-                        currentsmatrix = [[0 for x in xrange(11)] for x in xrange(2)] 
+                        currentsmatrix = [[0 for x in xrange(11)] for x in xrange(dim)] 
                         #print currentsmatrix
 
                         #fieldsmatrix = np.zeros(shape=(dim,11), dtype=float) 
@@ -406,21 +415,44 @@ class LatticeFileItem:
                         #print fieldsmatrix
 
                         #iterate over keys and add to the array
-                        for key in calib_dict[self.itemName]:
-                            #print key, 'corresponds to', calib_dict[self.itemName][key]
-                            currents = calib_dict[self.itemName][key][5:16]
-                            fields   = calib_dict[self.itemName][key][16:27]
-                            #print currents, fields
+                        for key in calib_dict[self.itemName.split("_")[0]]:
+                            print '--- ', key, 'corresponds to', calib_dict[self.itemName.split("_")[0]][key]
+                            currents = calib_dict[self.itemName.split("_")[0]][key][5:16]
+                            fields   = calib_dict[self.itemName.split("_")[0]][key][17:28]
+                            print '--- ',currents, fields
 
                             fieldsmatrix[key-1]=fields
                             currentsmatrix[key-1]=currents
                             #key here is the multipole order. any one should have same polarity
-                            polarity = calib_dict[self.itemName][key][2]
-                            orientation = calib_dict[self.itemName][key][3]
+                            polarity = calib_dict[self.itemName.split("_")[0]][key][2]
+                            orientation = calib_dict[self.itemName.split("_")[0]][key][3]
                             #print "P, O", polarity, orientation
 
-                        #print fieldsmatrix
-                        #print currentsmatrix
+                        print '--- ',fieldsmatrix
+                        print '--- ',currentsmatrix
+
+                        #now trim the matrices (lists)
+                        maxlength = 11
+                        for i,val in enumerate(fieldsmatrix[dim-1]):
+                            if val=='':
+                                print i , val
+                                maxlength = i
+                                break
+                        print maxlength
+                        for i in xrange(dim):
+                            print i
+                            del fieldsmatrix[i][maxlength:]
+                            del currentsmatrix[i][maxlength:]
+
+                        print 'Now--- ',fieldsmatrix
+                        print 'Now--- ',currentsmatrix
+
+                        #if "_" in self.itemName and "CR" in self.itemName:
+                        #    currentcir = self.itemName.split("_")[1]
+                        #    print "actually circuit info",  currentcir, lastcir
+                        #    if currentcir != lastcir:
+                        #        lastcir = currentcir
+                        #        print "new cir",  currentcir, lastcir
 
                         #currents = calib_dict[self.itemName][5:16]
                         #fields   = calib_dict[self.itemName][16:27]
@@ -454,6 +486,8 @@ class LatticeFileItem:
                         #if we aleady made this circuit device, add it to this magnet properties
                         print "!!!ALART!!! already added a circuit device for ", self.itemName
                         
+
+
                         self.parameters['CircuitProxies'] = [circuit_ps_list[powersupplyname]]
 
                         #need to get the name of the circuit device from the ps dict though
@@ -463,7 +497,34 @@ class LatticeFileItem:
                         #current_mags = sdict.servers["%s/%s" % (devclass, system+"-"+location)][devclass][circuit_ps_list[powersupplyname]].properties
                         current_mags = sdict.servers["%s/%s" % ("MagnetCircuit", system+"-"+location)]["MagnetCircuit"][circuit_ps_list[powersupplyname]].properties
                         current_mags['MagnetProxies'].append(name)
-                        
+
+                        print "magnets on cir ", current_mags['MagnetProxies'], len(current_mags['MagnetProxies'])
+                        #need to average the currents, even if already done so in excel (depends on field order)
+                        if 'ExcitationCurveFields' in current_mags:
+
+                            assoc_field_m =  current_mags['ExcitationCurveFields']
+                            this_field_m  =  fieldsmatrix
+
+                            assoc_curr_m =  current_mags['ExcitationCurveCurrents']
+                            this_curr_m  =  currentsmatrix
+                            
+                            print "field matrix assoc   is ", assoc_field_m
+                            print "field matrix current is ", this_field_m
+
+                            print "current matrix assoc   is ", assoc_curr_m
+                            print "current matrix current is ", this_curr_m
+                            
+                            for i in xrange(dim):
+                                print i
+                                newFields  =  [ ( x*(len(current_mags['MagnetProxies']) -1) + y ) / len(current_mags['MagnetProxies'])  for y,x in zip(this_field_m[i],assoc_field_m[i])]
+                                newCurrents = [ ( x*(len(current_mags['MagnetProxies']) -1) + y ) / len(current_mags['MagnetProxies'])  for y,x in zip(this_curr_m[i],assoc_curr_m[i])]
+
+                            print "new fields   ", newFields
+                            print "new currents ", newCurrents
+                            current_mags['ExcitationCurveFields'][i] = newFields
+                            print "updated: ", current_mags['ExcitationCurveFields']
+                            current_mags['ExcitationCurveCurrents'][i] = newCurrents
+                            print "updated: ", current_mags['ExcitationCurveCurrents']
 
                         #print "props", current_mags['MagnetProxies']
 
@@ -502,6 +563,8 @@ class ElegantLatticeParser:
         self.fileName = _fileName
         self.file = io.open(_fileName)
 
+
+
     def parseLatticeFile(self):
         ''' '''        
         line = ""  # this will be a line combined from lines to be connected
@@ -525,11 +588,14 @@ class ElegantLatticeParser:
 
 
 if __name__ == '__main__':
+
+
     
     inFileName = ''
     doCalib=False
     doAlarms=False
-    excelName = 'MagnetCalibrationData.xls'
+    excelName = 'MagnetCalibrationData_fullBC2.xls'
+    #excelName = 'MagnetCalibrationData.xls'
     alarmName = 'Magnet_TempInterlock_IMAG_ALARM_140313.xls'
 
     #configuration
@@ -608,21 +674,21 @@ if __name__ == '__main__':
                 continue
             #this is like 
             #[5.0, u'I.S01A', u'I.S01A.MAG.QE.1', 202005.0, u'#1168-10030-0001', 1.0, -1.0, 2.0, 6.3167, 5.6757, 5.0307500000000003, 4.4208999999999996, 3.8452999999999999, 3.1463999999999999, 2.5179624999999999, 1.8892374999999999, 1.2808725000000001, 0.63988750000000016, 0.0, 0.70470485548532313, 0.63908274382966312, 0.56946571499960408, 0.50203927491440703, 0.43686121069898298, 0.35966476443894108, 0.288993167760146, 0.21848942173091002, 0.14957521795596601, 0.077488874695939805, 0.0052044472873010797, u'T', u'Rotating coil-C1168, #0001.xls', u'https://alfresco.maxlab.lu.se/share/page/site/maxiv/document-details?nodeRef=workspace://SpacesStore/23cdc9d1-a01e-443e-b578-1538637a1472', u'Scanditronix Magnet', 40690.0, '']
-            if row[1][2] not in calib_dict:
+            if row[1][2].strip() not in calib_dict:
                 if row[1][7] is not "":
                     data_key = int(row[1][7])
-                    data_list = row[1][3:]
+                    data_list = row[1][3:33]
                     data_dict = {data_key : data_list}
-                    calib_dict[row[1][2]]=data_dict
-                #calib_dict[row[1][2]]=row[1][3:]
+                    calib_dict[row[1][2].strip()]=data_dict
+                #calib_dict[row[1][2]]=row[1][3:33]
             else:
                 if row[1][7] is not "":
                #we found more curves for the same magnet 
                     print "found another entry", row[1][2], row[1][7]
                     data_key = int(row[1][7])
-                    data_list = row[1][3:]
+                    data_list = row[1][3:33]
                     data_dict = {data_key : data_list}
-                    calib_dict[row[1][2]][data_key]=data_list
+                    calib_dict[row[1][2].strip()][data_key]=data_list
 
         print "DICT IS ", calib_dict
         
