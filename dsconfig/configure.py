@@ -22,7 +22,7 @@ import json
 
 import PyTango
 
-from utils import (ADD, REMOVE, RED, GREEN, YELLOW, ENDC,
+from utils import (red, green, yellow,
                    ObjectWrapper, get_dict_from_db,
                    decode_dict, decode_pointer)
 
@@ -164,24 +164,24 @@ def print_diff(dbdict, data, removes=True):
         for d in diff:
             ptr = " > ".join(decode_pointer(d["path"]))
             if d["op"] == "replace":
-                print "REPLACE:"
-                print ptr
+                print yellow("REPLACE:")
+                print yellow(ptr)
                 db_value = resolve_pointer(dbdict, d["path"])
-                print REMOVE + dump_value(db_value) + ENDC
-                print ADD + dump_value(d["value"]) + ENDC
+                print red(dump_value(db_value))
+                print green(dump_value(d["value"]))
                 ops["replace"] += 1
             if d["op"] == "add":
-                print "ADD:"
-                print ptr
+                print green("ADD:")
+                print green(ptr)
                 if d["value"]:
-                    print ADD + dump_value(d["value"]) + ENDC
+                    print green(dump_value(d["value"]))
                 ops["add"] += 1
             if removes and d["op"] == "remove":
-                print "REMOVE:"
-                print ptr
+                print red("REMOVE:")
+                print red(ptr)
                 value = resolve_pointer(dbdict, d["path"])
                 if value:
-                    print REMOVE + dump_value(value) + ENDC
+                    print red(dump_value(value))
                 ops["remove"] += 1
 
         # # The following output is a bit misleading, removing for now
@@ -202,7 +202,7 @@ def validate_json(data):
         validate(data, schema)
     except ImportError:
         print >>sys.stderr, ("'jsonschema' not installed, could not "
-                             "validate json file.")
+                             "validate json file. You're on your own.")
     except exceptions.ValidationError as e:
         print >>sys.stderr, "JSON data does not match schema: %s" % e
         sys.exit(1)
@@ -276,13 +276,12 @@ def main():
 
     if db.calls:
         if options.write:
-            print >>sys.stderr, (
-                RED + "\n*** Data was written to the Tango DB ***") + ENDC
+            print >>sys.stderr, red("\n*** Data was written to the Tango DB ***")
         else:
-            print >>sys.stderr, YELLOW +\
-                "\n*** Nothing was written to the Tango DB (use -w) ***" + ENDC
+            print >>sys.stderr, yellow(
+                "\n*** Nothing was written to the Tango DB (use -w) ***")
     else:
-        print >>sys.stderr, GREEN + "\n*** No changes needed in Tango DB ***" + ENDC
+        print >>sys.stderr, green("\n*** No changes needed in Tango DB ***")
 
 
 if __name__ == "__main__":
