@@ -100,7 +100,7 @@ def get_dict_from_db(db, data):
                     for attr, props in dbprops.items():
                         props = dict((prop, [str(v) for v in values])
                                      for prop, values in props.items())  # whew!
-                        dev.attribute_properties[attr] =
+                        dev.attribute_properties[attr] = props
 
     # Classes
     for class_name, cls in data.get("classes", {}).items():
