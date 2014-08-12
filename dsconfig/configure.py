@@ -10,29 +10,42 @@ from utils import (ADD, REMOVE, RED, GREEN, YELLOW, ENDC,
 
 
 def update_properties(db, parent, db_props, new_props,
-                      attr=False, cls=False):
+                      attr=False, cls=False, delete=True):
     """
     Updates properties in DB. Covers both device and class
     properties/attribute properties.
     """
 
     # Figure out what's going to be added/changed or removed
-    added_props = dict((prop, value)
-                       for prop, value in new_props.items()
-                       if db_props.get(prop) != value)
-    removed_props = dict((prop, value)
-                         for prop, value in db_props.items()
-                         if prop not in new_props)
+    if attr:
+        # For attribute properties we need to go one step deeper into
+        # the dict, since each attribute can have several properties.
+        # A little messy, but at least it's consistent.
+        added_props = dict((prop, value)
+                           for prop, value in new_props.items()
+                           for attr_prop, value2 in value.items()
+                           if db_props.get(prop, {}).get(attr_prop) != value2)
+        removed_props = dict((prop, value)
+                             for prop, value in db_props.items()
+                             for attr_prop in value
+                             if attr_prop not in new_props.get(prop, {}))
+    else:
+        added_props = dict((prop, value)
+                           for prop, value in new_props.items()
+                           if db_props.get(prop) != value)
+        removed_props = dict((prop, value)
+                             for prop, value in db_props.items()
+                             if prop not in new_props)
 
     # Find the appropriate DB method to call. Thankfully the API is
-    # pretty consistent here.
+    # consistent here.
     db_method_ending = (("class" if cls else "device") +
                         ("_attribute" if attr else "") + "_property")
     put_method = getattr(db, "put_" + db_method_ending)
     delete_method = getattr(db, "delete_" + db_method_ending)
 
     # Do it!
-    if removed_props:
+    if delete and removed_props:
         delete_method(parent, removed_props)
     if added_props:
         put_method(parent, added_props)
@@ -40,7 +53,7 @@ def update_properties(db, parent, db_props, new_props,
     return added_props, removed_props
 
 
-def update_server(db, server_name, server_dict, db_dict):
+def update_server(db, server_name, server_dict, db_dict, update=False):
 
     """Creates/removes devices for a given server."""
 
@@ -65,28 +78,34 @@ def update_server(db, server_name, server_dict, db_dict):
                 db_props = db_dict[class_name][device_name]["properties"]
                 new_props = dev["properties"]
                 added, removed = update_properties(db, device_name,
-                                                   db_props, new_props)
+                                                   db_props, new_props,
+                                                   delete=not update)
             if "attribute_properties" in dev:
                 db_attr_props = (db_dict[class_name][device_name]
                                  ["attribute_properties"])
                 new_attr_props = dev["attribute_properties"]
                 removed, added = update_properties(db, device_name,
                                                    db_attr_props,
-                                                   new_attr_props, True)
+                                                   new_attr_props,
+                                                   attr=True,
+                                                   delete=not update)
 
 
-def update_class(db, class_name, class_dict, db_dict):
+def update_class(db, class_name, class_dict, db_dict, update=False):
+
+    "Configure a class"
 
     if "properties" in class_dict:
         db_props = db_dict["properties"]
         new_props = class_dict["properties"]
         added, removed = update_properties(db, class_name, db_props,
-                                           new_props, False, True)
+                                           new_props, cls=True, delete=not update)
     if "attribute_properties" in class_dict:
         db_attr_props = db_dict["attribute_properties"]
         new_attr_props = class_dict["attribute_properties"]
         removed, added = update_properties(db, class_name, db_attr_props,
-                                           new_attr_props, True, True)
+                                           new_attr_props, attr=True, cls=True,
+                                           delete=not update)
 
 
 def dump_value(value):
@@ -149,6 +168,9 @@ def main():
 
     parser.add_option("-w", "--write", dest="write", action="store_true",
                       help="write to the Tango DB", metavar="WRITE")
+    parser.add_option("-u", "--update", dest="update", action="store_true",
+                      help="don't remove things, only add/update",
+                      metavar="UPDATE")
     parser.add_option("-q", "--quiet",
                       action="store_false", dest="verbose", default=True,
                       help="don't print actions to stdout")
@@ -180,17 +202,17 @@ def main():
             print_diff(dbdict, data)
         except ImportError:
             print >>sys.stderr, ("'jsonpatch' module not available - "
-                                 "no diff functionality for you!")
+                                 "no diff printouts for you!")
 
     # wrap the database to record calls (and fake it if not writing)
     db = ObjectWrapper(db if options.write else None)
 
     for servername, serverdata in data.get("servers", {}).items():
         update_server(db, servername, serverdata,
-                      dbdict["servers"][servername])
+                      dbdict["servers"][servername], options.update)
     for classname, classdata in data.get("classes", {}).items():
         update_class(db, classname, classdata,
-                     dbdict["classes"][classname])
+                     dbdict["classes"][classname], options.update)
 
     if options.dbcalls:
         print "\nTango database calls:"
