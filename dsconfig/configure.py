@@ -55,7 +55,8 @@ def update_properties(db, parent, db_props, new_props,
 
 def update_server(db, server_name, server_dict, db_dict, update=False):
 
-    """Creates/removes devices for a given server."""
+    """Creates/removes devices for a given server. Optionally
+    ignores removed devices, only adding new and updating old ones."""
 
     devinfo = PyTango.DbDevInfo()
     devinfo.server = server_name
@@ -66,8 +67,9 @@ def update_server(db, server_name, server_dict, db_dict, update=False):
                            if dev not in cls]
         added_devices = cls.items()
 
-        for device_name in removed_devices:
-            db.delete_device(device_name)
+        if not update:
+            for device_name in removed_devices:
+                db.delete_device(device_name)
 
         for device_name, dev in added_devices:
             devinfo.name = device_name
