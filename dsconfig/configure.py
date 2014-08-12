@@ -1,4 +1,12 @@
+"""
+Reads a JSON file in the right format, compares it with the current
+state of the Tango DB, and generates the set of DB API commands needed
+to get to the state described by the file. These commands can then
+optionally be run.
+"""
+
 from collections import Mapping
+from os import path
 import sys
 import json
 
@@ -7,6 +15,9 @@ import PyTango
 from utils import (ADD, REMOVE, RED, GREEN, YELLOW, ENDC,
                    ObjectWrapper, get_dict_from_db,
                    decode_dict, decode_pointer)
+
+module_path = path.dirname(path.realpath(__file__))
+SCHEMA_FILENAME = path.join(module_path, "schema.json")
 
 
 def update_properties(db, parent, db_props, new_props,
@@ -124,6 +135,10 @@ def dump_value(value):
 def print_diff(dbdict, data):
 
     "Print a (hopefully) human readable list of changes."
+    # TODO: needs work, does not handle multiline properties,
+    # empty properties (should probably never be allowed but still)
+    # and probably more corner cases. Also the output format could
+    # use some tweaking.
 
     from collections import defaultdict
     import jsonpatch
@@ -188,6 +203,18 @@ def main():
         json_file = args[0]
         with open(json_file) as f:
             data = json.load(f, object_hook=decode_dict)
+
+    try:
+        from jsonschema import Draft4Validator, validate, exceptions
+        with open(SCHEMA_FILENAME) as schema_json:
+            schema = json.load(schema_json)
+        validate(data, schema)
+    except ImportError:
+        print >>sys.stderr, ("'jsonschema' not installed, could not "
+                             "validate json file.")
+    except exceptions.ValidationError as e:
+        print "JSON data does not match schema: %s" % e
+        sys.exit(1)
 
     for key in data.keys():
         if key.startswith("_"):
