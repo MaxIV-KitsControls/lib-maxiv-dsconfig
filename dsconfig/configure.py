@@ -26,6 +26,8 @@ from utils import (ADD, REMOVE, RED, GREEN, YELLOW, ENDC,
                    ObjectWrapper, get_dict_from_db,
                    decode_dict, decode_pointer)
 
+from appending_dict import AppendingDict
+
 module_path = path.dirname(path.realpath(__file__))
 SCHEMA_FILENAME = path.join(module_path, "schema.json")
 
@@ -137,15 +139,15 @@ def dump_value(value):
         if isinstance(value, Mapping):
             dump = json.dumps(value, indent=4)
             return dump
-        return str(value)
+        return repr(value)
     else:
         return "None"  # should never happen?
 
 
-def print_diff(dbdict, data):
+def print_diff(dbdict, data, removes=True):
 
     "Print a (hopefully) human readable list of changes."
-    # TODO: needs work, does not handle multiline properties,
+    # TODO: needs work, especially on multiline properties,
     # empty properties (should probably never be allowed but still)
     # and probably more corner cases. Also the output format could
     # use some tweaking.
@@ -164,7 +166,7 @@ def print_diff(dbdict, data):
             print ptr
             db_value = resolve_pointer(dbdict, d["path"])
             print REMOVE + dump_value(db_value) + ENDC
-            print ADD + str(d["value"]) + ENDC
+            print ADD + dump_value(d["value"]) + ENDC
             ops["replace"] += 1
         if d["op"] == "add":
             print "ADD:"
@@ -172,7 +174,7 @@ def print_diff(dbdict, data):
             if d["value"]:
                 print ADD + dump_value(d["value"]) + ENDC
             ops["add"] += 1
-        if d["op"] == "remove":
+        if removes and d["op"] == "remove":
             print "REMOVE:"
             print ptr
             value = resolve_pointer(dbdict, d["path"])
@@ -234,6 +236,8 @@ def main():
     # Optional validation of the JSON file format.
     if options.validate:
         validate(data)
+    else:
+        data = AppendingDict(data)  # tries to "normalise" the data
 
     # remove any metadata
     for key in data.keys():
@@ -249,7 +253,7 @@ def main():
     # Print out a nice diff
     if options.verbose:
         try:
-            print_diff(dbdict, data)
+            print_diff(dbdict, data, removes=not options.update)
         except ImportError:
             print >>sys.stderr, ("'jsonpatch' module not available - "
                                  "no diff printouts for you! (Try -d instead.)")
