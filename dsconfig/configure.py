@@ -147,45 +147,50 @@ def dump_value(value):
 def print_diff(dbdict, data, removes=True):
 
     "Print a (hopefully) human readable list of changes."
+
     # TODO: needs work, especially on multiline properties,
     # empty properties (should probably never be allowed but still)
     # and probably more corner cases. Also the output format could
     # use some tweaking.
 
-    from collections import defaultdict
-    import jsonpatch
-    from jsonpointer import resolve_pointer
+    try:
+        from collections import defaultdict
+        import jsonpatch
+        from jsonpointer import resolve_pointer
 
-    ops = defaultdict(int)
+        ops = defaultdict(int)
 
-    diff = jsonpatch.make_patch(dbdict, data)
-    for d in diff:
-        ptr = " > ".join(decode_pointer(d["path"]))
-        if d["op"] == "replace":
-            print "REPLACE:"
-            print ptr
-            db_value = resolve_pointer(dbdict, d["path"])
-            print REMOVE + dump_value(db_value) + ENDC
-            print ADD + dump_value(d["value"]) + ENDC
-            ops["replace"] += 1
-        if d["op"] == "add":
-            print "ADD:"
-            print ptr
-            if d["value"]:
+        diff = jsonpatch.make_patch(dbdict, data)
+        for d in diff:
+            ptr = " > ".join(decode_pointer(d["path"]))
+            if d["op"] == "replace":
+                print "REPLACE:"
+                print ptr
+                db_value = resolve_pointer(dbdict, d["path"])
+                print REMOVE + dump_value(db_value) + ENDC
                 print ADD + dump_value(d["value"]) + ENDC
-            ops["add"] += 1
-        if removes and d["op"] == "remove":
-            print "REMOVE:"
-            print ptr
-            value = resolve_pointer(dbdict, d["path"])
-            if value:
-                print REMOVE + dump_value(value) + ENDC
-            ops["remove"] += 1
+                ops["replace"] += 1
+            if d["op"] == "add":
+                print "ADD:"
+                print ptr
+                if d["value"]:
+                    print ADD + dump_value(d["value"]) + ENDC
+                ops["add"] += 1
+            if removes and d["op"] == "remove":
+                print "REMOVE:"
+                print ptr
+                value = resolve_pointer(dbdict, d["path"])
+                if value:
+                    print REMOVE + dump_value(value) + ENDC
+                ops["remove"] += 1
 
-    # # The following output is a bit misleading, removing for now
-    # print "Total: %d operations (%d replace, %d add, %d remove)" % (
-    #     sum(ops.values()), ops["replace"], ops["add"], ops["remove"])
-    return diff
+        # # The following output is a bit misleading, removing for now
+        # print "Total: %d operations (%d replace, %d add, %d remove)" % (
+        #     sum(ops.values()), ops["replace"], ops["add"], ops["remove"])
+        return diff
+    except ImportError:
+        print >>sys.stderr, ("'jsonpatch' module not available - "
+                             "no diff printouts for you! (Try -d instead.)")
 
 
 def validate(data):
@@ -252,11 +257,7 @@ def main():
 
     # Print out a nice diff
     if options.verbose:
-        try:
-            print_diff(dbdict, data, removes=not options.update)
-        except ImportError:
-            print >>sys.stderr, ("'jsonpatch' module not available - "
-                                 "no diff printouts for you! (Try -d instead.)")
+        print_diff(dbdict, data, removes=not options.update)
 
     # wrap the database to record calls (and fake it if not writing)
     db = ObjectWrapper(db if options.write else None)
