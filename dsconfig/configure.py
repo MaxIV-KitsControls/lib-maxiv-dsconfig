@@ -204,7 +204,7 @@ def validate_json(data):
         print >>sys.stderr, ("'jsonschema' not installed, could not "
                              "validate json file.")
     except exceptions.ValidationError as e:
-        print "JSON data does not match schema: %s" % e
+        print >>sys.stderr, "JSON data does not match schema: %s" % e
         sys.exit(1)
 
 
