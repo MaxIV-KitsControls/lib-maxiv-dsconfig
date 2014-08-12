@@ -252,7 +252,7 @@ def main():
             print_diff(dbdict, data)
         except ImportError:
             print >>sys.stderr, ("'jsonpatch' module not available - "
-                                 "no diff printouts for you!")
+                                 "no diff printouts for you! (Try -d instead.)")
 
     # wrap the database to record calls (and fake it if not writing)
     db = ObjectWrapper(db if options.write else None)
