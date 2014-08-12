@@ -193,7 +193,7 @@ def print_diff(dbdict, data, removes=True):
                              "no diff printouts for you! (Try -d instead.)")
 
 
-def validate(data):
+def validate_json(data):
     """Validate that a given dict is of the right form"""
     try:
         from jsonschema import Draft4Validator, validate, exceptions
@@ -240,7 +240,7 @@ def main():
 
     # Optional validation of the JSON file format.
     if options.validate:
-        validate(data)
+        validate_json(data)
     else:
         data = AppendingDict(data)  # tries to "normalise" the data
 
