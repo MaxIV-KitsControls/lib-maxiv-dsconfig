@@ -128,10 +128,9 @@ class ObjectWrapper(object):
     """An object that allows all method calls and records them,
     then passes them on to a target object (if any)."""
 
-    calls = []
-
     def __init__(self, target=None):
         self.target = target
+        self.calls = []
 
     def __getattr__(self, attr):
 
