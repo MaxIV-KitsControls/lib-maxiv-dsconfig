@@ -109,7 +109,7 @@ def update_server(db, server_name, server_dict, db_dict, update=False):
                 db_attr_props = (db_dict[class_name][device_name]
                                  ["attribute_properties"])
                 new_attr_props = dev["attribute_properties"]
-                removed, added = update_properties(db, device_name,
+                added, removed = update_properties(db, device_name,
                                                    db_attr_props,
                                                    new_attr_props,
                                                    attr=True,
