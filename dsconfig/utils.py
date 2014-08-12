@@ -8,6 +8,15 @@ REMOVE = RED = FAIL = '\033[91m'
 REPLACE = YELLOW = WARN = '\033[93m'
 ENDC = '\033[0m'
 
+def green(text):
+    return GREEN + text + ENDC
+
+def red(text):
+    return RED + text + ENDC
+
+def yellow(text):
+    return YELLOW + text + ENDC
+
 
 # functions to decode unicode JSON (PyTango does not like unicode strings)
 
@@ -135,7 +144,6 @@ class ObjectWrapper(object):
     def __getattr__(self, attr):
 
         def method(attr, *args, **kwargs):
-            print attr, args, kwargs
             self.calls.append((attr, args, kwargs))
             if self.target:
                 getattr(self.target, attr)(*args, **kwargs)
