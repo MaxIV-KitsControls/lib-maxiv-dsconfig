@@ -11,6 +11,7 @@ from utils import CaselessDict
 
 
 def get_properties(row):
+
     "Find property definitions on a row"
 
     prop_dict = AppendingDict()
@@ -31,7 +32,7 @@ def get_properties(row):
         if match and value:
             name, = match.groups()
             if isinstance(value, float):    # TODO: numeric values become floats, but what if we only want integers?
-                value = str(value)  
+                value = str(value)
             prop_dict[name] = value.strip()
 
     return prop_dict
@@ -40,36 +41,46 @@ def get_properties(row):
 def get_dynamic(row):
     "Find dynamic definitions on a row"
 
-    mode_mapping = {"ATTR": "DynamicAttributes",
-                    "CMD": "DynamicCommands",
-                    "STATE": "DynamicStates",
-                    "STATUS": "DynamicStatus"}
+    mode_mapping = CaselessDict({"ATTR": "DynamicAttributes",
+                                 "CMD": "DynamicCommands",
+                                 "STATE": "DynamicStates",
+                                 "STATUS": "DynamicStatus"})
     prop_dict = AppendingDict()
 
-    formula = row["formula"].strip()
-    if "type" in row:
-        # TODO: Sanity check type?
-        formula = "%s(%s)" % (row["type"], formula)
-    check_formula(formula)
-    if row["mode"].lower() == "status":
-        dyn = formula
-    else:
-        dyn = "%s=%s" % (row["name"], formula)
-    prop_dict[mode_mapping[row["mode"]]] = dyn
+    try:
+        formula = row["formula"].strip()
+        if "type" in row:
+            # TODO: Sanity check type?
+            formula = "%s(%s)" % (row["type"], formula)
+        check_formula(formula)
+        mode = row["mode"]
+        if mode.lower() == "status":
+            dyn = formula
+        else:
+            dyn = "%s=%s" % (row["name"], formula)
+        prop_dict[mode_mapping[mode]] = dyn
+    except KeyError as e:
+        raise ValueError("Problem with formula: %s" % e)
 
     return prop_dict
+
+
+def make_db_name(name):
+    "convert a Space Separated Name into a lowercase, underscore_separated_name"
+    return name.strip().lower().replace(" ", "_")
 
 
 def get_config(row):
     "WIP"
     prop_dict = AppendingDict()
 
-    # "Cfg:xyz" columns
+    # "Cfg:attribute" columns
     for col_name, value in row.items():
         match = re.match("cfg:(.*)", col_name, re.IGNORECASE)
         if match and value:
-            name, = match.groups()
-            prop_dict[name.strip()] = value.strip()
+            attr_name, = match.groups()
+            name = make_db_name(name)
+            prop_dict[name] = value.strip()
 
     return prop_dict
 
@@ -81,11 +92,12 @@ def check_formula(formula):
 
 def check_device_format(devname):
     """
-    Verify that a device name is of the correct form
+    Verify that a device name is of the correct form (three parts separated by slashes,
+    only letters, numbers, dashes and underscores allowed.)
     Note: We could put more logic here to make device names
-          conform to a standard...
+          conform to a standard.
     """
-    device_pattern = "^.+/.+/.+$"
+    device_pattern = "^[\w-]+/[\w-]+/[\w-]+$"
     if not re.match(device_pattern, devname):
         raise ValueError("device name '%s' not valid" % devname)
 
@@ -141,7 +153,7 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
             if dynamic:
                 target.properties = get_dynamic(row)
             elif config:
-                target.properties = get_config(row)
+                target.properties["attribute_properties"] = get_config(row)
             else:
                 target.properties = get_properties(row)
 
