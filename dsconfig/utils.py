@@ -82,9 +82,10 @@ def get_dict_from_db(db, data):
 
                 # Properties
                 for prop in db_props:
-                    value = db.get_device_property(name, prop)[prop]
-                    value = [str(v) for v in value]  # is this safe?
-                    dev.properties[prop] = value
+                    if not prop.startswith("__"):  # skip e.g. __SubDevices
+                        value = db.get_device_property(name, prop)[prop]
+                        value = [str(v) for v in value]  # is this safe?
+                        dev.properties[prop] = value
 
                 attr_props = cls.get(device_name, {}).get("attribute_properties")
 
@@ -99,10 +100,11 @@ def get_dict_from_db(db, data):
 
     for class_name, cls in data.get("classes", {}).items():
         for prop in cls["properties"]:
-            db_prop = db.get_class_property(class_name, prop)[prop]
-            if db_prop:
-                value = [str(v) for v in db_prop]
-                dbdict.classes[class_name].properties[prop] = value
+            if not prop.startswith("__"):  # skip e.g. __SubDevices
+                db_prop = db.get_class_property(class_name, prop)[prop]
+                if db_prop:
+                    value = [str(v) for v in db_prop]
+                    dbdict.classes[class_name].properties[prop] = value
 
     return dbdict
 
@@ -120,6 +122,7 @@ class ObjectWrapper(object):
     def __getattr__(self, attr):
 
         def method(attr, *args, **kwargs):
+            print attr, args, kwargs
             self.calls.append((attr, args, kwargs))
             if self.target:
                 getattr(self.target, attr)(*args, **kwargs)
