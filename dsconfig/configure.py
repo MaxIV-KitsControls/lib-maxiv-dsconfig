@@ -1,8 +1,18 @@
 """
 Reads a JSON file in the right format, compares it with the current
 state of the Tango DB, and generates the set of DB API commands needed
-to get to the state described by the file. These commands can then
+to get to the state described by the file. These commands can also
 optionally be run.
+
+Note that the granularity is on the top (server/class) level; servers
+and classes not mentioned in the JSON file are ignored. However, any
+devices, properties, etc belonging to the mentioned servers/classes in
+the DB, but not present in the JSON file will be removed, unless the
+--update flag is used.
+
+If the "jsonpatch" module is installed, a "diff" representing the
+changes will be printed. Inspecting this before writing to the DB
+could prevent embarrassing mistakes.
 """
 
 from collections import Mapping
@@ -176,6 +186,21 @@ def print_diff(dbdict, data):
     return diff
 
 
+def validate(data):
+    """Validate that a given dict is of the right form"""
+    try:
+        from jsonschema import Draft4Validator, validate, exceptions
+        with open(SCHEMA_FILENAME) as schema_json:
+            schema = json.load(schema_json)
+        validate(data, schema)
+    except ImportError:
+        print >>sys.stderr, ("'jsonschema' not installed, could not "
+                             "validate json file.")
+    except exceptions.ValidationError as e:
+        print "JSON data does not match schema: %s" % e
+        sys.exit(1)
+
+
 def main():
 
     from optparse import OptionParser
@@ -195,6 +220,8 @@ def main():
                       help="Output the relevant DB state as JSON.")
     parser.add_option("-d", "--dbcalls", dest="dbcalls", action="store_true",
                       help="print out all db calls.")
+    parser.add_option("-v", "--no-validation", dest="validate", default=True,
+                      action="store_false", help=("Skip JSON validation"))
 
     options, args = parser.parse_args()
     if len(args) == 0:
@@ -204,21 +231,14 @@ def main():
         with open(json_file) as f:
             data = json.load(f, object_hook=decode_dict)
 
-    try:
-        from jsonschema import Draft4Validator, validate, exceptions
-        with open(SCHEMA_FILENAME) as schema_json:
-            schema = json.load(schema_json)
-        validate(data, schema)
-    except ImportError:
-        print >>sys.stderr, ("'jsonschema' not installed, could not "
-                             "validate json file.")
-    except exceptions.ValidationError as e:
-        print "JSON data does not match schema: %s" % e
-        sys.exit(1)
+    # Optional validation of the JSON file format.
+    if options.validate:
+        validate(data)
 
+    # remove any metadata
     for key in data.keys():
         if key.startswith("_"):
-            data.pop(key, None)  # remove any metadata
+            data.pop(key, None)
 
     db = PyTango.Database()
     dbdict = get_dict_from_db(db, data)  # check the current DB state
@@ -226,6 +246,7 @@ def main():
     if options.output:
         print json.dumps(dbdict, indent=4)
 
+    # Print out a nice diff
     if options.verbose:
         try:
             print_diff(dbdict, data)
