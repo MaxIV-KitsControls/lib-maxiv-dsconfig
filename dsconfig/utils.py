@@ -87,24 +87,33 @@ def get_dict_from_db(db, data):
                         value = [str(v) for v in value]  # is this safe?
                         dev.properties[prop] = value
 
-                attr_props = cls.get(device_name, {}).get("attribute_properties")
-
                 # Attribute properties
+                # Seems impossible to get the full list of defined attribute
+                # properties through the API so we'll have to make do with
+                # the attributes we know about.
+                attr_props = cls.get(device_name, {}).get("attribute_properties")
                 if attr_props:
                     dbprops = db.get_device_attribute_property(device_name,
-                                                               attr_props)
+                                                               attr_props.keys())
                     for attr, props in dbprops.items():
                         dev.attribute_properties[attr] = dict(
                             (prop, [str(v) for v in values])
                             for prop, values in props.items())  # whew!
 
     for class_name, cls in data.get("classes", {}).items():
-        for prop in cls["properties"]:
+        for prop in cls.get("properties", ()):
             if not prop.startswith("__"):  # skip e.g. __SubDevices
                 db_prop = db.get_class_property(class_name, prop)[prop]
                 if db_prop:
                     value = [str(v) for v in db_prop]
                     dbdict.classes[class_name].properties[prop] = value
+        attr_props = cls.get("attribute_properties")
+        dbprops = db.get_device_attribute_property(device_name,
+                                                   attr_props.keys())
+        for attr, props in dbprops.items():
+            dbdict.classes[class_name].attribute_properties[attr] = dict(
+                (prop, [str(v) for v in values])
+                for prop, values in props.items())  # whew!
 
     return dbdict
 
