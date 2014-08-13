@@ -29,7 +29,7 @@ from utils import (red, green, yellow,
 from appending_dict import AppendingDict
 
 module_path = path.dirname(path.realpath(__file__))
-SCHEMA_FILENAME = path.join(module_path, "schema.json")
+SCHEMA_FILENAME = path.join(module_path, "schema/dsconfig.json")
 
 
 def update_properties(db, parent, db_props, new_props,
