@@ -27,9 +27,19 @@ from utils import (red, green, yellow,
                    decode_dict, decode_pointer)
 
 from appending_dict import AppendingDict
+from excel import ATTRIBUTE_PROPERTY_NAMES
 
 module_path = path.dirname(path.realpath(__file__))
 SCHEMA_FILENAME = path.join(module_path, "schema/dsconfig.json")
+
+
+def check_attribute_properties(attr_props):
+    bad = AppendingDict()
+    for attr, ap in attr_props.items():
+       for prop, value in ap.items():
+           if prop not in ATTRIBUTE_PROPERTY_NAMES:
+               bad[attr] = prop
+    return bad
 
 
 def update_properties(db, parent, db_props, new_props,
@@ -109,11 +119,15 @@ def update_server(db, server_name, server_dict, db_dict, update=False):
                 db_attr_props = (db_dict[class_name][device_name]
                                  ["attribute_properties"])
                 new_attr_props = dev["attribute_properties"]
-                added, removed = update_properties(db, device_name,
-                                                   db_attr_props,
-                                                   new_attr_props,
-                                                   attr=True,
-                                                   delete=not update)
+                bad = check_attribute_properties(new_attr_props)
+                if not bad:
+                    added, removed = update_properties(db, device_name,
+                                                       db_attr_props,
+                                                       new_attr_props,
+                                                       attr=True,
+                                                       delete=not update)
+                else:
+                    print "Bad attribute properties for %s: %r" % (device_name, bad)
 
 
 def update_class(db, class_name, class_dict, db_dict, update=False):
@@ -250,17 +264,23 @@ def main():
             data.pop(key, None)
 
     db = PyTango.Database()
-    dbdict = get_dict_from_db(db, data)  # check the current DB state
+    dbdict, collisions = get_dict_from_db(db, data)  # check the current DB state
 
     if options.output:
         print json.dumps(dbdict, indent=4)
 
+    # wrap the database to record calls (and fake it if not writing)
+    db = ObjectWrapper(db if options.write else None)
+
+    # remove devices already present in another server
+    for dev, cls, srv in collisions:
+        print >>sys.stderr, red("REMOVE (because of collision):")
+        print >>sys.stderr, red(" > servers > %s > %s > %s" % (srv, cls, dev))
+        db.remove_device(dev)  # this may not strictly be needed..?
+
     # Print out a nice diff
     if options.verbose:
         print_diff(dbdict, data, removes=not options.update)
-
-    # wrap the database to record calls (and fake it if not writing)
-    db = ObjectWrapper(db if options.write else None)
 
     for servername, serverdata in data.get("servers", {}).items():
         update_server(db, servername, serverdata,
