@@ -1,3 +1,8 @@
+"""
+Routines for reading an Excel file containing server, class and device definitions,
+producing a file in the TangoDB JSON format.
+"""
+
 from datetime import datetime
 import json
 import os
@@ -9,16 +14,16 @@ from utils import find_device
 from appending_dict import AppendingDict
 from utils import CaselessDict
 
-mode_mapping = CaselessDict({"ATTR": "DynamicAttributes",
+MODE_MAPPING = CaselessDict({"ATTR": "DynamicAttributes",
                              "CMD": "DynamicCommands",
                              "STATE": "DynamicStates",
                              "STATUS": "DynamicStatus"})
 
-attribute_properties = ["label", "format",
-                        "min_value", "min_alarm", "min_warning",
-                        "max_value", "min_alarm", "min_warning",
-                        "unit", "polling_period", "change_event",
-                        "description", "mode"]
+ATTRIBUTE_PROPERTY_NAMES = ["label", "format",
+                            "min_value", "min_alarm", "min_warning",
+                            "max_value", "min_alarm", "min_warning",
+                            "unit", "polling_period", "change_event",
+                            "description", "mode"]
 
 
 def get_properties(row):
@@ -65,7 +70,7 @@ def get_dynamic(row):
             dyn = formula
         else:
             dyn = "%s=%s" % (row["name"], formula)
-        prop_dict[mode_mapping[mode]] = dyn
+        prop_dict[MODE_MAPPING[mode]] = dyn
     except KeyError as e:
         raise ValueError("Problem with formula: %s" % e)
 
@@ -92,7 +97,7 @@ def get_config(row):
         # Pick up columns named after attribute properties
         db_colname = make_db_name(col_name)
         attr = row["attribute"].strip()
-        if db_colname in attribute_properties:
+        if db_colname in ATTRIBUTE_PROPERTY_NAMES:
             prop_dict[attr][db_colname] = [value]
 
     return prop_dict
