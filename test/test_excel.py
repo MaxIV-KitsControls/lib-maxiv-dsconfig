@@ -69,6 +69,9 @@ class TestExcel(TestCase):
     def test_check_device_format_lets_valid_names_pass(self):
         excel.check_device_format("i-a/test-test/device-0")
 
+    def test_check_device_format_ignores_case(self):
+        excel.check_device_format("I-A/TEST-TEST/DEVICE-0")
+
     def test_check_device_format_catches_bad_names(self):
         self.assertRaises(ValueError, excel.check_device_format, "not/a/device/name")
 
