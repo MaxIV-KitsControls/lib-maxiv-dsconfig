@@ -122,12 +122,13 @@ def get_dict_from_db(db, data):
                     dbdict.classes[class_name].properties[prop] = value
 
         attr_props = cls.get("attribute_properties")
-        dbprops = db.get_device_attribute_property(device_name,
-                                                   attr_props.keys())
-        for attr, props in dbprops.items():
-            props = dict((prop, [str(v) for v in values])
-                         for prop, values in props.items())
-            dbdict.classes[class_name].attribute_properties[attr] = props
+        if attr_props:
+            dbprops = db.get_class_attribute_property(class_name,
+                                                      attr_props.keys())
+            for attr, props in dbprops.items():
+                props = dict((prop, [str(v) for v in values])
+                             for prop, values in props.items())
+                dbdict.classes[class_name].attribute_properties[attr] = props
 
     return dbdict
 
