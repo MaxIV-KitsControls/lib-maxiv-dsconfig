@@ -3,16 +3,24 @@
     "title": "Tango device generator JSON canonical format",
     "type": "object",
     "additionalProperties": false,
-    "required": ["servers"],
     "properties": {
+        "_title": {
+            "type": "string"
+        },
+        "_date": {
+            "type": "string"
+        },
+        "_source": {
+            "type": "string"
+        },
         "_version": {
-            "enum": [0]
+            "enum": [1]
         },
         "servers": {
             "type": "object",
             "additionalProperties": false,
             "patternProperties": {
-                "^[.\\w]+/[.\\w]+$": {
+                "^[\\-\\w]+/[\\-\\w]+$": {
                     "$ref": "#definitions/instance"
                 }
             }
@@ -35,7 +43,7 @@
             "type": "object",
             "additionalProperties": false,
             "patternProperties": {
-                "^[.\\-\\w]+/[.\\-\\w]+/[.\\-\\w]+$": {
+                "^[\\-\\w]+/[\\-\\w]+/[\\-\\w]+$": {
                     "$ref": "#definitions/device"
                 }
             }
@@ -45,28 +53,36 @@
             "additionalProperties": false,
             "properties": {
                 "properties": {
-                    "$ref": "#definitions/property"
+                    "$ref": "#definitions/properties"
                 },
                 "attribute_properties": {
-                    "$ref": "#definitions/attribute_property"
+                    "$ref": "#definitions/attribute_properties"
                 }
             }
         },
-        "property": {
+        "properties": {
             "type": "object",
             "additionalProperties": {
-                "type": "array",
-                "minItems": 1,
-                "items": {
-                    "type": "string"
-                }
+                "$ref": "#definitions/property"
+            }
+        },
+        "property": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "type": "string"
+            }
+        },
+        "attribute_properties": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#definitions/attribute_property"
             }
         },
         "attribute_property": {
             "type": "object",
             "additionalProperties": {
-                "type": "object",
-                "$ref": "#definitions/property"
+                "$ref": "#/definitions/property"
             }
         }
     }
