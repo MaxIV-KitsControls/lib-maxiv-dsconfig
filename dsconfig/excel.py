@@ -91,7 +91,7 @@ def get_config(row):
 
         # Pick up columns named after attribute properties
         db_colname = make_db_name(col_name)
-        attr = row["attribute"]
+        attr = row["attribute"].strip()
         if db_colname in attribute_properties:
             prop_dict[attr][db_colname] = [value]
 
