@@ -161,25 +161,28 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
                 try:
                     # full device definition
                     srvr = format_server_instance(row)
-                    target = definitions.servers[srvr][row["class"]][row["device"]]
+                    # target is "lazily" evaluated, so that we don't create
+                    # an empty dict if it turns out there are no members
+                    target = lambda: definitions.servers[srvr]\
+                             [row["class"]][row["device"]]
                 except KeyError:
                     # is the device already defined?
-                    target, _ = find_device(definitions, row["device"])
+                    target = lambda: find_device(definitions, row["device"])[0]
             else:  # Class
-                target = definitions.classes[row["class"]]
+                target = lambda: definitions.classes[row["class"]]
 
             if dynamic:
                 props = get_dynamic(row)
                 if props:
-                    target.properties = props
+                    target().properties = props
             elif config:
                 attr_props = get_config(row)
                 if attr_props:
-                    target.attribute_properties = attr_props
+                    target().attribute_properties = attr_props
             else:
                 props = get_properties(row)
                 if props:
-                    target.properties = props
+                    target().properties = props
 
         except KeyError as ke:
             #handle_error(i, "insufficient data (%s)" % ke)
