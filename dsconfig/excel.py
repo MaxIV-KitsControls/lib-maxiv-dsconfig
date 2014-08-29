@@ -9,6 +9,17 @@ from utils import find_device
 from appending_dict import AppendingDict
 from utils import CaselessDict
 
+mode_mapping = CaselessDict({"ATTR": "DynamicAttributes",
+                             "CMD": "DynamicCommands",
+                             "STATE": "DynamicStates",
+                             "STATUS": "DynamicStatus"})
+
+attribute_properties = ["label", "format",
+                        "min_value", "min_alarm", "min_warning",
+                        "max_value", "min_alarm", "min_warning",
+                        "unit", "polling_period", "change_event",
+                        "description", "mode"]
+
 
 def get_properties(row):
 
@@ -41,10 +52,6 @@ def get_properties(row):
 def get_dynamic(row):
     "Find dynamic definitions on a row"
 
-    mode_mapping = CaselessDict({"ATTR": "DynamicAttributes",
-                                 "CMD": "DynamicCommands",
-                                 "STATE": "DynamicStates",
-                                 "STATUS": "DynamicStatus"})
     prop_dict = AppendingDict()
 
     try:
@@ -76,11 +83,17 @@ def get_config(row):
 
     # "Cfg:attribute" columns
     for col_name, value in row.items():
-        match = re.match("cfg:(.*)", col_name, re.IGNORECASE)
-        if match and value:
-            attr_name, = match.groups()
-            name = make_db_name(name)
-            prop_dict[name] = value.strip()
+        # match = re.match("cfg:(.*)", col_name, re.IGNORECASE)
+        # if match and value:
+        #     attr_name, = match.groups()
+        #     name = make_db_name(name)
+        #     prop_dict[name] = value.strip()
+
+        # Pick up columns named after attribute properties
+        db_colname = make_db_name(col_name)
+        attr = row["attribute"]
+        if db_colname in attribute_properties:
+            prop_dict[attr][db_colname] = [value]
 
     return prop_dict
 
@@ -151,11 +164,17 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
                 target = definitions.classes[row["class"]]
 
             if dynamic:
-                target.properties = get_dynamic(row)
+                props = get_dynamic(row)
+                if props:
+                    target.properties = props
             elif config:
-                target.properties["attribute_properties"] = get_config(row)
+                attr_props = get_config(row)
+                if attr_props:
+                    target.attribute_properties = attr_props
             else:
-                target.properties = get_properties(row)
+                props = get_properties(row)
+                if props:
+                    target.properties = props
 
         except KeyError as ke:
             #handle_error(i, "insufficient data (%s)" % ke)

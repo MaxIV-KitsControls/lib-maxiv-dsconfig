@@ -61,8 +61,10 @@ class TestExcel(TestCase):
         self.assertRaises(ValueError, excel.get_dynamic, row)
 
     def test_get_config(self):
-        "specification"
-        pass
+        row = CaselessDict({"Attribute": "myAttribute", "Label": "Something", "Min value": 45})
+        result = excel.get_config(row)
+        self.assertDictEqual(result,
+                             {"myAttribute": {"min_value": ["45"], "label": ["Something"]}})
 
     def test_check_device_format_lets_valid_names_pass(self):
         excel.check_device_format("i-a/test-test/device-0")
