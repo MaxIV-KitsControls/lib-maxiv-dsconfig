@@ -36,9 +36,9 @@ SCHEMA_FILENAME = path.join(module_path, "schema/dsconfig.json")
 def check_attribute_properties(attr_props):
     bad = AppendingDict()
     for attr, ap in attr_props.items():
-       for prop, value in ap.items():
-           if prop not in ATTRIBUTE_PROPERTY_NAMES:
-               bad[attr] = prop
+        for prop, value in ap.items():
+            if prop not in ATTRIBUTE_PROPERTY_NAMES:
+                bad[attr] = prop
     return bad
 
 
@@ -119,15 +119,11 @@ def update_server(db, server_name, server_dict, db_dict, update=False):
                 db_attr_props = (db_dict[class_name][device_name]
                                  ["attribute_properties"])
                 new_attr_props = dev["attribute_properties"]
-                bad = check_attribute_properties(new_attr_props)
-                if not bad:
-                    added, removed = update_properties(db, device_name,
-                                                       db_attr_props,
-                                                       new_attr_props,
-                                                       attr=True,
-                                                       delete=not update)
-                else:
-                    print "Bad attribute properties for %s: %r" % (device_name, bad)
+                added, removed = update_properties(db, device_name,
+                                                   db_attr_props,
+                                                   new_attr_props,
+                                                   attr=True,
+                                                   delete=not update)
 
 
 def update_class(db, class_name, class_dict, db_dict, update=False):
@@ -138,7 +134,8 @@ def update_class(db, class_name, class_dict, db_dict, update=False):
         db_props = db_dict["properties"]
         new_props = class_dict["properties"]
         added, removed = update_properties(db, class_name, db_props,
-                                           new_props, cls=True, delete=not update)
+                                           new_props, cls=True,
+                                           delete=not update)
     if "attribute_properties" in class_dict:
         db_attr_props = db_dict["attribute_properties"]
         new_attr_props = class_dict["attribute_properties"]
@@ -210,7 +207,7 @@ def print_diff(dbdict, data, removes=True):
 def validate_json(data):
     """Validate that a given dict is of the right form"""
     try:
-        from jsonschema import Draft4Validator, validate, exceptions
+        from jsonschema import validate, exceptions
         with open(SCHEMA_FILENAME) as schema_json:
             schema = json.load(schema_json)
         validate(data, schema)
@@ -264,7 +261,7 @@ def main():
             data.pop(key, None)
 
     db = PyTango.Database()
-    dbdict, collisions = get_dict_from_db(db, data)  # check the current DB state
+    dbdict, collisions = get_dict_from_db(db, data)
 
     if options.output:
         print json.dumps(dbdict, indent=4)
