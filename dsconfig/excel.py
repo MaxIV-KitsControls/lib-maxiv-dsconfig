@@ -148,7 +148,7 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
             # problems. Those are caught and reported.
 
             # Filter out empty columns
-            row = CaselessDict(dict((str(name), col)
+            row = CaselessDict(dict((str(name), col.strip())
                                     for name, col in zip(column_names, row_) if col))
 
             # Skip empty lines
