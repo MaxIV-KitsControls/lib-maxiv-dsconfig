@@ -4,3 +4,4 @@ mock
 coverage
 jsonschema
 jsonpatch
+PyTango
