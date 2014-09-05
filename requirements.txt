@@ -1,5 +1,6 @@
 unittest2
 nose
+mock
 coverage
 jsonschema
 jsonpatch
