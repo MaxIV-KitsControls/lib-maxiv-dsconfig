@@ -20,8 +20,6 @@ from os import path
 import sys
 import json
 
-import PyTango
-
 from utils import (red, green, yellow,
                    ObjectWrapper, get_dict_from_db,
                    decode_dict, decode_pointer)
@@ -86,12 +84,13 @@ def update_properties(db, parent, db_props, new_props,
     return added_props, removed_props
 
 
-def update_server(db, server_name, server_dict, db_dict, update=False):
+def update_server(db, difactory, server_name, server_dict, db_dict,
+                  update=False):
 
     """Creates/removes devices for a given server. Optionally
     ignores removed devices, only adding new and updating old ones."""
 
-    devinfo = PyTango.DbDevInfo()
+    devinfo = difactory()
     devinfo.server = server_name
 
     for class_name, cls in server_dict.items():  # classes
@@ -221,6 +220,7 @@ def validate_json(data):
 
 def main():
 
+    import PyTango
     from optparse import OptionParser
 
     usage = "Usage: %prog [options] JSONFILE"
@@ -280,7 +280,7 @@ def main():
         print_diff(dbdict, data, removes=not options.update)
 
     for servername, serverdata in data.get("servers", {}).items():
-        update_server(db, servername, serverdata,
+        update_server(db, PyTango.DbDevInfo, servername, serverdata,
                       dbdict["servers"][servername], options.update)
     for classname, classdata in data.get("classes", {}).items():
         update_class(db, classname, classdata,
