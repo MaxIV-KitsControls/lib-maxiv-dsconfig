@@ -1,6 +1,6 @@
 from copy import deepcopy
 from mock import Mock
-from unittest import TestCase
+from unittest2 import TestCase
 
 from dsconfig.configure import update_server
 from dsconfig.utils import ObjectWrapper, find_device
