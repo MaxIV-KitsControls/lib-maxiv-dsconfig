@@ -2,7 +2,7 @@
     "servers": {
         "PyAlarm/I-MAG": {
             "PyAlarm": {
-                "I-BC1/MAG/ALARM": {
+                "I-BC2/MAG/ALARM": {
                     "properties": {
                         "MaxMessagesPerAlarm": [
                             1
@@ -14,20 +14,26 @@
                             "/tmp/pjb"
                         ], 
                         "AlarmSeverity": [
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_01:ALARM", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_02:ALARM", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_03:ALARM", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_04:ALARM", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_05:ALARM", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_06:ALARM", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_07:ALARM", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_08:ALARM", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__QD_01:ALARM", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__QD_02:ALARM", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__QD_03:ALARM", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__QD_04:ALARM", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__SXL_01:ALARM", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__SXL_02:ALARM"
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_01:ALARM", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_02:ALARM", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_03:ALARM", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_04:ALARM", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_05:ALARM", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_06:ALARM", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_07:ALARM", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_08:ALARM", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_01:ALARM", 
+                            "TemperatureInterlockTSW2_I_BC2__MAG__QF_01:ALARM", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_02:ALARM", 
+                            "TemperatureInterlockTSW2_I_BC2__MAG__QF_03:ALARM", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_03:ALARM", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_04:ALARM", 
+                            "TemperatureInterlockTSW2_I_BC2__MAG__QF_04:ALARM", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_05:ALARM", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_06:ALARM", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_07:ALARM", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__SXH_01:ALARM", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__SXH_02:ALARM"
                         ], 
                         "AutoReset": [
                             60.0
@@ -39,63 +45,77 @@
                             0.0
                         ], 
                         "AlarmDescriptions": [
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_01:Temp > 60 alarm to TANGO", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_02:Temp > 60 alarm to TANGO", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_03:Temp > 60 alarm to TANGO", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_04:Temp > 60 alarm to TANGO", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_05:Temp > 60 alarm to TANGO", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_06:Temp > 60 alarm to TANGO", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_07:Temp > 60 alarm to TANGO", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_08:Temp > 60 alarm to TANGO", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__QD_01:Temp > 60 alarm to TANGO", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__QD_02:Temp > 60 alarm to TANGO", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__QD_03:Temp > 60 alarm to TANGO", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__QD_04:Temp > 60 alarm to TANGO", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__SXL_01:Temp > 60 alarm to TANGO", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__SXL_02:Temp > 60 alarm to TANGO"
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_01:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_02:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_03:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_04:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_05:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_06:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_07:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_08:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_01:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_BC2__MAG__QF_01:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_02:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_BC2__MAG__QF_03:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_03:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_04:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_BC2__MAG__QF_04:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_05:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_06:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_07:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__SXH_01:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__SXH_02:Temp > 60 alarm to TANGO"
                         ], 
                         "AlarmReceivers": [
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_01:HTML", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_02:HTML", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_03:HTML", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_04:HTML", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_05:HTML", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_06:HTML", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_07:HTML", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_08:HTML", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__QD_01:HTML", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__QD_02:HTML", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__QD_03:HTML", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__QD_04:HTML", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__SXL_01:HTML", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__SXL_02:HTML"
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_01:HTML", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_02:HTML", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_03:HTML", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_04:HTML", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_05:HTML", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_06:HTML", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_07:HTML", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_08:HTML", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_01:HTML", 
+                            "TemperatureInterlockTSW2_I_BC2__MAG__QF_01:HTML", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_02:HTML", 
+                            "TemperatureInterlockTSW2_I_BC2__MAG__QF_03:HTML", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_03:HTML", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_04:HTML", 
+                            "TemperatureInterlockTSW2_I_BC2__MAG__QF_04:HTML", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_05:HTML", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_06:HTML", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_07:HTML", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__SXH_01:HTML", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__SXH_02:HTML"
                         ], 
                         "AlarmList": [
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_01:I-BC1/DIA/COOLING/B_I_BC1DIA1_DIA_TSW1_A", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_02:I-BC1/DIA/COOLING/B_I_BC1DIA2_DIA_TSW1_A", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_03:I-BC1/DIA/COOLING/B_I_BC1DIA3_DIA_TSW1_A", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_04:I-BC1/DIA/COOLING/B_I_BC1DIA4_DIA_TSW1_A", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_05:I-BC1/DIA/COOLING/B_I_BC1DIA5_DIA_TSW1_A", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_06:I-BC1/DIA/COOLING/B_I_BC1DIA6_DIA_TSW1_A", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_07:I-BC1/DIA/COOLING/B_I_BC1DIA7_DIA_TSW1_A", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__DIA_08:I-BC1/DIA/COOLING/B_I_BC1DIA8_DIA_TSW1_A", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__QD_01:I-BC1/DIA/COOLING/B_I_BC1QD1_DIA_TSW1_A", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__QD_02:I-BC1/DIA/COOLING/B_I_BC1QD2_DIA_TSW1_A", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__QD_03:I-BC1/DIA/COOLING/B_I_BC1QD3_DIA_TSW1_A", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__QD_04:I-BC1/DIA/COOLING/B_I_BC1QD4_DIA_TSW1_A", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__SXL_01:I-BC1/DIA/COOLING/B_I_BC1SXL1_DIA_TSW1_A", 
-                            "TemperatureInterlockTSW1_I_BC1__MAG__SXL_02:I-BC1/DIA/COOLING/B_I_BC1SXL2_DIA_TSW1_A"
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_01:I-BC2/DIA/COOLING/B_I_BC2DIB1_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_02:I-BC2/DIA/COOLING/B_I_BC2DIB2_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_03:I-BC2/DIA/COOLING/B_I_BC2DIB3_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_04:I-BC2/DIA/COOLING/B_I_BC2DIB4_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_05:I-BC2/DIA/COOLING/B_I_BC2DIB5_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_06:I-BC2/DIA/COOLING/B_I_BC2DIB6_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_07:I-BC2/DIA/COOLING/B_I_BC2DIB7_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__DIB_08:I-BC2/DIA/COOLING/B_I_BC2DIB8_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_01:I-BC2/DIA/COOLING/B_I_BC2QF1_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW2_I_BC2__MAG__QF_01:I-BC2/DIA/COOLING/B_I_BC2QF1_2_6_7_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_02:I-BC2/DIA/COOLING/B_I_BC2QF2_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW2_I_BC2__MAG__QF_03:I-BC2/DIA/COOLING/B_I_BC2QF3_5_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_03:I-BC2/DIA/COOLING/B_I_BC2QF3_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_04:I-BC2/DIA/COOLING/B_I_BC2QF4_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW2_I_BC2__MAG__QF_04:I-BC2/DIA/COOLING/B_I_BC2QF4_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_05:I-BC2/DIA/COOLING/B_I_BC2QF5_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_06:I-BC2/DIA/COOLING/B_I_BC2QF6_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__QF_07:I-BC2/DIA/COOLING/B_I_BC2QF7_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__SXH_01:I-BC2/DIA/COOLING/B_I_BC2SXH1_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_BC2__MAG__SXH_02:I-BC2/DIA/COOLING/B_I_BC2SXH2_DIA_TSW1_A"
                         ], 
                         "LogFile": [
                             "/tmp/pjb/log"
                         ]
                     }
                 }, 
-                "I-MS1/MAG/ALARM": {}, 
-                "I-S01A/MAG/ALARM": {}, 
-                "I-S01B/MAG/ALARM": {}, 
-                "I-G00/MAG/ALARM": {}, 
-                "I-S00/MAG/ALARM": {
+                "I-SP02/MAG/ALARM": {
                     "properties": {
                         "MaxMessagesPerAlarm": [
                             1
@@ -107,10 +127,18 @@
                             "/tmp/pjb"
                         ], 
                         "AlarmSeverity": [
-                            "TemperatureInterlockTSW2_I_S00__MAG__SOLT_01:ALARM", 
-                            "TemperatureInterlockTSW1_I_S00__MAG__SOLT_01:ALARM", 
-                            "TemperatureInterlockTSW2_I_S00__MAG__SOLT_02:ALARM", 
-                            "TemperatureInterlockTSW1_I_S00__MAG__SOLT_02:ALARM"
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_01:ALARM", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_01:ALARM", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_02:ALARM", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_02:ALARM", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_03:ALARM", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_03:ALARM", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_04:ALARM", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_04:ALARM", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_05:ALARM", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_05:ALARM", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__DIPBD_01:ALARM", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__DIPBD_01:ALARM"
                         ], 
                         "AutoReset": [
                             60.0
@@ -122,28 +150,397 @@
                             0.0
                         ], 
                         "AlarmDescriptions": [
-                            "TemperatureInterlockTSW2_I_S00__MAG__SOLT_01:Temp > 70 alarm to TANGO", 
-                            "TemperatureInterlockTSW1_I_S00__MAG__SOLT_01:Temp > 60 alarm to TANGO", 
-                            "TemperatureInterlockTSW2_I_S00__MAG__SOLT_02:Temp > 70 alarm to TANGO", 
-                            "TemperatureInterlockTSW1_I_S00__MAG__SOLT_02:Temp > 60 alarm to TANGO"
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_01:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_01:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_02:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_02:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_03:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_03:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_04:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_04:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_05:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_05:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__DIPBD_01:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__DIPBD_01:Temp > 70 alarm to TANGO"
                         ], 
                         "AlarmReceivers": [
-                            "TemperatureInterlockTSW2_I_S00__MAG__SOLT_01:HTML", 
-                            "TemperatureInterlockTSW1_I_S00__MAG__SOLT_01:HTML", 
-                            "TemperatureInterlockTSW2_I_S00__MAG__SOLT_02:HTML", 
-                            "TemperatureInterlockTSW1_I_S00__MAG__SOLT_02:HTML"
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_01:HTML", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_01:HTML", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_02:HTML", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_02:HTML", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_03:HTML", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_03:HTML", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_04:HTML", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_04:HTML", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_05:HTML", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_05:HTML", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__DIPBD_01:HTML", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__DIPBD_01:HTML"
                         ], 
                         "AlarmList": [
-                            "TemperatureInterlockTSW2_I_S00__MAG__SOLT_01:I-S00/DIA/COOLING/B_I_S00SOLT1_DIA_TSW2_A", 
-                            "TemperatureInterlockTSW1_I_S00__MAG__SOLT_01:I-S00/DIA/COOLING/B_I_S00SOLT1_DIA_TSW1_A", 
-                            "TemperatureInterlockTSW2_I_S00__MAG__SOLT_02:I-S00/DIA/COOLING/B_I_S00SOLT2_DIA_TSW2_A", 
-                            "TemperatureInterlockTSW1_I_S00__MAG__SOLT_02:I-S00/DIA/COOLING/B_I_S00SOLT2_DIA_TSW1_A"
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_01:I-SP02/DIA/COOLING/B_I_SP02QF1_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_01:I-SP02/DIA/COOLING/B_I_SP02QF1_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_02:I-SP02/DIA/COOLING/B_I_SP02QF2_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_02:I-SP02/DIA/COOLING/B_I_SP02QF2_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_03:I-SP02/DIA/COOLING/B_I_SP02QF3_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_03:I-SP02/DIA/COOLING/B_I_SP02QF3_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_04:I-SP02/DIA/COOLING/B_I_SP02QF4_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_04:I-SP02/DIA/COOLING/B_I_SP02QF4_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__QF_05:I-SP02/DIA/COOLING/B_I_SP02QF5_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__QF_05:I-SP02/DIA/COOLING/B_I_SP02QF5_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW1_I_SP02__MAG__DIPBD_01:I-SP02/DIA/COOLING/B_I_SP02DIPBD_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW2_I_SP02__MAG__DIPBD_01:I-SP02/DIA/COOLING/B_I_SP02DIPBD_DIA_TSW2_A"
                         ], 
                         "LogFile": [
                             "/tmp/pjb/log"
                         ]
                     }
-                }
+                }, 
+                "I-TR1/MAG/ALARM": {
+                    "properties": {
+                        "MaxMessagesPerAlarm": [
+                            1
+                        ], 
+                        "PollingPeriod": [
+                            5
+                        ], 
+                        "HtmlFolder": [
+                            "/tmp/pjb"
+                        ], 
+                        "AlarmSeverity": [
+                            "TemperatureInterlockTSW1_I_TR1__MAG__SM1A_01:ALARM", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__DIE_01:ALARM", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__DIF_01:ALARM", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_01:ALARM", 
+                            "TemperatureInterlockTSW2_I_TR1__MAG__QF_01:ALARM", 
+                            "TemperatureInterlockTSW2_I_TR1__MAG__QF_02:ALARM", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_02:ALARM", 
+                            "TemperatureInterlockTSW2_I_TR1__MAG__QF_03:ALARM", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_03:ALARM", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_04:ALARM", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_05:ALARM", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_06:ALARM"
+                        ], 
+                        "AutoReset": [
+                            60.0
+                        ], 
+                        "AlarmThreshold": [
+                            1
+                        ], 
+                        "StartupDelay": [
+                            0.0
+                        ], 
+                        "AlarmDescriptions": [
+                            "TemperatureInterlockTSW1_I_TR1__MAG__SM1A_01:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__DIE_01:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__DIF_01:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_01:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_TR1__MAG__QF_01:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_TR1__MAG__QF_02:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_02:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_TR1__MAG__QF_03:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_03:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_04:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_05:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_06:Temp > 60 alarm to TANGO"
+                        ], 
+                        "AlarmReceivers": [
+                            "TemperatureInterlockTSW1_I_TR1__MAG__SM1A_01:HTML", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__DIE_01:HTML", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__DIF_01:HTML", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_01:HTML", 
+                            "TemperatureInterlockTSW2_I_TR1__MAG__QF_01:HTML", 
+                            "TemperatureInterlockTSW2_I_TR1__MAG__QF_02:HTML", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_02:HTML", 
+                            "TemperatureInterlockTSW2_I_TR1__MAG__QF_03:HTML", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_03:HTML", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_04:HTML", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_05:HTML", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_06:HTML"
+                        ], 
+                        "AlarmList": [
+                            "TemperatureInterlockTSW1_I_TR1__MAG__SM1A_01:I-TR1/DIA/COOLING/B_I_TR1SM1A_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__DIE_01:I-TR1/DIA/COOLING/B_I_TR1DIE_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__DIF_01:I-TR1/DIA/COOLING/B_I_TR1DIF_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_01:I-TR1/DIA/COOLING/B_I_TR1QF1_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW2_I_TR1__MAG__QF_01:I-TR1/DIA/COOLING/B_I_TR1QF1_6_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW2_I_TR1__MAG__QF_02:I-TR1/DIA/COOLING/B_I_TR1QF2_5_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_02:I-TR1/DIA/COOLING/B_I_TR1QF2_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW2_I_TR1__MAG__QF_03:I-TR1/DIA/COOLING/B_I_TR1QF3_4_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_03:I-TR1/DIA/COOLING/B_I_TR1QF3_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_04:I-TR1/DIA/COOLING/B_I_TR1QF4_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_05:I-TR1/DIA/COOLING/B_I_TR1QF5_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_TR1__MAG__QF_06:I-TR1/DIA/COOLING/B_I_TR1QF6_DIA_TSW1_A"
+                        ], 
+                        "LogFile": [
+                            "/tmp/pjb/log"
+                        ]
+                    }
+                }, 
+                "I-S14B/MAG/ALARM": {}, 
+                "I-S19B/MAG/ALARM": {}, 
+                "I-MS3/MAG/ALARM": {
+                    "properties": {
+                        "MaxMessagesPerAlarm": [
+                            1
+                        ], 
+                        "PollingPeriod": [
+                            5
+                        ], 
+                        "HtmlFolder": [
+                            "/tmp/pjb"
+                        ], 
+                        "AlarmSeverity": [
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_01:ALARM", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_01:ALARM", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_02:ALARM", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_02:ALARM", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_03:ALARM", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_03:ALARM", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_04:ALARM", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_04:ALARM", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_05:ALARM", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_05:ALARM", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_06:ALARM", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_06:ALARM"
+                        ], 
+                        "AutoReset": [
+                            60.0
+                        ], 
+                        "AlarmThreshold": [
+                            1
+                        ], 
+                        "StartupDelay": [
+                            0.0
+                        ], 
+                        "AlarmDescriptions": [
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_01:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_01:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_02:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_02:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_03:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_03:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_04:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_04:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_05:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_05:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_06:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_06:Temp > 60 alarm to TANGO"
+                        ], 
+                        "AlarmReceivers": [
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_01:HTML", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_01:HTML", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_02:HTML", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_02:HTML", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_03:HTML", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_03:HTML", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_04:HTML", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_04:HTML", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_05:HTML", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_05:HTML", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_06:HTML", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_06:HTML"
+                        ], 
+                        "AlarmList": [
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_01:I-MS3/DIA/COOLING/B_I_MS3QF1_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_01:I-MS3/DIA/COOLING/B_I_MS3QF1_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_02:I-MS3/DIA/COOLING/B_I_MS3QF2_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_02:I-MS3/DIA/COOLING/B_I_MS3QF2_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_03:I-MS3/DIA/COOLING/B_I_MS3QF3_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_03:I-MS3/DIA/COOLING/B_I_MS3QF3_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_04:I-MS3/DIA/COOLING/B_I_MS3QF4_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_04:I-MS3/DIA/COOLING/B_I_MS3QF4_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_05:I-MS3/DIA/COOLING/B_I_MS3QF5_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_05:I-MS3/DIA/COOLING/B_I_MS3QF5_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW2_I_MS3__MAG__QF_06:I-MS3/DIA/COOLING/B_I_MS3QF6_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW1_I_MS3__MAG__QF_06:I-MS3/DIA/COOLING/B_I_MS3QF6_DIA_TSW1_A"
+                        ], 
+                        "LogFile": [
+                            "/tmp/pjb/log"
+                        ]
+                    }
+                }, 
+                "I-TR3/MAG/ALARM": {
+                    "properties": {
+                        "MaxMessagesPerAlarm": [
+                            1
+                        ], 
+                        "PollingPeriod": [
+                            5
+                        ], 
+                        "HtmlFolder": [
+                            "/tmp/pjb"
+                        ], 
+                        "AlarmSeverity": [
+                            "TemperatureInterlockTSW1_I_TR3__MAG__DIC_01:ALARM", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_01:ALARM", 
+                            "TemperatureInterlockTSW2_I_TR3__MAG__QF_01:ALARM", 
+                            "TemperatureInterlockTSW2_I_TR3__MAG__QF_02:ALARM", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_02:ALARM", 
+                            "TemperatureInterlockTSW2_I_TR3__MAG__QF_03:ALARM", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_03:ALARM", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_04:ALARM", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_05:ALARM", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_06:ALARM"
+                        ], 
+                        "AutoReset": [
+                            60.0
+                        ], 
+                        "AlarmThreshold": [
+                            1
+                        ], 
+                        "StartupDelay": [
+                            0.0
+                        ], 
+                        "AlarmDescriptions": [
+                            "TemperatureInterlockTSW1_I_TR3__MAG__DIC_01:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_01:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_TR3__MAG__QF_01:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_TR3__MAG__QF_02:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_02:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW2_I_TR3__MAG__QF_03:Temp > 70 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_03:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_04:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_05:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_06:Temp > 60 alarm to TANGO"
+                        ], 
+                        "AlarmReceivers": [
+                            "TemperatureInterlockTSW1_I_TR3__MAG__DIC_01:HTML", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_01:HTML", 
+                            "TemperatureInterlockTSW2_I_TR3__MAG__QF_01:HTML", 
+                            "TemperatureInterlockTSW2_I_TR3__MAG__QF_02:HTML", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_02:HTML", 
+                            "TemperatureInterlockTSW2_I_TR3__MAG__QF_03:HTML", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_03:HTML", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_04:HTML", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_05:HTML", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_06:HTML"
+                        ], 
+                        "AlarmList": [
+                            "TemperatureInterlockTSW1_I_TR3__MAG__DIC_01:I-TR3/DIA/COOLING/B_I_TR3DIC_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_01:I-TR3/DIA/COOLING/B_I_TR3QF1_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW2_I_TR3__MAG__QF_01:I-TR3/DIA/COOLING/B_I_TR3QF1_6_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW2_I_TR3__MAG__QF_02:I-TR3/DIA/COOLING/B_I_TR3QF2_5_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_02:I-TR3/DIA/COOLING/B_I_TR3QF2_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW2_I_TR3__MAG__QF_03:I-TR3/DIA/COOLING/B_I_TR3QF3_4_DIA_TSW2_A", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_03:I-TR3/DIA/COOLING/B_I_TR3QF3_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_04:I-TR3/DIA/COOLING/B_I_TR3QF4_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_05:I-TR3/DIA/COOLING/B_I_TR3QF5_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_TR3__MAG__QF_06:I-TR3/DIA/COOLING/B_I_TR3QF6_DIA_TSW1_A"
+                        ], 
+                        "LogFile": [
+                            "/tmp/pjb/log"
+                        ]
+                    }
+                }, 
+                "I-S16A/MAG/ALARM": {}, 
+                "I-S16B/MAG/ALARM": {}, 
+                "I-S03B/MAG/ALARM": {}, 
+                "I-EX1/MAG/ALARM": {
+                    "properties": {
+                        "MaxMessagesPerAlarm": [
+                            1
+                        ], 
+                        "PollingPeriod": [
+                            5
+                        ], 
+                        "HtmlFolder": [
+                            "/tmp/pjb"
+                        ], 
+                        "AlarmSeverity": [
+                            "TemperatureInterlockTSW1_I_EX1__MAG__DIH_01:ALARM", 
+                            "TemperatureInterlockTSW1_I_EX1__MAG__DIH_02:ALARM", 
+                            "TemperatureInterlockTSW1_I_EX1__MAG__DIH_01:ALARM", 
+                            "TemperatureInterlockTSW1_I_EX1__MAG__DIH_02:ALARM"
+                        ], 
+                        "AutoReset": [
+                            60.0
+                        ], 
+                        "AlarmThreshold": [
+                            1
+                        ], 
+                        "StartupDelay": [
+                            0.0
+                        ], 
+                        "AlarmDescriptions": [
+                            "TemperatureInterlockTSW1_I_EX1__MAG__DIH_01:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_EX1__MAG__DIH_02:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_EX1__MAG__DIH_01:Temp > 60 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_EX1__MAG__DIH_02:Temp > 60 alarm to TANGO"
+                        ], 
+                        "AlarmReceivers": [
+                            "TemperatureInterlockTSW1_I_EX1__MAG__DIH_01:HTML", 
+                            "TemperatureInterlockTSW1_I_EX1__MAG__DIH_02:HTML", 
+                            "TemperatureInterlockTSW1_I_EX1__MAG__DIH_01:HTML", 
+                            "TemperatureInterlockTSW1_I_EX1__MAG__DIH_02:HTML"
+                        ], 
+                        "AlarmList": [
+                            "TemperatureInterlockTSW1_I_EX1__MAG__DIH_01:I-EX1/DIA/COOLING/B_I_EX1DIH1_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_EX1__MAG__DIH_02:I-EX1/DIA/COOLING/B_I_EX1DIH2_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_EX1__MAG__DIH_01:I-EX1/DIA/COOLING/B_I_EX1DIH1_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_EX1__MAG__DIH_02:I-EX1/DIA/COOLING/B_I_EX1DIH2_DIA_TSW1_A"
+                        ], 
+                        "LogFile": [
+                            "/tmp/pjb/log"
+                        ]
+                    }
+                }, 
+                "I-S06B/MAG/ALARM": {}, 
+                "I-S10B/MAG/ALARM": {}, 
+                "I-MS2/MAG/ALARM": {}, 
+                "I-EX3/MAG/ALARM": {
+                    "properties": {
+                        "MaxMessagesPerAlarm": [
+                            1
+                        ], 
+                        "PollingPeriod": [
+                            5
+                        ], 
+                        "HtmlFolder": [
+                            "/tmp/pjb"
+                        ], 
+                        "AlarmSeverity": [
+                            "TemperatureInterlockTSW1_I_EX3__MAG__DIH_01:ALARM", 
+                            "TemperatureInterlockTSW1_I_EX3__MAG__DIH_02:ALARM", 
+                            "TemperatureInterlockTSW1_I_EX3__MAG__DIH_01:ALARM", 
+                            "TemperatureInterlockTSW1_I_EX3__MAG__DIH_02:ALARM"
+                        ], 
+                        "AutoReset": [
+                            60.0
+                        ], 
+                        "AlarmThreshold": [
+                            1
+                        ], 
+                        "StartupDelay": [
+                            0.0
+                        ], 
+                        "AlarmDescriptions": [
+                            "TemperatureInterlockTSW1_I_EX3__MAG__DIH_01:Temp > 90 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_EX3__MAG__DIH_02:Temp > 90 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_EX3__MAG__DIH_01:Temp > 90 alarm to TANGO", 
+                            "TemperatureInterlockTSW1_I_EX3__MAG__DIH_02:Temp > 90 alarm to TANGO"
+                        ], 
+                        "AlarmReceivers": [
+                            "TemperatureInterlockTSW1_I_EX3__MAG__DIH_01:HTML", 
+                            "TemperatureInterlockTSW1_I_EX3__MAG__DIH_02:HTML", 
+                            "TemperatureInterlockTSW1_I_EX3__MAG__DIH_01:HTML", 
+                            "TemperatureInterlockTSW1_I_EX3__MAG__DIH_02:HTML"
+                        ], 
+                        "AlarmList": [
+                            "TemperatureInterlockTSW1_I_EX3__MAG__DIH_01:I-EX3/DIA/COOLING/B_I_EX3DIH1_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_EX3__MAG__DIH_02:I-EX3/DIA/COOLING/B_I_EX3DIH2_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_EX3__MAG__DIH_01:I-EX3/DIA/COOLING/B_I_EX3DIH1_DIA_TSW1_A", 
+                            "TemperatureInterlockTSW1_I_EX3__MAG__DIH_02:I-EX3/DIA/COOLING/B_I_EX3DIH2_DIA_TSW1_A"
+                        ], 
+                        "LogFile": [
+                            "/tmp/pjb/log"
+                        ]
+                    }
+                }, 
+                "I-S07B/MAG/ALARM": {}, 
+                "I-S04B/MAG/ALARM": {}, 
+                "I-S06A/MAG/ALARM": {}, 
+                "I-S05A/MAG/ALARM": {}
             }
         }
     }

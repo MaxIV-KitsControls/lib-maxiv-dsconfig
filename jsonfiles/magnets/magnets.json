@@ -1,10 +1,5 @@
 {
     "servers": {
-        "Magnet/R1-01S": {
-            "Magnet": {
-                "R1-01S/MAG/SM1B-01": {}
-            }
-        }, 
         "Magnet/I-EX1": {
             "Magnet": {
                 "I-EX1/MAG/DIH-01": {
@@ -16,6 +11,11 @@
                         ], 
                         "Length": [
                             "0.4"
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-EX1/DIA/COOLING", 
+                            "B_I_EX1DIH1_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
                         ], 
                         "Type": "rben", 
                         "CircuitProxies": [
@@ -48,6 +48,11 @@
                         ], 
                         "Length": [
                             "0.4"
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-EX1/DIA/COOLING", 
+                            "B_I_EX1DIH2_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
                         ], 
                         "Type": "rben", 
                         "CircuitProxies": [
@@ -106,8 +111,6 @@
                             ""
                         ], 
                         "MagnetProxies": [
-                            "I-EX1/MAG/DIH-01", 
-                            "I-EX1/MAG/DIH-02", 
                             "I-EX1/MAG/DIH-01", 
                             "I-EX1/MAG/DIH-02"
                         ]
@@ -195,11 +198,6 @@
                 }
             }
         }, 
-        "Magnet/R3-01L": {
-            "Magnet": {
-                "R3-01L/MAG/SM3B-01": {}
-            }
-        }, 
         "MagnetCircuit/I-S19B": {
             "MagnetCircuit": {
                 "I-S19B/MAG/CRCOX-01": {
@@ -252,11 +250,47 @@
                         "RiseTime": [
                             0.0
                         ], 
-                        "ResistanceReference": [
-                            0.0
-                        ], 
                         "CoilNames": [
                             ""
+                        ], 
+                        "ExcitationCurveCurrents": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                8.0, 
+                                6.4, 
+                                4.8, 
+                                3.2, 
+                                1.6, 
+                                0.0
+                            ]
+                        ], 
+                        "ExcitationCurveFields": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                2.074898466666667, 
+                                1.6746870926666668, 
+                                1.2620388073333333, 
+                                0.8480483946666667, 
+                                0.4320768933333333, 
+                                0.016150820666666666
+                            ]
+                        ], 
+                        "ResistanceReference": [
+                            0.0
                         ], 
                         "MagnetProxies": [
                             "I-S05A/MAG/QB-01"
@@ -412,11 +446,47 @@
                         "RiseTime": [
                             0.0
                         ], 
-                        "ResistanceReference": [
-                            0.0
-                        ], 
                         "CoilNames": [
                             ""
+                        ], 
+                        "ExcitationCurveCurrents": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                8.0, 
+                                6.4, 
+                                4.8, 
+                                3.2, 
+                                1.6, 
+                                0.0
+                            ]
+                        ], 
+                        "ExcitationCurveFields": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                2.0848235213333335, 
+                                1.6826944813333333, 
+                                1.268662808666667, 
+                                0.8523982433333334, 
+                                0.434141378, 
+                                0.01638584
+                            ]
+                        ], 
+                        "ResistanceReference": [
+                            0.0
                         ], 
                         "MagnetProxies": [
                             "I-MS2/MAG/QB-02"
@@ -431,11 +501,47 @@
                         "RiseTime": [
                             0.0
                         ], 
-                        "ResistanceReference": [
-                            0.0
-                        ], 
                         "CoilNames": [
                             ""
+                        ], 
+                        "ExcitationCurveCurrents": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                8.0, 
+                                6.4, 
+                                4.8, 
+                                3.2, 
+                                1.6, 
+                                0.0
+                            ]
+                        ], 
+                        "ExcitationCurveFields": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                2.0781454386666667, 
+                                1.676387671333333, 
+                                1.2632644386666667, 
+                                0.8480040566666667, 
+                                0.4309724366666667, 
+                                0.014189802000000001
+                            ]
+                        ], 
+                        "ResistanceReference": [
+                            0.0
                         ], 
                         "MagnetProxies": [
                             "I-MS2/MAG/QB-03"
@@ -450,11 +556,47 @@
                         "RiseTime": [
                             0.0
                         ], 
-                        "ResistanceReference": [
-                            0.0
-                        ], 
                         "CoilNames": [
                             ""
+                        ], 
+                        "ExcitationCurveCurrents": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                8.0, 
+                                6.4, 
+                                4.8, 
+                                3.2, 
+                                1.6, 
+                                0.0
+                            ]
+                        ], 
+                        "ExcitationCurveFields": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                2.0800502266666667, 
+                                1.6798211673333334, 
+                                1.266391806, 
+                                0.8507232119999999, 
+                                0.43319028200000004, 
+                                0.01588709666666667
+                            ]
+                        ], 
+                        "ResistanceReference": [
+                            0.0
                         ], 
                         "MagnetProxies": [
                             "I-MS2/MAG/QB-01"
@@ -488,11 +630,47 @@
                         "RiseTime": [
                             0.0
                         ], 
-                        "ResistanceReference": [
-                            0.0
-                        ], 
                         "CoilNames": [
                             ""
+                        ], 
+                        "ExcitationCurveCurrents": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                8.0, 
+                                6.4, 
+                                4.8, 
+                                3.2, 
+                                1.6, 
+                                0.0
+                            ]
+                        ], 
+                        "ExcitationCurveFields": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                2.0759162706666667, 
+                                1.6738798486666664, 
+                                1.2619548346666665, 
+                                0.8467107953333336, 
+                                0.43099662, 
+                                0.015262812666666665
+                            ]
+                        ], 
+                        "ResistanceReference": [
+                            0.0
                         ], 
                         "MagnetProxies": [
                             "I-MS2/MAG/QB-04"
@@ -556,8 +734,6 @@
                             ""
                         ], 
                         "MagnetProxies": [
-                            "I-EX3/MAG/DIH-01", 
-                            "I-EX3/MAG/DIH-02", 
                             "I-EX3/MAG/DIH-01", 
                             "I-EX3/MAG/DIH-02"
                         ]
@@ -809,6 +985,11 @@
                         "Length": [
                             "0.4"
                         ], 
+                        "TemperatureInterlock": [
+                            "I-EX3/DIA/COOLING", 
+                            "B_I_EX3DIH2_DIA_TSW1_A", 
+                            "Temp > 90 alarm to TANGO"
+                        ], 
                         "Type": "rben", 
                         "CircuitProxies": [
                             "I-EX3/MAG/CRDI-01"
@@ -824,6 +1005,11 @@
                         ], 
                         "Length": [
                             "0.4"
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-EX3/DIA/COOLING", 
+                            "B_I_EX3DIH1_DIA_TSW1_A", 
+                            "Temp > 90 alarm to TANGO"
                         ], 
                         "Type": "rben", 
                         "CircuitProxies": [
@@ -862,11 +1048,47 @@
                         "RiseTime": [
                             0.0
                         ], 
-                        "ResistanceReference": [
-                            0.0
-                        ], 
                         "CoilNames": [
                             ""
+                        ], 
+                        "ExcitationCurveCurrents": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                8.0, 
+                                6.4, 
+                                4.8, 
+                                3.2, 
+                                1.6, 
+                                0.0
+                            ]
+                        ], 
+                        "ExcitationCurveFields": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                2.1118815893333336, 
+                                1.7046611606666664, 
+                                1.2845716013333335, 
+                                0.8632320826666667, 
+                                0.439929626, 
+                                0.016326474666666667
+                            ]
+                        ], 
+                        "ResistanceReference": [
+                            0.0
                         ], 
                         "MagnetProxies": [
                             "I-S14B/MAG/QB-01"
@@ -887,6 +1109,11 @@
                         "Tilt": [
                             0
                         ], 
+                        "TemperatureInterlock": [
+                            "I-MS3/DIA/COOLING", 
+                            "B_I_MS3QF1_DIA_TSW2_A", 
+                            "Temp > 70 alarm to TANGO"
+                        ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
                             "I-MS3/MAG/CRQ-01"
@@ -902,6 +1129,11 @@
                         "Orientation": 1, 
                         "Tilt": [
                             0
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-MS3/DIA/COOLING", 
+                            "B_I_MS3QF3_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
                         ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
@@ -919,6 +1151,11 @@
                         "Tilt": [
                             0
                         ], 
+                        "TemperatureInterlock": [
+                            "I-MS3/DIA/COOLING", 
+                            "B_I_MS3QF2_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
                             "I-MS3/MAG/CRQ-02"
@@ -934,6 +1171,11 @@
                         "Orientation": 1, 
                         "Tilt": [
                             0
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-MS3/DIA/COOLING", 
+                            "B_I_MS3QF5_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
                         ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
@@ -951,6 +1193,11 @@
                         "Tilt": [
                             0
                         ], 
+                        "TemperatureInterlock": [
+                            "I-MS3/DIA/COOLING", 
+                            "B_I_MS3QF4_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
                             "I-MS3/MAG/CRQ-04"
@@ -966,6 +1213,11 @@
                         "Orientation": 1, 
                         "Tilt": [
                             0
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-MS3/DIA/COOLING", 
+                            "B_I_MS3QF6_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
                         ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
@@ -1154,7 +1406,7 @@
                         "Length": [
                             "0.2"
                         ], 
-                        "Orientation": 1, 
+                        "Orientation": -1, 
                         "Tilt": [
                             0
                         ], 
@@ -1766,6 +2018,11 @@
                         "Tilt": [
                             "\"0.5 pi *\""
                         ], 
+                        "TemperatureInterlock": [
+                            "I-TR3/DIA/COOLING", 
+                            "B_I_TR3DIC_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "Type": "sben", 
                         "CircuitProxies": [
                             "I-TR3/MAG/CRDI-01"
@@ -1915,6 +2172,11 @@
                         "Tilt": [
                             0
                         ], 
+                        "TemperatureInterlock": [
+                            "I-TR3/DIA/COOLING", 
+                            "B_I_TR3QF6_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
                             "I-TR3/MAG/CRQ-01"
@@ -1930,6 +2192,11 @@
                         "Orientation": 1, 
                         "Tilt": [
                             0
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-TR3/DIA/COOLING", 
+                            "B_I_TR3QF5_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
                         ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
@@ -1947,6 +2214,11 @@
                         "Tilt": [
                             0
                         ], 
+                        "TemperatureInterlock": [
+                            "I-TR3/DIA/COOLING", 
+                            "B_I_TR3QF4_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
                             "I-TR3/MAG/CRQ-03"
@@ -1962,6 +2234,11 @@
                         "Orientation": 1, 
                         "Tilt": [
                             0
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-TR3/DIA/COOLING", 
+                            "B_I_TR3QF3_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
                         ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
@@ -1979,6 +2256,11 @@
                         "Tilt": [
                             0
                         ], 
+                        "TemperatureInterlock": [
+                            "I-TR3/DIA/COOLING", 
+                            "B_I_TR3QF2_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
                             "I-TR3/MAG/CRQ-02"
@@ -1994,6 +2276,11 @@
                         "Orientation": 1, 
                         "Tilt": [
                             0
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-TR3/DIA/COOLING", 
+                            "B_I_TR3QF1_6_DIA_TSW2_A", 
+                            "Temp > 70 alarm to TANGO"
                         ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
@@ -2047,6 +2334,11 @@
                         "Tilt": [
                             "\"0.5 pi *\""
                         ], 
+                        "TemperatureInterlock": [
+                            "I-TR1/DIA/COOLING", 
+                            "B_I_TR1DIF_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "Type": "sben", 
                         "CircuitProxies": [
                             "I-TR1/MAG/CRDI-01"
@@ -2062,6 +2354,11 @@
                         "Orientation": 1, 
                         "Tilt": [
                             "\"0.5 pi *\""
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-TR1/DIA/COOLING", 
+                            "B_I_TR1DIE_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
                         ], 
                         "Type": "sben", 
                         "CircuitProxies": [
@@ -2191,6 +2488,11 @@
                         "Tilt": [
                             0
                         ], 
+                        "TemperatureInterlock": [
+                            "I-TR1/DIA/COOLING", 
+                            "B_I_TR1QF1_6_DIA_TSW2_A", 
+                            "Temp > 70 alarm to TANGO"
+                        ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
                             "I-TR1/MAG/CRQ-01"
@@ -2206,6 +2508,11 @@
                         "Orientation": 1, 
                         "Tilt": [
                             0
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-TR1/DIA/COOLING", 
+                            "B_I_TR1QF3_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
                         ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
@@ -2223,6 +2530,11 @@
                         "Tilt": [
                             0
                         ], 
+                        "TemperatureInterlock": [
+                            "I-TR1/DIA/COOLING", 
+                            "B_I_TR1QF2_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
                             "I-TR1/MAG/CRQ-02"
@@ -2239,6 +2551,11 @@
                         "Tilt": [
                             0
                         ], 
+                        "TemperatureInterlock": [
+                            "I-TR1/DIA/COOLING", 
+                            "B_I_TR1QF5_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
                             "I-TR1/MAG/CRQ-02"
@@ -2254,6 +2571,11 @@
                         "Orientation": 1, 
                         "Tilt": [
                             0
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-TR1/DIA/COOLING", 
+                            "B_I_TR1QF4_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
                         ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
@@ -2287,6 +2609,11 @@
                         "Tilt": [
                             0
                         ], 
+                        "TemperatureInterlock": [
+                            "I-TR1/DIA/COOLING", 
+                            "B_I_TR1QF6_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
                             "I-TR1/MAG/CRQ-01"
@@ -2302,6 +2629,11 @@
                         "Orientation": 1, 
                         "Tilt": [
                             "\"0.5 pi *\""
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-TR1/DIA/COOLING", 
+                            "B_I_TR1SM1A_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
                         ], 
                         "Type": "sben", 
                         "CircuitProxies": [
@@ -2371,7 +2703,7 @@
                         "Length": [
                             "0.2"
                         ], 
-                        "Orientation": 1, 
+                        "Orientation": -1, 
                         "Tilt": [
                             0
                         ], 
@@ -2430,7 +2762,7 @@
                         "Length": [
                             "0.2"
                         ], 
-                        "Orientation": 1, 
+                        "Orientation": -1, 
                         "Tilt": [
                             0
                         ], 
@@ -2455,6 +2787,11 @@
                         "Tilt": [
                             0
                         ], 
+                        "TemperatureInterlock": [
+                            "I-SP02/DIA/COOLING", 
+                            "B_I_SP02QF4_DIA_TSW2_A", 
+                            "Temp > 70 alarm to TANGO"
+                        ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
                             "I-SP02/MAG/CRQ-04"
@@ -2470,6 +2807,11 @@
                         "Orientation": 1, 
                         "Tilt": [
                             0
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-SP02/DIA/COOLING", 
+                            "B_I_SP02QF5_DIA_TSW2_A", 
+                            "Temp > 70 alarm to TANGO"
                         ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
@@ -2503,6 +2845,11 @@
                         "Tilt": [
                             0
                         ], 
+                        "TemperatureInterlock": [
+                            "I-SP02/DIA/COOLING", 
+                            "B_I_SP02QF3_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
                             "I-SP02/MAG/CRQ-03"
@@ -2534,6 +2881,11 @@
                         "Orientation": 1, 
                         "Tilt": [
                             0
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-SP02/DIA/COOLING", 
+                            "B_I_SP02QF1_DIA_TSW2_A", 
+                            "Temp > 70 alarm to TANGO"
                         ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
@@ -2603,6 +2955,11 @@
                         "Length": [
                             "2.477675"
                         ], 
+                        "TemperatureInterlock": [
+                            "I-SP02/DIA/COOLING", 
+                            "B_I_SP02DIPBD_DIA_TSW2_A", 
+                            "Temp > 70 alarm to TANGO"
+                        ], 
                         "CircuitProxies": [
                             "I-SP02/MAG/CRDI-01"
                         ]
@@ -2617,6 +2974,11 @@
                         "Orientation": 1, 
                         "Tilt": [
                             0
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-SP02/DIA/COOLING", 
+                            "B_I_SP02QF2_DIA_TSW2_A", 
+                            "Temp > 70 alarm to TANGO"
                         ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
@@ -3027,11 +3389,47 @@
                         "RiseTime": [
                             0.0
                         ], 
-                        "ResistanceReference": [
-                            0.0
-                        ], 
                         "CoilNames": [
                             ""
+                        ], 
+                        "ExcitationCurveCurrents": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                8.0, 
+                                6.4, 
+                                4.8, 
+                                3.2, 
+                                1.6, 
+                                0.0
+                            ]
+                        ], 
+                        "ExcitationCurveFields": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                2.1168224066666665, 
+                                1.70785783, 
+                                1.2869799513333335, 
+                                0.8635863973333335, 
+                                0.440584024, 
+                                0.017551356666666667
+                            ]
+                        ], 
+                        "ResistanceReference": [
+                            0.0
                         ], 
                         "MagnetProxies": [
                             "I-S16B/MAG/QB-02"
@@ -3052,6 +3450,11 @@
                         "Tilt": [
                             0
                         ], 
+                        "TemperatureInterlock": [
+                            "I-BC2/DIA/COOLING", 
+                            "B_I_BC2QF7_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
                             "I-BC2/MAG/CRQM-01"
@@ -3067,6 +3470,11 @@
                         "Orientation": 1, 
                         "Tilt": [
                             0
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-BC2/DIA/COOLING", 
+                            "B_I_BC2QF6_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
                         ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
@@ -3084,6 +3492,11 @@
                         "Tilt": [
                             0
                         ], 
+                        "TemperatureInterlock": [
+                            "I-BC2/DIA/COOLING", 
+                            "B_I_BC2QF5_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
                             "I-BC2/MAG/CRQ1-01"
@@ -3099,6 +3512,11 @@
                         "Orientation": 1, 
                         "Tilt": [
                             0
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-BC2/DIA/COOLING", 
+                            "B_I_BC2QF4_DIA_TSW2_A", 
+                            "Temp > 70 alarm to TANGO"
                         ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
@@ -3116,6 +3534,11 @@
                         "Tilt": [
                             0
                         ], 
+                        "TemperatureInterlock": [
+                            "I-BC2/DIA/COOLING", 
+                            "B_I_BC2QF3_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
                             "I-BC2/MAG/CRQ1-01"
@@ -3132,6 +3555,11 @@
                         "Tilt": [
                             0
                         ], 
+                        "TemperatureInterlock": [
+                            "I-BC2/DIA/COOLING", 
+                            "B_I_BC2QF2_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
                             "I-BC2/MAG/CRQM-01"
@@ -3147,6 +3575,11 @@
                         "Orientation": 1, 
                         "Tilt": [
                             0
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-BC2/DIA/COOLING", 
+                            "B_I_BC2QF1_2_6_7_DIA_TSW2_A", 
+                            "Temp > 70 alarm to TANGO"
                         ], 
                         "Type": "kquad", 
                         "CircuitProxies": [
@@ -3260,6 +3693,11 @@
                         "Tilt": [
                             0
                         ], 
+                        "TemperatureInterlock": [
+                            "I-BC2/DIA/COOLING", 
+                            "B_I_BC2SXH2_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "Type": "ksext", 
                         "CircuitProxies": [
                             "I-BC2/MAG/CRSX-01"
@@ -3275,6 +3713,11 @@
                         "Orientation": 1, 
                         "Tilt": [
                             0
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-BC2/DIA/COOLING", 
+                            "B_I_BC2SXH1_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
                         ], 
                         "Type": "ksext", 
                         "CircuitProxies": [
@@ -3341,6 +3784,11 @@
                             "0.55"
                         ], 
                         "Type": "csrcsbend", 
+                        "TemperatureInterlock": [
+                            "I-BC2/DIA/COOLING", 
+                            "B_I_BC2DIB8_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "CircuitProxies": [
                             "I-BC2/MAG/CRDI-01"
                         ]
@@ -3357,6 +3805,11 @@
                             "0.55"
                         ], 
                         "Type": "csrcsbend", 
+                        "TemperatureInterlock": [
+                            "I-BC2/DIA/COOLING", 
+                            "B_I_BC2DIB2_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "CircuitProxies": [
                             "I-BC2/MAG/CRDI-01"
                         ]
@@ -3373,6 +3826,11 @@
                             "0.55"
                         ], 
                         "Type": "csrcsbend", 
+                        "TemperatureInterlock": [
+                            "I-BC2/DIA/COOLING", 
+                            "B_I_BC2DIB4_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "CircuitProxies": [
                             "I-BC2/MAG/CRDI-01"
                         ]
@@ -3389,6 +3847,11 @@
                             "0.55"
                         ], 
                         "Type": "csrcsbend", 
+                        "TemperatureInterlock": [
+                            "I-BC2/DIA/COOLING", 
+                            "B_I_BC2DIB5_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "CircuitProxies": [
                             "I-BC2/MAG/CRDI-01"
                         ]
@@ -3405,6 +3868,11 @@
                             "0.55"
                         ], 
                         "Type": "csrcsbend", 
+                        "TemperatureInterlock": [
+                            "I-BC2/DIA/COOLING", 
+                            "B_I_BC2DIB6_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "CircuitProxies": [
                             "I-BC2/MAG/CRDI-01"
                         ]
@@ -3421,6 +3889,11 @@
                             "0.55"
                         ], 
                         "Type": "csrcsbend", 
+                        "TemperatureInterlock": [
+                            "I-BC2/DIA/COOLING", 
+                            "B_I_BC2DIB7_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "CircuitProxies": [
                             "I-BC2/MAG/CRDI-01"
                         ]
@@ -3453,6 +3926,11 @@
                             "0.55"
                         ], 
                         "Type": "csrcsbend", 
+                        "TemperatureInterlock": [
+                            "I-BC2/DIA/COOLING", 
+                            "B_I_BC2DIB1_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "CircuitProxies": [
                             "I-BC2/MAG/CRDI-01"
                         ]
@@ -3485,6 +3963,11 @@
                             "0.55"
                         ], 
                         "Type": "csrcsbend", 
+                        "TemperatureInterlock": [
+                            "I-BC2/DIA/COOLING", 
+                            "B_I_BC2DIB3_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
                         "CircuitProxies": [
                             "I-BC2/MAG/CRDI-01"
                         ]
@@ -3545,11 +4028,47 @@
                         "RiseTime": [
                             0.0
                         ], 
-                        "ResistanceReference": [
-                            0.0
-                        ], 
                         "CoilNames": [
                             ""
+                        ], 
+                        "ExcitationCurveCurrents": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                8.0, 
+                                6.4, 
+                                4.8, 
+                                3.2, 
+                                1.6, 
+                                0.0
+                            ]
+                        ], 
+                        "ExcitationCurveFields": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                2.092619182, 
+                                1.6887510473333331, 
+                                1.273087922, 
+                                0.8555800593333335, 
+                                0.4361257213333333, 
+                                0.01708527066666667
+                            ]
+                        ], 
+                        "ResistanceReference": [
+                            0.0
                         ], 
                         "MagnetProxies": [
                             "I-S06A/MAG/QB-01"
@@ -3607,11 +4126,47 @@
                         "RiseTime": [
                             0.0
                         ], 
-                        "ResistanceReference": [
-                            0.0
-                        ], 
                         "CoilNames": [
                             ""
+                        ], 
+                        "ExcitationCurveCurrents": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                8.0, 
+                                6.4, 
+                                4.8, 
+                                3.2, 
+                                1.6, 
+                                0.0
+                            ]
+                        ], 
+                        "ExcitationCurveFields": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                2.0642560213333336, 
+                                1.666485766, 
+                                1.2561643466666668, 
+                                0.8447753833333334, 
+                                0.43043663400000004, 
+                                0.016825835999999997
+                            ]
+                        ], 
+                        "ResistanceReference": [
+                            0.0
                         ], 
                         "MagnetProxies": [
                             "I-S04B/MAG/QB-01"
@@ -3650,11 +4205,47 @@
                         "RiseTime": [
                             0.0
                         ], 
-                        "ResistanceReference": [
-                            0.0
-                        ], 
                         "CoilNames": [
                             ""
+                        ], 
+                        "ExcitationCurveCurrents": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                8.0, 
+                                6.4, 
+                                4.8, 
+                                3.2, 
+                                1.6, 
+                                0.0
+                            ]
+                        ], 
+                        "ExcitationCurveFields": [
+                            [
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0, 
+                                0
+                            ], 
+                            [
+                                2.076147046666667, 
+                                1.6755084746666669, 
+                                1.2628893639999998, 
+                                0.8486976286666668, 
+                                0.4318693893333334, 
+                                0.01620469266666667
+                            ]
+                        ], 
+                        "ResistanceReference": [
+                            0.0
                         ], 
                         "MagnetProxies": [
                             "I-S16A/MAG/QB-01"

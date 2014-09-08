@@ -217,6 +217,7 @@ class LatticeFileItem:
         print "In add device for item: " + self.itemName + " as " + self.itemType, self.lastdev, self.alpars, testpjb
         # only when we know class for certain element 
 
+        print "adict is ", adict
 
         #for case with no final number like I.TR1.MAG.DIE (no .1 etc at end)
         alt_name_parsing_string='(?P<system>[a-zA-Z0-9]+)\.(?P<location>[a-zA-Z0-9]+)\.(?P<subsystem>[a-zA-Z0-9]+)\.(?P<device>[a-zA-Z0-9]+)'
@@ -402,9 +403,10 @@ class LatticeFileItem:
                     #get alarm info from excel
                     pyalarm = system+"-"+location + '/MAG/ALARM'
 
-                    if adict:
+                    print "adict is again", adict
+                    if adict is not None:
                         devdictalarm = adict.servers["%s/%s" % ("PyAlarm", "I-MAG")]["PyAlarm"][pyalarm]
-
+                        print "init devdictalarm"
 
                     #print "made dev dict ", devdictalarm
                     for key in alarm_dict:
@@ -421,6 +423,9 @@ class LatticeFileItem:
 
                             pyattname = "I-" + section + "/DIA/COOLING"
 
+                            print "alarm dict is ", alarm_dict
+                            print "key is ", key
+                            print "alarm dict entry is ", alarm_dict[key]
                             print "FOUND ALARM INFO FOR ", compactname, key, alarm_dict[key], pyattname, adict
 
                             #for the magnets json file
@@ -478,9 +483,11 @@ class LatticeFileItem:
                             if "AlarmThreshold" not in self.alpars[pyalarm]:
                                 self.alpars[pyalarm]["AlarmThreshold"] = [1]
 
+
                                 
                     #if self.nextmag:       
                         #print "FIX THE PROPERTIES for ", devdictalarm
+                            print "devdictalarm is ", devdictalarm
                             devdictalarm.properties = self.alpars[pyalarm]
                         #reset alarm pars
                      #self.alpars = {}
@@ -651,12 +658,17 @@ class LatticeFileItem:
 
                         #current_mags = sdict.servers["%s/%s" % (devclass, system+"-"+location)][devclass][circuit_ps_list[powersupplyname]].properties
                         current_mags = sdict.servers["%s/%s" % ("MagnetCircuit", system+"-"+location)]["MagnetCircuit"][circuit_ps_list[powersupplyname]].properties
-                        current_mags['MagnetProxies'].append(name)
+
 
                         #for circuits json
                         print "cir name from ps ", circuit_ps_list[powersupplyname], psdict
                         ps_current_mags = psdict.Circuits[circuit_ps_list[powersupplyname]].Properties
-                        ps_current_mags['MagnetProxies'].append(name)
+
+                        if name in current_mags['MagnetProxies']:
+                            print "circuit already has magnet ", name
+                        else:
+                            ps_current_mags['MagnetProxies'].append(name)
+                            current_mags['MagnetProxies'].append(name)
 
                         print "magnets on cir ", current_mags['MagnetProxies'], len(current_mags['MagnetProxies'])
                         #need to average the currents, even if already done so in excel (depends on field order)
