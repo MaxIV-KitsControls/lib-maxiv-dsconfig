@@ -20,16 +20,24 @@ from os import path
 import sys
 import json
 
-import PyTango
-
 from utils import (red, green, yellow,
                    ObjectWrapper, get_dict_from_db,
                    decode_dict, decode_pointer)
 
 from appending_dict import AppendingDict
+from excel import ATTRIBUTE_PROPERTY_NAMES
 
 module_path = path.dirname(path.realpath(__file__))
 SCHEMA_FILENAME = path.join(module_path, "schema/dsconfig.json")
+
+
+def check_attribute_properties(attr_props):
+    bad = AppendingDict()
+    for attr, ap in attr_props.items():
+        for prop, value in ap.items():
+            if prop not in ATTRIBUTE_PROPERTY_NAMES:
+                bad[attr] = prop
+    return bad
 
 
 def update_properties(db, parent, db_props, new_props,
@@ -76,12 +84,13 @@ def update_properties(db, parent, db_props, new_props,
     return added_props, removed_props
 
 
-def update_server(db, server_name, server_dict, db_dict, update=False):
+def update_server(db, difactory, server_name, server_dict, db_dict,
+                  update=False):
 
     """Creates/removes devices for a given server. Optionally
     ignores removed devices, only adding new and updating old ones."""
 
-    devinfo = PyTango.DbDevInfo()
+    devinfo = difactory()
     devinfo.server = server_name
 
     for class_name, cls in server_dict.items():  # classes
@@ -124,7 +133,8 @@ def update_class(db, class_name, class_dict, db_dict, update=False):
         db_props = db_dict["properties"]
         new_props = class_dict["properties"]
         added, removed = update_properties(db, class_name, db_props,
-                                           new_props, cls=True, delete=not update)
+                                           new_props, cls=True,
+                                           delete=not update)
     if "attribute_properties" in class_dict:
         db_attr_props = db_dict["attribute_properties"]
         new_attr_props = class_dict["attribute_properties"]
@@ -196,7 +206,7 @@ def print_diff(dbdict, data, removes=True):
 def validate_json(data):
     """Validate that a given dict is of the right form"""
     try:
-        from jsonschema import Draft4Validator, validate, exceptions
+        from jsonschema import validate, exceptions
         with open(SCHEMA_FILENAME) as schema_json:
             schema = json.load(schema_json)
         validate(data, schema)
@@ -210,6 +220,7 @@ def validate_json(data):
 
 def main():
 
+    import PyTango
     from optparse import OptionParser
 
     usage = "Usage: %prog [options] JSONFILE"
@@ -250,20 +261,26 @@ def main():
             data.pop(key, None)
 
     db = PyTango.Database()
-    dbdict = get_dict_from_db(db, data)  # check the current DB state
+    dbdict, collisions = get_dict_from_db(db, data)
 
     if options.output:
         print json.dumps(dbdict, indent=4)
+
+    # wrap the database to record calls (and fake it if not writing)
+    db = ObjectWrapper(db if options.write else None)
+
+    # remove devices already present in another server
+    for dev, cls, srv in collisions:
+        print >>sys.stderr, red("REMOVE (because of collision):")
+        print >>sys.stderr, red(" > servers > %s > %s > %s" % (srv, cls, dev))
+        db.remove_device(dev)  # this may not strictly be needed..?
 
     # Print out a nice diff
     if options.verbose:
         print_diff(dbdict, data, removes=not options.update)
 
-    # wrap the database to record calls (and fake it if not writing)
-    db = ObjectWrapper(db if options.write else None)
-
     for servername, serverdata in data.get("servers", {}).items():
-        update_server(db, servername, serverdata,
+        update_server(db, PyTango.DbDevInfo, servername, serverdata,
                       dbdict["servers"][servername], options.update)
     for classname, classdata in data.get("classes", {}).items():
         update_class(db, classname, classdata,

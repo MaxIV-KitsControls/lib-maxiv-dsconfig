@@ -1,0 +1,7 @@
+unittest2
+nose >= 1.0
+mock
+coverage
+jsonschema
+jsonpatch
+PyTango

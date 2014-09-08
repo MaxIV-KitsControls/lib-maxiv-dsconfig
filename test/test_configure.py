@@ -1,5 +1,6 @@
 from copy import deepcopy
-from unittest import TestCase
+from mock import Mock
+from unittest2 import TestCase
 
 from dsconfig.configure import update_server
 from dsconfig.utils import ObjectWrapper, find_device
@@ -42,8 +43,7 @@ class ConfigureTestCase(TestCase):
         self.db = ObjectWrapper(None)
 
     def test_update_server_no_changes(self):
-
-        update_server(self.db, "test", TEST_DATA["servers"]["TangoTest/test"],
+        update_server(self.db, Mock, "test", TEST_DATA["servers"]["TangoTest/test"],
                       TEST_DATA["servers"]["TangoTest/test"])
 
         self.assertListEqual(self.db.calls, [])
@@ -56,7 +56,7 @@ class ConfigureTestCase(TestCase):
             }
         }
 
-        update_server(self.db, "TangoTest/1", new_data, AppendingDict())
+        update_server(self.db, Mock, "TangoTest/1", new_data, AppendingDict())
 
         self.assertEqual(len(self.db.calls), 1)
         dbcall, args, kwargs = self.db.calls[0]
@@ -71,7 +71,7 @@ class ConfigureTestCase(TestCase):
         dev = find_device(new_data, "sys/tg_test/2")[0]
         dev["properties"]["flepp"] = ["56"]
 
-        update_server(self.db, "test", new_data["servers"]["TangoTest/test"],
+        update_server(self.db, Mock, "test", new_data["servers"]["TangoTest/test"],
                       TEST_DATA["servers"]["TangoTest/test"])
 
         self.assertListEqual(
@@ -84,7 +84,7 @@ class ConfigureTestCase(TestCase):
         dev = find_device(new_data, "sys/tg_test/2")[0]
         del dev["properties"]["bepa"]
 
-        update_server(self.db, "test", new_data["servers"]["TangoTest/test"],
+        update_server(self.db, Mock, "test", new_data["servers"]["TangoTest/test"],
                       TEST_DATA["servers"]["TangoTest/test"])
 
         self.assertEqual(len(self.db.calls), 1)

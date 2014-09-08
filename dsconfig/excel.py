@@ -1,3 +1,8 @@
+"""
+Routines for reading an Excel file containing server, class and device definitions,
+producing a file in the TangoDB JSON format.
+"""
+
 from datetime import datetime
 import json
 import os
@@ -8,6 +13,17 @@ import sys
 from utils import find_device
 from appending_dict import AppendingDict
 from utils import CaselessDict
+
+MODE_MAPPING = CaselessDict({"ATTR": "DynamicAttributes",
+                             "CMD": "DynamicCommands",
+                             "STATE": "DynamicStates",
+                             "STATUS": "DynamicStatus"})
+
+ATTRIBUTE_PROPERTY_NAMES = ["label", "format",
+                            "min_value", "min_alarm", "min_warning",
+                            "max_value", "min_alarm", "min_warning",
+                            "unit", "polling_period", "change_event",
+                            "description", "mode"]
 
 
 def get_properties(row):
@@ -41,10 +57,6 @@ def get_properties(row):
 def get_dynamic(row):
     "Find dynamic definitions on a row"
 
-    mode_mapping = CaselessDict({"ATTR": "DynamicAttributes",
-                                 "CMD": "DynamicCommands",
-                                 "STATE": "DynamicStates",
-                                 "STATUS": "DynamicStatus"})
     prop_dict = AppendingDict()
 
     try:
@@ -58,7 +70,7 @@ def get_dynamic(row):
             dyn = formula
         else:
             dyn = "%s=%s" % (row["name"], formula)
-        prop_dict[mode_mapping[mode]] = dyn
+        prop_dict[MODE_MAPPING[mode]] = dyn
     except KeyError as e:
         raise ValueError("Problem with formula: %s" % e)
 
@@ -76,11 +88,17 @@ def get_config(row):
 
     # "Cfg:attribute" columns
     for col_name, value in row.items():
-        match = re.match("cfg:(.*)", col_name, re.IGNORECASE)
-        if match and value:
-            attr_name, = match.groups()
-            name = make_db_name(name)
-            prop_dict[name] = value.strip()
+        # match = re.match("cfg:(.*)", col_name, re.IGNORECASE)
+        # if match and value:
+        #     attr_name, = match.groups()
+        #     name = make_db_name(name)
+        #     prop_dict[name] = value.strip()
+
+        # Pick up columns named after attribute properties
+        db_colname = make_db_name(col_name)
+        attr = row["attribute"].strip()
+        if db_colname in ATTRIBUTE_PROPERTY_NAMES:
+            prop_dict[attr][db_colname] = [value]
 
     return prop_dict
 
@@ -130,7 +148,7 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
             # problems. Those are caught and reported.
 
             # Filter out empty columns
-            row = CaselessDict(dict((str(name), col)
+            row = CaselessDict(dict((str(name), col.strip())
                                     for name, col in zip(column_names, row_) if col))
 
             # Skip empty lines
@@ -143,19 +161,28 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
                 try:
                     # full device definition
                     srvr = format_server_instance(row)
-                    target = definitions.servers[srvr][row["class"]][row["device"]]
+                    # target is "lazily" evaluated, so that we don't create
+                    # an empty dict if it turns out there are no members
+                    target = lambda: definitions.servers[srvr]\
+                             [row["class"]][row["device"]]
                 except KeyError:
                     # is the device already defined?
-                    target, _ = find_device(definitions, row["device"])
+                    target = lambda: find_device(definitions, row["device"])[0]
             else:  # Class
-                target = definitions.classes[row["class"]]
+                target = lambda: definitions.classes[row["class"]]
 
             if dynamic:
-                target.properties = get_dynamic(row)
+                props = get_dynamic(row)
+                if props:
+                    target().properties = props
             elif config:
-                target.properties["attribute_properties"] = get_config(row)
+                attr_props = get_config(row)
+                if attr_props:
+                    target().attribute_properties = attr_props
             else:
-                target.properties = get_properties(row)
+                props = get_properties(row)
+                if props:
+                    target().properties = props
 
         except KeyError as ke:
             #handle_error(i, "insufficient data (%s)" % ke)

@@ -1,5 +1,7 @@
 from functools import partial
 
+import PyTango
+
 from appending_dict import AppendingDict
 
 #colors
@@ -72,6 +74,13 @@ def decode_pointer(ptr):
             for p in ptr.split("/")]
 
 
+def get_devices_from_dict(dbdict):
+    return [(server_name, class_name, device_name)
+            for server_name, server in dbdict.items()
+            for class_name, clss in server.items()
+            for device_name in clss]
+
+
 def get_dict_from_db(db, data):
 
     """Takes a data dict, checks if any if the definitions are already
@@ -79,6 +88,17 @@ def get_dict_from_db(db, data):
 
     # This is where we'll collect all the relevant data
     dbdict = AppendingDict()
+    moved_devices = []
+
+    # Devices that are already defined somewhere else
+    for server, clss, device in get_devices_from_dict(data["servers"]):
+        try:
+            devinfo = db.get_device_info(device)
+            if devinfo.ds_full_name != server:
+                moved_devices.append((devinfo.name, devinfo.class_name,
+                                      devinfo.ds_full_name))
+        except PyTango.DevFailed:
+            pass
 
     # Servers
     for server_name, srvr in data.get("servers", {}).items():
@@ -88,6 +108,7 @@ def get_dict_from_db(db, data):
 
             for device_name in devices:
                 name = device_name
+
                 db_props = db.get_device_property_list(name, "*")
                 dev = dbdict.servers[server_name][class_name][device_name]
 
@@ -122,14 +143,15 @@ def get_dict_from_db(db, data):
                     dbdict.classes[class_name].properties[prop] = value
 
         attr_props = cls.get("attribute_properties")
-        dbprops = db.get_device_attribute_property(device_name,
-                                                   attr_props.keys())
-        for attr, props in dbprops.items():
-            props = dict((prop, [str(v) for v in values])
-                         for prop, values in props.items())
-            dbdict.classes[class_name].attribute_properties[attr] = props
+        if attr_props:
+            dbprops = db.get_class_attribute_property(class_name,
+                                                      attr_props.keys())
+            for attr, props in dbprops.items():
+                props = dict((prop, [str(v) for v in values])
+                             for prop, values in props.items())
+                dbdict.classes[class_name].attribute_properties[attr] = props
 
-    return dbdict
+    return dbdict, moved_devices
 
 
 class ObjectWrapper(object):
