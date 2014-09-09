@@ -273,7 +273,7 @@ def main():
     for dev, cls, srv in collisions:
         print >>sys.stderr, red("REMOVE (because of collision):")
         print >>sys.stderr, red(" > servers > %s > %s > %s" % (srv, cls, dev))
-        db.remove_device(dev)  # this may not strictly be needed..?
+        db.delete_device(dev)  # this may not strictly be needed..?
 
     # Print out a nice diff
     if options.verbose:
