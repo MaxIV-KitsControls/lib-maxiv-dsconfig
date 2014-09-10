@@ -147,8 +147,11 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
             # line, raising exceptions if there are unrecoverable
             # problems. Those are caught and reported.
 
-            # Filter out empty columns
-            row = CaselessDict(dict((str(name), col.strip())
+            # Filter out empty columns. Make col a string, then strip whitespace.
+            for name, col in zip(column_names, row_):
+                print name, str(col)
+
+            row = CaselessDict(dict((str(name), str(col).strip())
                                     for name, col in zip(column_names, row_) if col))
 
             # Skip empty lines
@@ -176,6 +179,7 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
                 if props:
                     target().properties = props
             elif config:
+                print "DOING SOMETHING WITH PARAMS"
                 attr_props = get_config(row)
                 if attr_props:
                     target().attribute_properties = attr_props
@@ -222,6 +226,9 @@ def xls_to_dict(xls_filename, pages=None, skip=False):
 
     for page in pages:
 
+        #PJB hack: page should be Servers, Dynamics or ParamConfig. Allows other documentation sheets.
+        if page not in ["Servers","Dynamics","ParamConfig"]:
+            continue
 
         print >>sys.stderr, "\nPage: %s" % page
         sheet = xls.sheet_by_name(page)
