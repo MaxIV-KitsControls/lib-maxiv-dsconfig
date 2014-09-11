@@ -149,7 +149,8 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
 
             # Filter out empty columns
             row = CaselessDict(dict((str(name), col.strip())
-                                    for name, col in zip(column_names, row_) if col))
+                                    for name, col in zip(column_names, row_)
+                                    if col not in ("", None)))
 
             # Skip empty lines
             if not row:
