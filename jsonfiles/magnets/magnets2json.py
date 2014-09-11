@@ -32,6 +32,8 @@ from PowerSupplyMap import POWER_SUPPLY_MAP
 import copy
 import numpy as np
 
+cirlist = []
+cirlist2 = []
 nextdev = True
 testpjb = 999
 #lastcir = "xxx"
@@ -64,6 +66,7 @@ class LatticeFileItem:
         '''
         Construct an object parsing a _line from a lattice file
         '''
+        self.psparameters= {}
         self.parameters= {}
         self.properties= {}
 
@@ -204,7 +207,7 @@ class LatticeFileItem:
         #print "properties are now", self.properties
             
     #def add_device(self, sdict, name_parsing_string='(?P<system>[a-zA-Z0-9]+)\.(?P<location>[a-zA-Z0-9]+)\.(?P<subsystem>[a-zA-Z0-9]+)\.(?P<device>[a-zA-Z0-9]+)\.(?P<num>[0-9]+)\.(?P<cir>[a-zA-Z0-9]+)'):
-    def add_device(self, sdict, adict, name_parsing_string='(?P<system>[a-zA-Z0-9]+)\.(?P<location>[a-zA-Z0-9]+)\.(?P<subsystem>[a-zA-Z0-9]+)\.(?P<device>[a-zA-Z0-9]+)\.(?P<num>[0-9]+)'):
+    def add_device(self, sdict, adict, psdict, name_parsing_string='(?P<system>[a-zA-Z0-9]+)\.(?P<location>[a-zA-Z0-9]+)\.(?P<subsystem>[a-zA-Z0-9]+)\.(?P<device>[a-zA-Z0-9]+)\.(?P<num>[0-9]+)'):
         '''
         Updates json file
         '''
@@ -214,6 +217,11 @@ class LatticeFileItem:
         print "In add device for item: " + self.itemName + " as " + self.itemType, self.lastdev, self.alpars, testpjb
         # only when we know class for certain element 
 
+        print "adict is ", adict
+
+        #for case with no final number like I.TR1.MAG.DIE (no .1 etc at end)
+        alt_name_parsing_string='(?P<system>[a-zA-Z0-9]+)\.(?P<location>[a-zA-Z0-9]+)\.(?P<subsystem>[a-zA-Z0-9]+)\.(?P<device>[a-zA-Z0-9]+)'
+        alt_pattern = re.compile(alt_name_parsing_string)  
 
         #self.alpars = {}
         devdictalarm = None
@@ -225,15 +233,29 @@ class LatticeFileItem:
 
             # split name
             name_items = pattern.search(self.itemName) 
+            parsed=False
+            tryagain=False
             if name_items == None:
-                pass
-                #print "Warning: Item name in lattice file doesn't match the naming convention."       
+                print "Warning: Item name in lattice file doesn't match the naming convention.",self.itemName       
+                tryagain=True
             else:
+                parsed=True
+            if tryagain:
+                name_items = alt_pattern.search(self.itemName) 
+                if name_items == None:
+                    print "Warning: Item name in lattice file STILL doesn't match the naming convention.",self.itemName
+                else:
+                    parsed=True
+            if parsed:
                 system = name_items.group('system')
                 subsystem = name_items.group('subsystem')
                 location = name_items.group('location')
                 device = name_items.group('device')
-                num = name_items.group('num')   
+                
+                if tryagain==False:
+                    num = name_items.group('num')   
+                else:
+                    num=""
                 #circuit = name_items.group('cir')   
                 
                 #print "circuit is ", circuit
@@ -241,8 +263,12 @@ class LatticeFileItem:
                 if num == None: num = ''
                 # print "Parsed elements: "+system+", "+subsystem+ ", "+location+","+device+","+num
 
-                num2 =  "%02d" % int(num)
+                if num != "":
+                    num2 =  "%02d" % int(num)
+                else:
+                    num2 = "01"
 
+                print "num 2 is ", num2
                 #store the parameters we need (attributes and properties)
                 #print "PJB parameter",  self.itemName, self.parameters
                 #print "++++++++++++++++++++++++++++ DEALING WITH: " + self.itemName
@@ -250,16 +276,69 @@ class LatticeFileItem:
                 self.match_properties()
 
                 # create device for json output
-                name = (system+"-"+location + '/' + subsystem + '/' + device + "-" +num2).encode('ascii', 'ignore')
+                name = (system+"-"+location + '/' + subsystem + '/' + device + "-" + num2).encode('ascii', 'ignore')
                 devclass = types_classes[self.itemType].encode('ascii', 'ignore')
                 server = devclass + '/' + system+"-"+location
 
                 #hack for circuits
                 if "CIR" in self.itemName:
-                    #print "orig name",self.itemName, name
+                    print "orig name",self.itemName, name
                     #name = name.split("-",1)[-1] + "-CIR" +  "-" +num2
-                    name = name.rsplit("-",1)[0] + "-CIR" +  "-" +num2
-                    #pdevclass = "Circuit"
+                    #name = name.rsplit("-",1)[0] + "-CIR" +  "-" +num2
+
+                    #quad circuits named like CRQ
+                    #correctors like CRCOX and CRCOY
+                    #dipoles like CRDI
+                    #solenoid like CRSOL
+                    #sextu like CRX
+                    endname = name.rsplit("/",1)[1]
+                    print "endname is ", endname
+                    #hack for bc1
+                    if "QD" in self.itemName and "BC1" in self.itemName:
+                        endname = "CRQM-" +num2 
+                    #hack for bc2
+                    elif "QF" in self.itemName and "BC2" in self.itemName and "3" not in self.itemName and "4" not in self.itemName and "5" not in self.itemName:
+                        endname = "CRQM-" +num2 
+                    elif "QF" in self.itemName and "BC2" in self.itemName and ("3" in self.itemName or "5" in self.itemName):
+                        endname = "CRQ1-01"
+                    elif "QF" in self.itemName and "BC2" in self.itemName and "4" in self.itemName:
+                        endname = "CRQ2-01"
+                    #
+                    elif "Q" in self.itemName:
+                        endname = "CRQ-" + num2 
+                    elif "CO" in self.itemName and "X" in self.itemName:
+                        endname = "CRCOX-" + num2
+                    elif "CO" in self.itemName and "Y" in self.itemName:
+                        endname = "CRCOY-" + num2
+                    elif "DI" in self.itemName:
+                        endname = "CRDI-" + num2 
+                    elif "SX" in self.itemName:
+                        endname = "CRSX-" + num2 
+                    elif "SOL" in self.itemName:
+                        endname = "CRSOL-" + num2
+                    elif "SM" in self.itemName:
+                        endname = "CRSM-" + num2
+                    else:
+                        sys.exit("Cannot convert circuit name" + self.itemName)
+
+                    if "/" in endname: #in case did not end with number, endname will be some */*/ by mistake
+                        endname=endname.split("-")[0]+"-01"
+
+                    name = name.rsplit("/",1)[0] + "/" + endname
+
+
+                    #e.g in G00 have COIX 1, 2, 3 and COHX 1 and 2, which would make COX 1, 2, 3 with COIX 1 and 2 being lost!
+                    #increment number till unique
+                    while name in cirlist:
+                        print "danger! already named this circuit!", self.itemName, name
+                        suffix = int(name.split("-")[2]) + 1
+                        newnum2 =  "%02d" % suffix
+                        print newnum2
+                        name = (name.rsplit("-",1)[0]) + "-" + newnum2
+                        print name
+                    print "new name ", name
+                    cirlist.append(name)
+                    print cirlist
                     devclass = "MagnetCircuit"
 
 
@@ -270,6 +349,11 @@ class LatticeFileItem:
                 # see if this class exists and append if so, or create
                 devdict = sdict.servers["%s/%s" % (devclass, system+"-"+location)][devclass][name]
 
+                #for circuit json only
+                if "CR" in name:
+                    psdevdict = psdict.Circuits[name]
+
+
                 if "MAG" in self.itemName and "CIR" not in self.itemName:
 
 
@@ -279,8 +363,9 @@ class LatticeFileItem:
                     section = name_l[1]
                     del name_l[0]
                     del name_l[1]
-                    compactname = "".join(name_l)
-                    compactname = compactname.split("_")[0]
+                    compactfullname = "".join(name_l)
+                    compactname = compactfullname.split("_")[0]
+                    #compactcirname = compactfullname.split("_")[1]
 
                         
                     print "-------------------- magnet not circuit", self.itemName,  compactname
@@ -291,7 +376,11 @@ class LatticeFileItem:
                     #print section
 
                     #see what is the ps of the magnet
-                    powersupplyname = POWER_SUPPLY_MAP[name]
+                    if name in POWER_SUPPLY_MAP:
+                        powersupplyname = POWER_SUPPLY_MAP[name]
+                    else:
+                        print "magnet not in PS map, skipping", name
+                        return 
 
                     #create circuit device for each new ps
                     #print "circuit_ps_list", circuit_ps_list
@@ -307,11 +396,17 @@ class LatticeFileItem:
                     magnetcircuit.parameters['ResistanceReference'] = [0.0]
                     magnetcircuit.parameters['CoilNames'] = [""]
 
+                    #for the ps json file only
+                    magnetcircuit.psparameters['PowerSupplyProxy'] = [powersupplyname]
+                    magnetcircuit.psparameters['MagnetProxies'] = [name]
+
                     #get alarm info from excel
-
                     pyalarm = system+"-"+location + '/MAG/ALARM'
-                    devdictalarm = adict.servers["%s/%s" % ("PyAlarm", "I-MAG")]["PyAlarm"][pyalarm]
 
+                    print "adict is again", adict
+                    if adict is not None:
+                        devdictalarm = adict.servers["%s/%s" % ("PyAlarm", "I-MAG")]["PyAlarm"][pyalarm]
+                        print "init devdictalarm"
 
                     #print "made dev dict ", devdictalarm
                     for key in alarm_dict:
@@ -328,6 +423,9 @@ class LatticeFileItem:
 
                             pyattname = "I-" + section + "/DIA/COOLING"
 
+                            print "alarm dict is ", alarm_dict
+                            print "key is ", key
+                            print "alarm dict entry is ", alarm_dict[key]
                             print "FOUND ALARM INFO FOR ", compactname, key, alarm_dict[key], pyattname, adict
 
                             #for the magnets json file
@@ -385,9 +483,11 @@ class LatticeFileItem:
                             if "AlarmThreshold" not in self.alpars[pyalarm]:
                                 self.alpars[pyalarm]["AlarmThreshold"] = [1]
 
+
                                 
                     #if self.nextmag:       
                         #print "FIX THE PROPERTIES for ", devdictalarm
+                            print "devdictalarm is ", devdictalarm
                             devdictalarm.properties = self.alpars[pyalarm]
                         #reset alarm pars
                      #self.alpars = {}
@@ -467,18 +567,76 @@ class LatticeFileItem:
                     #assign circuit name as property of magnet device
                     #no regex to fix name here so do by hand
                     #e.g. I.BC1.MAG.COEX.4.CIR -> I-BC1/MAG/COEX-CIR-04
+
+
                     cname = magnetcircuit.itemName.replace(".","/")
+
+                    print "dealing with cname 1 ", cname
+
                     cname = cname.replace("/","-",1)
+
+                    print "dealing with cname 2 ", cname
+
                     cname = name.rsplit("/CIR",1)[0]
-                    cname = cname.rsplit("-",1)[0] + "-CIR-" + cname.rsplit("-",1)[1]
+
+                    print "dealing with cname 3 ", cname
+
+                    endname = cname.rsplit("/",1)[1]
+
+
+                    #hack for bc1
+                    if "QD" in self.itemName and "BC1" in self.itemName:
+                        endname = "CRQM-" +  cname.rsplit("-",1)[1]
+                    #
+                    #hack for bc2
+                    elif "QF" in self.itemName and "BC2" in self.itemName and "3" not in self.itemName and "4" not in self.itemName and "5" not in self.itemName:
+                        endname = "CRQM-" +  cname.rsplit("-",1)[1]
+                    elif "QF" in self.itemName and "BC2" in self.itemName and ("3" in self.itemName or "5" in self.itemName):
+                        endname = "CRQ1-01"
+                    elif "QF" in self.itemName and "BC2" in self.itemName and "4" in self.itemName:
+                        endname = "CRQ2-01"
+                    #
+                    elif "Q" in self.itemName:
+                        endname = "CRQ-" +  cname.rsplit("-",1)[1]
+                    elif "CO" in self.itemName and "X" in self.itemName:
+                        endname = "CRCOX-" +  cname.rsplit("-",1)[1]
+                    elif "CO" in self.itemName and "Y" in self.itemName:
+                        endname = "CRCOY-" +  cname.rsplit("-",1)[1]
+                    elif "DI" in self.itemName:
+                        endname = "CRDI-" +  cname.rsplit("-",1)[1]
+                        print "dealing with endname  ", endname
+                    elif "SX" in self.itemName:
+                        endname = "CRSX-" +  cname.rsplit("-",1)[1]
+                    elif "SOL" in self.itemName:
+                        endname = "CRSOL-" +  cname.rsplit("-",1)[1]
+                    elif "SM" in self.itemName:
+                        endname = "CRSM-" +  cname.rsplit("-",1)[1]
+                    else:
+                        sys.exit("Cannot convert circuit name" + self.itemName)
+
+                    if "/" in endname: #in case did not end with number, endname will be some */*/ by mistake
+                        endname=endname.split("-")[0]+"-01"
+
+                    cname = cname.rsplit("/",1)[0] + "/" + endname
+                    #cname = cname.rsplit("-",1)[0] + "-CIR-" + cname.rsplit("-",1)[1]
+                    print "cname is ", cname, name, powersupplyname, circuit_ps_list, cirlist2
+
+
+                    while cname in cirlist:
+                        print "danger2! already named this circuit!", cname
+                        suffix = int(cname.split("-")[2]) + 1
+                        newnum2 =  "%02d" % suffix
+                        cname = (cname.rsplit("-",1)[0]) + "-" + newnum2
+                    print "new name ", cname
+
 
                     #only add one circuit device per ps
                     if powersupplyname not in circuit_ps_list:
                         
-                        magnetcircuit.add_device(sdict,adict)
+                        magnetcircuit.add_device(sdict,adict,psdict)
                         circuit_ps_list[powersupplyname] = cname 
 
-                        #print "adding circuit name ", magnetcircuit.itemName, cname
+                        print "adding circuit name ", magnetcircuit.itemName, cname, circuit_ps_list
 
                         self.parameters['CircuitProxies'] = [cname]
                         
@@ -493,10 +651,24 @@ class LatticeFileItem:
                         #need to get the name of the circuit device from the ps dict though
                         print "exiting circuit device is", circuit_ps_list[powersupplyname]
                         
-                        
+                        print "current mags ",  system+"-"+location
+
+                        print "current mags 2",  sdict.servers
+
+
                         #current_mags = sdict.servers["%s/%s" % (devclass, system+"-"+location)][devclass][circuit_ps_list[powersupplyname]].properties
                         current_mags = sdict.servers["%s/%s" % ("MagnetCircuit", system+"-"+location)]["MagnetCircuit"][circuit_ps_list[powersupplyname]].properties
-                        current_mags['MagnetProxies'].append(name)
+
+
+                        #for circuits json
+                        print "cir name from ps ", circuit_ps_list[powersupplyname], psdict
+                        ps_current_mags = psdict.Circuits[circuit_ps_list[powersupplyname]].Properties
+
+                        if name in current_mags['MagnetProxies']:
+                            print "circuit already has magnet ", name
+                        else:
+                            ps_current_mags['MagnetProxies'].append(name)
+                            current_mags['MagnetProxies'].append(name)
 
                         print "magnets on cir ", current_mags['MagnetProxies'], len(current_mags['MagnetProxies'])
                         #need to average the currents, even if already done so in excel (depends on field order)
@@ -547,6 +719,9 @@ class LatticeFileItem:
 
                 devdict.properties = self.parameters
 
+                #for circuits json
+                if "CR" in name:
+                    psdevdict.Properties = self.psparameters
                 
 class ElegantLatticeParser:
     ''' Class for parsing an elegant lattice file. '''
@@ -606,6 +781,9 @@ if __name__ == '__main__':
     # define classes for lattice elements
     types_classes = {}
     types_classes["dip"] = "Magnet"
+    types_classes["sbend"] = "Magnet"
+    types_classes["sben"] = "Magnet"
+    types_classes["rben"] = "Magnet"
     types_classes["csrcsbend"] = "Magnet"
     types_classes["sole"] = "Magnet"
     types_classes["kquad"] = "Magnet"
@@ -704,6 +882,7 @@ if __name__ == '__main__':
     
     # make a json file
     json_dict = SuperDict()
+    json_ps =  SuperDict()
     for item in parser.items:
 
         #PJB hack to deal with magnet circuits here, should really go where other
@@ -718,7 +897,7 @@ if __name__ == '__main__':
         #    # hence also create a magnet circuit device
             
 
-        item.add_device(json_dict,json_dict_alarms)
+        item.add_device(json_dict,json_dict_alarms, json_ps)
     #print json.dumps(json_dict, indent=4)
 
     #now we have the dict, loop over again and sort out magnets, power supplies and circuits
@@ -736,4 +915,7 @@ if __name__ == '__main__':
 
     #!! note that item has parameters, but only want to extract those needed for tango!
 
+    #dump ps circuit info
+    outfile3 = open('circuits.json', 'w')
+    json.dump(json_ps, outfile3, indent=4)
 
