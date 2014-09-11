@@ -204,23 +204,4 @@ POWER_SUPPLY_MAP = {
 'I-TR3/MAG/QF-04'     : 'I-KTR3/MAG/PSPI-01', #--CR
 'I-TR3/MAG/QF-05'     : 'I-KTR3/MAG/PSPG-06-CAB07',#-CR
 'I-TR3/MAG/QF-06'     : 'I-KTR3/MAG/PSPG-05-CAB07',#CR
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

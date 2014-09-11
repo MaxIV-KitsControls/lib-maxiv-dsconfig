@@ -1769,7 +1769,8 @@
                             ""
                         ], 
                         "MagnetProxies": [
-                            "I-TR3/MAG/DIC-01"
+                            "I-TR3/MAG/DIC-01", 
+                            "I-TR3/MAG/DID-01"
                         ]
                     }
                 }, 
@@ -1884,6 +1885,25 @@
                         ], 
                         "MagnetProxies": [
                             "I-TR3/MAG/CODX-01"
+                        ]
+                    }
+                }, 
+                "I-TR3/MAG/CRSM-01": {
+                    "properties": {
+                        "PowerSupplyProxy": [
+                            "I-KTR3/MAG/PSPG-01-CAB07"
+                        ], 
+                        "RiseTime": [
+                            0.0
+                        ], 
+                        "ResistanceReference": [
+                            0.0
+                        ], 
+                        "CoilNames": [
+                            ""
+                        ], 
+                        "MagnetProxies": [
+                            "I-TR3/MAG/SM3A-01"
                         ]
                     }
                 }, 
@@ -2078,7 +2098,22 @@
                         ]
                     }
                 }, 
-                "I-TR3/MAG/SM3A-01": {}, 
+                "I-TR3/MAG/SM3A-01": {
+                    "properties": {
+                        "Polarity": 1, 
+                        "Length": [
+                            "1.027"
+                        ], 
+                        "Orientation": 1, 
+                        "Tilt": [
+                            "\"0.5 pi *\""
+                        ], 
+                        "Type": "sben", 
+                        "CircuitProxies": [
+                            "I-TR3/MAG/CRSM-01"
+                        ]
+                    }
+                }, 
                 "I-TR3/MAG/CODX-01": {
                     "properties": {
                         "Polarity": 1, 
@@ -2096,7 +2131,27 @@
                     }
                 }, 
                 "I-TR3/MAG/CODY-04": {}, 
-                "I-TR3/MAG/DID-01": {}, 
+                "I-TR3/MAG/DID-01": {
+                    "properties": {
+                        "Polarity": 1, 
+                        "Length": [
+                            "1.79994"
+                        ], 
+                        "Orientation": 1, 
+                        "Tilt": [
+                            "\"0.5 pi *\""
+                        ], 
+                        "TemperatureInterlock": [
+                            "I-TR3/DIA/COOLING", 
+                            "B_I_TR3DID_DIA_TSW1_A", 
+                            "Temp > 60 alarm to TANGO"
+                        ], 
+                        "Type": "sben", 
+                        "CircuitProxies": [
+                            "I-TR3/MAG/CRDI-01"
+                        ]
+                    }
+                }, 
                 "I-TR3/MAG/CODX-08": {}, 
                 "I-TR3/MAG/CODX-02": {
                     "properties": {
