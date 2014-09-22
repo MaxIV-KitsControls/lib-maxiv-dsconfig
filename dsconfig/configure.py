@@ -32,7 +32,7 @@ SCHEMA_FILENAME = path.join(module_path, "schema/dsconfig.json")
 
 
 def check_attribute_properties(attr_props):
-    bad = AppendingDict()
+    bad = {}  #AppendingDict()
     for attr, ap in attr_props.items():
         for prop, value in ap.items():
             if prop not in ATTRIBUTE_PROPERTY_NAMES:
@@ -254,8 +254,8 @@ def main():
     # Optional validation of the JSON file format.
     if options.validate:
         validate_json(data)
-    else:
-        data = AppendingDict(data)  # tries to "normalise" the data
+    # else:
+    #     data = AppendingDict(data)  # tries to "normalise" the data
 
     # remove any metadata
     for key in data.keys():
