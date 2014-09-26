@@ -105,7 +105,7 @@ def update_server(db, difactory, server_name, server_dict, db_dict,
 
         for device_name, dev in added_devices:
             devinfo.name = device_name
-            if device_name not in db_dict[class_name]:
+            if device_name not in db_dict[class_name] and '/' in device_name:
                 db.add_device(devinfo)
 
             if "properties" in dev:
