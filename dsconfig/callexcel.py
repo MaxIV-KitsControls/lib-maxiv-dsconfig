@@ -1,4 +1,4 @@
-"""Provide functions to parse a callable excel spreadsheets.""" 
+"""Provide functions to parse a callable excel spreadsheets."""
 
 # Imports
 
@@ -61,7 +61,7 @@ def get_kwargs(sheet, start, stop):
         else: value = integer if integer==value else value
         kwargs[str(keyword)] = value
     return kwargs
-    
+
 def get_call_list(filename):
     """Get the call list from a callable excel spreadsheet."""
     result = []
@@ -87,7 +87,7 @@ def process_call_list(lst, skip=False, verbose=True):
         for key, value in kwargs.items():
             prototype += '{0}={1}, '.format(key, value)
         if prototype.endswith(' '):
-            prototype = prototype[:-2] 
+            prototype = prototype[:-2]
         prototype += ')'
         # Print prototype
         if verbose:
@@ -144,7 +144,7 @@ def parse_command_line_args(desc):
     msg = "The output tango database json file"
     parser.add_option('-o', '--output', metavar='OUT',
                       type='str', help=msg, default='')
- 
+
     msg = "Display informations"
     parser.add_option('-v', '--verbose', action="store_true", help=msg, default=False)
 
@@ -207,12 +207,12 @@ def main(desc, module_name=None, function=None):
         os.remove(output_file)
         if verbose:
             print('Removed: ' + output_file)
-    print('OK!') 
+    print('OK!')
 
 # Main execution
 
 if __name__ == "__main__":
     main("Generate a Tango json file for a given callable excel spreadsheet.")
 
-            
-    
+
+
