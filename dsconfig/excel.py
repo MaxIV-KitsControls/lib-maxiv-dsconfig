@@ -13,6 +13,7 @@ import sys
 from utils import find_device
 from appending_dict import AppendingDict
 from utils import CaselessDict
+from callexcel import callable_xls_to_dict
 
 MODE_MAPPING = CaselessDict({"ATTR": "DynamicAttributes",
                              "CMD": "DynamicCommands",
@@ -284,18 +285,27 @@ def main():
     filename = args[0]
     pages = args[1:]
 
-    data = xls_to_dict(filename, pages, skip=options.skip)
-    metadata = dict(
-        _title="MAX-IV Tango JSON intermediate format",
-        _source=os.path.split(sys.argv[1])[-1],
-        _version=1,
-        _date=str(datetime.now()))
-    data.update(metadata)
+    callable_try = callable_xls_to_dict(filename,
+                                        options.skip,
+                                        options.verbose)
+    if callable_try is not None:
+        data = AppendingDict()
+        data.update(callable_try)
+    else:
+        data = xls_to_dict(filename, pages, skip=options.skip)
+        metadata = dict(
+            _title="MAX-IV Tango JSON intermediate format",
+            _source=os.path.split(sys.argv[1])[-1],
+            _version=1,
+            _date=str(datetime.now()))
+        data.update(metadata)
+
+    if options.verbose:
+        print json.dumps(data, indent=4, sort_keys=True)
 
     if not options.test:
-        print json.dumps(data, indent=4)
         outfile = open('config.json', 'w')
-        json.dump(data, outfile, indent=4)
+        json.dump(data, outfile, indent=4, sort_keys=True)
 
     stats = get_stats(data)
 
