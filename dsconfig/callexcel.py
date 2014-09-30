@@ -3,7 +3,7 @@
 # Imports
 
 import xlrd, json, sys, os
-from collections import OrderedDict, Mapping
+from collections import Mapping
 from importlib import import_module
 from optparse import OptionParser
 
@@ -30,21 +30,21 @@ def get_markup_index(sheet, col, markup):
                 return i+1
     return None
 
-def get_range_dct(sheet, col, start=0, stop=None, markup=None):
+def get_range_lst(sheet, col, start=0, stop=None, markup=None):
     """Get a value->range dictionnary from a given column."""
     if markup:
         start = max_or_none(start, get_markup_index(sheet, col, markup))
     if start is None:
         return {}
-    result = OrderedDict()
+    result = []
     previous_key, previous_start = None, None
     for i,key in enumerate(sheet.col_values(col, start, stop), start):
         if key != "":
             if previous_key is not None:
-                result[previous_key] = previous_start, i
+                result.append((previous_key, previous_start, i))
             previous_key, previous_start = key, i
     if previous_key is not None:
-        result[previous_key] = previous_start, i+1
+        result.append((previous_key, previous_start, i+1))
     return result
 
 # Callable excel functions
@@ -52,10 +52,11 @@ def get_range_dct(sheet, col, start=0, stop=None, markup=None):
 def get_kwargs(sheet, start, stop):
     """Get the keywords arguments between two indexes."""
     kwargs = {}
-    keyword_dct = get_range_dct(sheet, 2, start, stop)
-    for keyword, (start, stop) in keyword_dct.items():
-        dct = get_range_dct(sheet, 3, start, stop)
-        value = list(dct) if len(dct) > 1 else next(iter(dct))
+    keyword_lst = get_range_lst(sheet, 2, start, stop)
+    for keyword, start, stop in keyword_lst:
+        lst = get_range_lst(sheet, 3, start, stop)
+        value = [key for key, _, _ in lst]
+        if len(value) == 1: value = value[0]
         try: integer = int(value)
         except (ValueError, TypeError): pass
         else: value = integer if integer==value else value
@@ -65,14 +66,14 @@ def get_kwargs(sheet, start, stop):
 def get_call_list(filename):
     """Get the call list from a callable excel spreadsheet."""
     result = []
-    with xlrd.open_workbook(filename) as book:
-        for sheet in book.sheets():
-            package_dct = get_range_dct(sheet, 0, markup="Package")
-            for package, (start, stop) in package_dct.items():
-                func_dct = get_range_dct(sheet, 1, start, stop)
-                for func, (start, stop) in func_dct.items():
-                    kwargs = get_kwargs(sheet, start, stop)
-                    result.append((package, func, kwargs))
+    book = xlrd.open_workbook(filename)
+    for sheet in book.sheets():
+        package_lst = get_range_lst(sheet, 0, markup="Package")
+        for package, start, stop in package_lst:
+            func_lst = get_range_lst(sheet, 1, start, stop)
+            for func, start, stop in func_lst:
+                kwargs = get_kwargs(sheet, start, stop)
+                result.append((package, func, kwargs))
     return result
 
 # Data functions
