@@ -196,7 +196,7 @@ def main(desc, module_name=None, function=None):
     if output_file:
         with open(output_file, mode='w') as f:
             f.write(string)
-    if verbose:
+    if verbose and output_file:
         print('Exported to: ' + output_file)
     # Write tango database
     if write:
