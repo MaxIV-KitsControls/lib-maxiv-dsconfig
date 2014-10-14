@@ -185,9 +185,9 @@ class LatticeFileItem:
             self.alpars[pyalarm]["AlarmList"] = []
         self.alpars[pyalarm]['AlarmList'].append(alname+":"+pyattname+"/"+key)
 
-        if "AlarmSeverity" not in self.alpars[pyalarm]:
-            self.alpars[pyalarm]["AlarmSeverity"] = []
-        self.alpars[pyalarm]['AlarmSeverity'].append(alsev)
+        if "AlarmSeverities" not in self.alpars[pyalarm]:
+            self.alpars[pyalarm]["AlarmSeverities"] = []
+        self.alpars[pyalarm]['AlarmSeverities'].append(alsev)
         
         if "AlarmDescriptions" not in self.alpars[pyalarm]:
             self.alpars[pyalarm]["AlarmDescriptions"] = []
@@ -198,16 +198,16 @@ class LatticeFileItem:
         self.alpars[pyalarm]['AlarmReceivers'].append(alrec)
 
         if "StartupDelay" not in self.alpars[pyalarm]:
-            self.alpars[pyalarm]["StartupDelay"] = [0.0]
+            self.alpars[pyalarm]["StartupDelay"] = ["0"]
                             
         if "AutoReset" not in self.alpars[pyalarm]:
-            self.alpars[pyalarm]["AutoReset"] = [60.0]
+            self.alpars[pyalarm]["AutoReset"] = ["60"]
                             
         if "MaxMessagesPerAlarm" not in self.alpars[pyalarm]:
-            self.alpars[pyalarm]["MaxMessagesPerAlarm"] = [1]
+            self.alpars[pyalarm]["MaxMessagesPerAlarm"] = ["1"]
             
         if "PollingPeriod" not in self.alpars[pyalarm]:
-            self.alpars[pyalarm]["PollingPeriod"] = [5]
+            self.alpars[pyalarm]["PollingPeriod"] = ["5"]
                             
         if "LogFile" not in self.alpars[pyalarm]:
             self.alpars[pyalarm]["LogFile"] = ["/tmp/pjb/log"]
@@ -216,7 +216,7 @@ class LatticeFileItem:
             self.alpars[pyalarm]["HtmlFolder"] = ["/tmp/pjb"]
                             
         if "AlarmThreshold" not in self.alpars[pyalarm]:
-            self.alpars[pyalarm]["AlarmThreshold"] = [1]
+            self.alpars[pyalarm]["AlarmThreshold"] = ["1"]
 
 
     def match_properties(self):
@@ -239,6 +239,7 @@ class LatticeFileItem:
             lattice_properties_l = list(TANGO_PROPERTIES[devclass][1].keys())
             #print "possible lattice tango properties are ", lattice_properties_l
             for k in self.parameters.keys():
+                #print "pjb zzz 1", self.parameters["Tilt"], self.parameters
                 #print "key", k
                 #if not a required property or attribue then pop it
                 if k.lower() not in lattice_properties_l and k not in  fixed_properties_l:
@@ -249,10 +250,7 @@ class LatticeFileItem:
                 if k.lower() in lattice_properties_l:
                     #print "KEY ", k.lower(), TANGO_PROPERTIES[devclass][1][k.lower()], self.parameters[k]
                     self.parameters[TANGO_PROPERTIES[devclass][1][k.lower()]] = [self.parameters.pop(k)]
-                    if "Tilt" in self.parameters:
-                        if "0.5 pi" in str(self.parameters["Tilt"]):
-                            self.parameters["Tilt"] = ["90"]
-
+                    #print "pjb zzz", self.parameters["Tilt"], self.parameters
 
 
         else:
@@ -262,6 +260,13 @@ class LatticeFileItem:
         if "MAG" in self.itemName and not "CIR" in self.itemName:
             self.parameters["Type"] = [self.itemType]
 
+        #
+        if "Tilt" in self.parameters:
+            if "0.5 pi" in str(self.parameters["Tilt"]):
+                self.parameters["Tilt"] = ["90"]
+            else:
+                self.parameters["Tilt"] = ["0"]
+        print "pjbyyy", self.parameters
 
     def add_device(self, sdict, adict, psdict, name_parsing_string='(?P<system>[a-zA-Z0-9]+)\.(?P<location>[a-zA-Z0-9]+)\.(?P<subsystem>[a-zA-Z0-9]+)\.(?P<device>[a-zA-Z0-9]+)\.(?P<num>[0-9]+)'):
         '''
@@ -323,6 +328,7 @@ class LatticeFileItem:
 
 
                 self.match_properties()
+                print "pjbxxx ", self.parameters
 
                 # create device for json output
                 name = (system+"-"+location + '/' + subsystem + '/' + device + "-" + num2).encode('ascii', 'ignore')
@@ -458,8 +464,8 @@ class LatticeFileItem:
                     magnetcircuit.parameters = {}
                     magnetcircuit.parameters['PowerSupplyProxy'] = [powersupplyname]
                     magnetcircuit.parameters['MagnetProxies'] = [name]
-                    magnetcircuit.parameters['RiseTime'] = [0.0]
-                    magnetcircuit.parameters['ResistanceReference'] = [0.0]
+                    magnetcircuit.parameters['RiseTime'] = ["0.0"]
+                    magnetcircuit.parameters['ResistanceReference'] = ["0.0"]
                     magnetcircuit.parameters['CoilNames'] = [""]
 
                     #for the ps json file only
@@ -568,9 +574,8 @@ class LatticeFileItem:
                         magnetcircuit.parameters['ExcitationCurveCurrents']= currentsmatrix
                         magnetcircuit.parameters['ExcitationCurveFields']= fieldsmatrix
 
-
-                    self.parameters['Orientation'] = [int(orientation)]
-                    self.parameters['Polarity']    = [int(polarity)]
+                    self.parameters['Orientation'] = [str(int(orientation))]
+                    self.parameters['Polarity']    = [str(int(polarity))]
 
                     #assign circuit name as property of magnet device
                     #no regex to fix name here so do by hand
@@ -827,6 +832,27 @@ if __name__ == '__main__':
     print json_dict.servers
 
     outfile = open('magnets.json', 'w')
+
+    #have final json dict here
+    print "THE FINAL DICT"
+    topl = json_dict['servers'].keys()
+    for item in topl:
+        if "Circuit" in item:
+            #print json_dict['servers'][item]
+            for cir in json_dict['servers'][item]:
+                #print json_dict['servers'][item][cir]['ExcitationCurveCurrents']
+                #print json_dict['servers'][item]["MagnetCircuit"]
+                for c in json_dict['servers'][item]["MagnetCircuit"]:
+                    for key in json_dict['servers'][item]["MagnetCircuit"][c]["properties"]:
+                        if key == "ExcitationCurveCurrents":
+                            ls = json_dict['servers'][item]["MagnetCircuit"][c]["properties"][key]
+                            print key, [str(x) for x in ls]
+                            json_dict['servers'][item]["MagnetCircuit"][c]["properties"][key] =  [str(x) for x in ls]
+                        if key == "ExcitationCurveFields":
+                            ls = json_dict['servers'][item]["MagnetCircuit"][c]["properties"][key]
+                            print key, [str(x) for x in ls]
+                            json_dict['servers'][item]["MagnetCircuit"][c]["properties"][key] =  [str(x) for x in ls]
+
     json.dump(json_dict, outfile, indent=4)
 
     if doAlarms:
