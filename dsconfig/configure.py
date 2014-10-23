@@ -254,10 +254,8 @@ def main():
     # Optional validation of the JSON file format.
     if options.validate:
         validate_json(data)
-    # else:
-    #     data = AppendingDict(data)  # tries to "normalise" the data
 
-    # remove any metadata
+    # remove any metadata at the top level
     for key in data.keys():
         if key.startswith("_"):
             data.pop(key, None)

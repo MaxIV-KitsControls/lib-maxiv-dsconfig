@@ -178,7 +178,6 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
                 if props:
                     target().properties = props
             elif config:
-                print "DOING SOMETHING WITH PARAMS"
                 attr_props = get_config(row)
                 if attr_props:
                     target().attribute_properties = attr_props

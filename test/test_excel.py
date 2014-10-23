@@ -1,4 +1,7 @@
-from unittest2 import TestCase
+try:
+    from unittest2 import TestCase
+except ImportError:
+    from unittest import TestCase
 
 from dsconfig import excel
 from dsconfig.utils import CaselessDict

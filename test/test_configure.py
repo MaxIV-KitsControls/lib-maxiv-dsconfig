@@ -1,6 +1,9 @@
 from copy import deepcopy
 from mock import Mock
-from unittest2 import TestCase
+try:
+    from unittest2 import TestCase
+except ImportError:
+    from unittest import TestCase
 
 from dsconfig.configure import update_server
 from dsconfig.utils import ObjectWrapper, find_device

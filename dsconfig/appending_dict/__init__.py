@@ -37,7 +37,7 @@ class SetterDict(defaultdict):
         return self[attr]
 
     def __repr__(self):
-        return "%s: %s" % (self.__class__.__name__, json.dumps(self))
+        return json.dumps(self)
 
 
 def merge(d, u):
