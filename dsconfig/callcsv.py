@@ -1,8 +1,8 @@
-"""Provide functions to parse a callable excel spreadsheets."""
+"""Provide functions to parse a callable csv file."""
 
 # Imports
 
-import xlrd, json, sys, os
+import csv, json, sys, os
 from collections import Mapping
 from importlib import import_module
 from optparse import OptionParser
@@ -21,24 +21,52 @@ def max_or_none(*args):
     """Maximum function considering None as a maximum value."""
     return None if None in args else max(*args)
 
-# Excel functions
+def cast_list(lst):
+    """Convert a list of a string to the corresponding value."""
+    result = []
+    for value in lst:
+        # Integer conversion
+        try: value = int(value)
+        except (ValueError, TypeError):
+            # Float conversion
+            try: value = float(value)
+            except (ValueError, TypeError):
+                # Hexa conversion
+                try: value = int(value, 16)
+                except (ValueError, TypeError):
+                    # Ignore
+                    pass
+        # Append
+        result.append(value)
+    # Return
+    if not result:
+        return ""
+    if len(result) == 1:
+        return result[0]
+    return tuple(result)
 
-def get_markup_index(sheet, col, markup):
+# Csv functions
+
+def get_column(matrix, col, start=None, stop=None, step=None):
+    """Get the column of a matrix, with optional range arguments."""
+    return [row[col] for row in matrix][slice(start, stop, step)]
+
+def get_markup_index(matrix, col, markup):
     """Find a markup in a given column and return the following index."""
-    for i,key in enumerate(sheet.col_values(col)):
+    for i,key in enumerate(get_column(matrix, col)):
             if key == markup:
                 return i+1
     return None
 
-def get_range_lst(sheet, col, start=0, stop=None, markup=None):
+def get_range_lst(matrix, col, start=0, stop=None, markup=None):
     """Get a value->range dictionnary from a given column."""
     if markup:
-        start = max_or_none(start, get_markup_index(sheet, col, markup))
+        start = max_or_none(start, get_markup_index(matrix, col, markup))
     if start is None:
         return {}
     result = []
     previous_key, previous_start = None, None
-    for i,key in enumerate(sheet.col_values(col, start, stop), start):
+    for i,key in enumerate(get_column(matrix, col, start, stop), start):
         if key != "":
             if previous_key is not None:
                 result.append((previous_key, previous_start, i))
@@ -47,33 +75,32 @@ def get_range_lst(sheet, col, start=0, stop=None, markup=None):
         result.append((previous_key, previous_start, i+1))
     return result
 
-# Callable excel functions
+# Callable csv functions
 
-def get_kwargs(sheet, start, stop):
+def get_kwargs(matrix, start, stop):
     """Get the keywords arguments between two indexes."""
     kwargs = {}
-    keyword_lst = get_range_lst(sheet, 2, start, stop)
+    keyword_lst = get_range_lst(matrix, 2, start, stop)
     for keyword, start, stop in keyword_lst:
-        lst = get_range_lst(sheet, 3, start, stop)
-        value = [key for key, _, _ in lst]
-        if len(value) == 1: value = value[0]
-        try: integer = int(value)
-        except (ValueError, TypeError): pass
-        else: value = integer if integer==value else value
-        kwargs[str(keyword)] = value
+        lst = get_range_lst(matrix, 3, start, stop)
+        values = [key for key, _, _ in lst]
+        kwargs[str(keyword)] = cast_list(values)
     return kwargs
 
 def get_call_list(filename):
-    """Get the call list from a callable excel spreadsheet."""
+    """Get the call list from a callable cls file."""
     result = []
-    book = xlrd.open_workbook(filename)
-    for sheet in book.sheets():
-        package_lst = get_range_lst(sheet, 0, markup="Package")
-        for package, start, stop in package_lst:
-            func_lst = get_range_lst(sheet, 1, start, stop)
-            for func, start, stop in func_lst:
-                kwargs = get_kwargs(sheet, start, stop)
-                result.append((package, func, kwargs))
+    with open(filename) as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        matrix = [[value.strip() for value in row] for row in reader]
+    package_lst = get_range_lst(matrix, 0, markup="Package")
+    # Process
+    result = []
+    for package, start, stop in package_lst:
+        func_lst = get_range_lst(matrix, 1, start, stop)
+        for func, start, stop in func_lst:
+            kwargs = get_kwargs(matrix, start, stop)
+            result.append((package, func, kwargs))
     return result
 
 # Data functions
@@ -118,10 +145,10 @@ def join_data(lst, source=None):
         data['_source'] = source
     return data
 
-# XLS to Dict function
+# CSV to Dict function
 
-def callable_xls_to_dict(filename, skip=False, verbose=True, to_json=False):
-    """Convert a callable excel spreadsheet to a data dictionnary."""
+def callable_csv_to_dict(filename, skip=False, verbose=True, to_json=False):
+    """Convert a callable csv file to a data dictionnary."""
     calls = get_call_list(filename)
     if not calls:
         return
@@ -138,7 +165,7 @@ def parse_command_line_args(desc):
     usage = "%prog [-i INPUT] [-o OUTPUT] [-v] [-w]"
     parser = OptionParser(usage=usage, description=desc, version='%prog v1.0')
 
-    msg = "The input callable excel spreadsheet."
+    msg = "The input callable csv file"
     parser.add_option('-i', '--input', metavar='IN',
                       type='str', help=msg, default='')
 
@@ -152,7 +179,13 @@ def parse_command_line_args(desc):
     msg = "Write the Tango Database"
     parser.add_option('-w', '--write', action="store_true", help=msg, default=False)
 
-    options, _ = parser.parse_args()
+    options, args = parser.parse_args()
+
+    if args:
+        msg = "No argument expected, options only.\n"
+        msg += "Use --help for further information."
+        parser.error(msg)
+
     return options.input, options.output, options.write, options.verbose
 
 # Main function for configuration scripts
@@ -170,19 +203,33 @@ def main(desc, module_name=None, function=None):
             if module == module_name and func == function.__name__:
                 kwargs = keywords
                 if verbose:
-                    print "'{0}' found".format(prototype)
-                    print "kwargs = " + str(kwargs)
+                    print("'{0}' found".format(prototype))
+                    print("kwargs = " + str(kwargs))
                 break
         else:
-            print "'{0}' not found".format(prototype)
+            print "'{0}' not found in {1}".format(prototype, get_call_list(input_file))
             return
     # Generate json file
     if module_name and function:
-        string = function(**kwargs)
+        if not input_file and verbose:
+            msg = 'No input file given. '
+            msg += 'Default configuration will be used'
+            print(msg)
+        data = function(**kwargs)
+        if isinstance(data, Mapping):
+            string = json.dumps(data, indent=4, sort_keys=True)
+        elif isinstance(data, basestring):
+            string = data
+        else:
+            msg = "The function didn't return a valid data format.\n"
+            msg += "The type is {0} instead.".format(type(data))
+            print(msg)
+            print(data)
+            return
     elif input_file:
-        string = callable_xls_to_dict(input_file, True, verbose, True)
+        string = callable_csv_to_dict(input_file, True, verbose, True)
     else:
-        print 'An input file is required.'
+        print('An input file is required.')
         return
     # Display json file
     if verbose:
@@ -213,7 +260,7 @@ def main(desc, module_name=None, function=None):
 # Main execution
 
 if __name__ == "__main__":
-    main("Generate a Tango json file for a given callable excel spreadsheet.")
+    main("Generate a Tango json file for a given callable csv file.")
 
 
 
