@@ -541,8 +541,8 @@ class LatticeFileItem:
                         #iterate over keys and add to the array
                         for key in calib_dict[self.itemName.split("_")[0]]:
                             print '--- ', key, 'corresponds to', calib_dict[self.itemName.split("_")[0]][key]
-                            currents = calib_dict[self.itemName.split("_")[0]][key][5:16]
-                            fields   = calib_dict[self.itemName.split("_")[0]][key][17:28]
+                            currents = calib_dict[self.itemName.split("_")[0]][key][5:17]
+                            fields   = calib_dict[self.itemName.split("_")[0]][key][17:29]
                             print '--- ',currents, fields
 
                             fieldsmatrix[key-1]=fields
@@ -556,7 +556,7 @@ class LatticeFileItem:
                         print '--- ',currentsmatrix
 
                         #now trim the matrices (lists)
-                        maxlength = 11
+                        maxlength = 12
                         for i,val in enumerate(fieldsmatrix[dim-1]):
                             if val=='':
                                 print i , val
