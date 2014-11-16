@@ -19,11 +19,17 @@ MODE_MAPPING = CaselessDict({"ATTR": "DynamicAttributes",
                              "STATE": "DynamicStates",
                              "STATUS": "DynamicStatus"})
 
-ATTRIBUTE_PROPERTY_NAMES = ["label", "format",
-                            "min_value", "min_alarm", "min_warning",
-                            "max_value", "min_alarm", "min_warning",
-                            "unit", "polling_period", "change_event",
-                            "description", "mode"]
+SPECIAL_PROPERTIES = [
+    "polled_attr", "logging_level", "logging_target"
+]
+
+SPECIAL_ATTRIBUTE_PROPERTIES = ["label", "format", "unit",
+                                "min_value", "min_alarm", "min_warning",
+                                "max_value", "min_alarm", "min_warning",
+                                "abs_change", "return el_change", "event_period",
+                                "archive_abs_change", "archive_rel_change",
+                                "archive_period",
+                                "description", "mode"]
 
 
 def get_properties(row):
@@ -97,7 +103,7 @@ def get_config(row):
         # Pick up columns named after attribute properties
         db_colname = make_db_name(col_name)
         attr = row["attribute"].strip()
-        if db_colname in ATTRIBUTE_PROPERTY_NAMES:
+        if db_colname in SPECIAL_ATTRIBUTE_PROPERTIES:
             prop_dict[attr][db_colname] = [value]
 
     return prop_dict
@@ -211,7 +217,6 @@ def print_errors(errors):
 def xls_to_dict(xls_filename, pages=None, skip=False):
 
     """Make JSON out of an XLS sheet of device definitions."""
-
 
     import xlrd
 

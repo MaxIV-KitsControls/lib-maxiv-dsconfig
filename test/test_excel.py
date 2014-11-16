@@ -64,7 +64,7 @@ class TestExcel(TestCase):
         self.assertRaises(ValueError, excel.get_dynamic, row)
 
     def test_get_config(self):
-        row = CaselessDict({"Attribute": "myAttribute", "Label": "Something", "Min value": 45})
+        row = CaselessDict({"Attribute": "myAttribute", "Label": "Something", "Min value": 45, "Not valid": "foo"})
         result = excel.get_config(row)
         self.assertDictEqual(result,
                              {"myAttribute": {"min_value": ["45"], "label": ["Something"]}})

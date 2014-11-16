@@ -25,7 +25,7 @@ import PyTango
 from utils import (red, green, yellow, ObjectWrapper,
                    get_dict_from_db, decode_dict, decode_pointer)
 #from appending_dict import AppendingDict
-from excel import ATTRIBUTE_PROPERTY_NAMES
+from excel import SPECIAL_ATTRIBUTE_PROPERTIES
 
 module_path = path.dirname(path.realpath(__file__))
 SCHEMA_FILENAME = path.join(module_path, "schema/dsconfig.json")
@@ -35,7 +35,8 @@ def check_attribute_properties(attr_props):
     bad = {}  #AppendingDict()
     for attr, ap in attr_props.items():
         for prop, value in ap.items():
-            if prop not in ATTRIBUTE_PROPERTY_NAMES:
+            # Is this too strict? Do we ever need non-standard attr props?
+            if prop not in SPECIAL_ATTRIBUTE_PROPERTIES:
                 bad[attr] = prop
     return bad
 
