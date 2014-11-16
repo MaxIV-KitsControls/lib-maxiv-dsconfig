@@ -20,11 +20,11 @@ from os import path
 import sys
 import json
 
-from utils import (red, green, yellow,
-                   ObjectWrapper, get_dict_from_db,
-                   decode_dict, decode_pointer)
+import PyTango
 
-from appending_dict import AppendingDict
+from utils import (red, green, yellow, ObjectWrapper,
+                   get_dict_from_db, decode_dict, decode_pointer)
+#from appending_dict import AppendingDict
 from excel import ATTRIBUTE_PROPERTY_NAMES
 
 module_path = path.dirname(path.realpath(__file__))
@@ -220,9 +220,45 @@ def validate_json(data):
         sys.exit(1)
 
 
+def load_json(f):
+    return json.load(f, object_hook=decode_dict)
+
+
+def clean_metadata(data):
+    for key in data.keys():
+        if key.startswith("_"):
+            data.pop(key, None)
+
+
+def configure(data, write=False, update=False):
+
+    # remove any metadata at the top level
+    clean_metadata(data)
+
+    db = PyTango.Database()
+    dbdict, collisions = get_dict_from_db(db, data)
+
+    # wrap the database to record calls (and fake it if not writing)
+    db = ObjectWrapper(db if write else None)
+
+    # remove devices already present in another server
+    for dev, cls, srv in collisions:
+        print >>sys.stderr, red("REMOVE (because of collision):")
+        print >>sys.stderr, red(" > servers > %s > %s > %s" % (srv, cls, dev))
+        db.delete_device(dev)  # this may not strictly be needed..?
+
+    for servername, serverdata in data.get("servers", {}).items():
+        update_server(db, PyTango.DbDevInfo, servername, serverdata,
+                      dbdict["servers"][servername], update)
+    for classname, classdata in data.get("classes", {}).items():
+        update_class(db, classname, classdata,
+                     dbdict["classes"][classname], update)
+
+    return db.calls, dbdict
+
+
 def main():
 
-    import PyTango
     from optparse import OptionParser
 
     usage = "Usage: %prog [options] JSONFILE"
@@ -244,54 +280,33 @@ def main():
                       action="store_false", help=("Skip JSON validation"))
 
     options, args = parser.parse_args()
+
     if len(args) == 0:
-        data = json.load(sys.stdin, object_hook=decode_dict)
+        data = load_json(sys.stdin)
     else:
         json_file = args[0]
         with open(json_file) as f:
-            data = json.load(f, object_hook=decode_dict)
+            data = load_json(f)
 
     # Optional validation of the JSON file format.
     if options.validate:
         validate_json(data)
 
-    # remove any metadata at the top level
-    for key in data.keys():
-        if key.startswith("_"):
-            data.pop(key, None)
-
-    db = PyTango.Database()
-    dbdict, collisions = get_dict_from_db(db, data)
+    dbcalls, dbdict = configure(data, options.write, options.update)
 
     if options.output:
         print json.dumps(dbdict, indent=4)
 
-    # wrap the database to record calls (and fake it if not writing)
-    db = ObjectWrapper(db if options.write else None)
-
-    # remove devices already present in another server
-    for dev, cls, srv in collisions:
-        print >>sys.stderr, red("REMOVE (because of collision):")
-        print >>sys.stderr, red(" > servers > %s > %s > %s" % (srv, cls, dev))
-        db.delete_device(dev)  # this may not strictly be needed..?
-
     # Print out a nice diff
     if options.verbose:
-        print_diff(dbdict, data, removes=not options.update)
-
-    for servername, serverdata in data.get("servers", {}).items():
-        update_server(db, PyTango.DbDevInfo, servername, serverdata,
-                      dbdict["servers"][servername], options.update)
-    for classname, classdata in data.get("classes", {}).items():
-        update_class(db, classname, classdata,
-                     dbdict["classes"][classname], options.update)
+        print_diff(dbdict.to_dict(), data, removes=not options.update)
 
     if options.dbcalls:
         print "\nTango database calls:"
-        for method, args, kwargs in db.calls:
+        for method, args, kwargs in dbcalls:
             print method, args
 
-    if db.calls:
+    if dbcalls:
         if options.write:
             print >>sys.stderr, red("\n*** Data was written to the Tango DB ***")
         else:
