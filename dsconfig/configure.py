@@ -110,38 +110,25 @@ def update_server(db, difactory, server_name, server_dict, db_dict,
                 db.add_device(devinfo)
                 db_dict[class_name][device_name] = {}
 
-            if "properties" in dev:
-                db_props = db_dict[class_name][device_name].get("properties", {})
-                new_props = dev["properties"]
-                added, removed = update_properties(db, device_name,
-                                                   db_props, new_props,
-                                                   delete=not update)
-            if "attribute_properties" in dev:
-                db_attr_props = (db_dict[class_name][device_name]
-                                 .get("attribute_properties", {}))
-                new_attr_props = dev["attribute_properties"]
-                added, removed = update_properties(db, device_name,
-                                                   db_attr_props,
-                                                   new_attr_props,
-                                                   attr=True,
-                                                   delete=not update)
+            update_device_or_class(db, device_name,
+                                   db_dict[class_name][device_name], dev,
+                                   update=update)
 
+def update_device_or_class(db, name, db_dict, new_dict, cls=False, update=False):
 
-def update_class(db, class_name, class_dict, db_dict, update=False):
+    "Configure a device or a class"
 
-    "Configure a class"
-
-    if "properties" in class_dict:
+    if "properties" in new_dict:
         db_props = db_dict.get("properties", {})
-        new_props = class_dict["properties"]
-        added, removed = update_properties(db, class_name, db_props,
-                                           new_props, cls=True,
+        new_props = new_dict["properties"]
+        added, removed = update_properties(db, name, db_props,
+                                           new_props, cls=cls,
                                            delete=not update)
-    if "attribute_properties" in class_dict:
+    if "attribute_properties" in new_dict:
         db_attr_props = db_dict.get("attribute_properties", {})
-        new_attr_props = class_dict["attribute_properties"]
-        removed, added = update_properties(db, class_name, db_attr_props,
-                                           new_attr_props, attr=True, cls=True,
+        new_attr_props = new_dict["attribute_properties"]
+        added, removed = update_properties(db, name, db_attr_props,
+                                           new_attr_props, attr=True, cls=cls,
                                            delete=not update)
 
 
@@ -253,8 +240,8 @@ def configure(data, write=False, update=False):
         update_server(db, PyTango.DbDevInfo, servername, serverdata,
                       dbdict["servers"][servername], update)
     for classname, classdata in data.get("classes", {}).items():
-        update_class(db, classname, classdata,
-                     dbdict["classes"][classname], update)
+        update_device_or_class(db, classname, dbdict["classes"][classname],
+                               classdata, update, cls=True)
 
     return db.calls, dbdict
 

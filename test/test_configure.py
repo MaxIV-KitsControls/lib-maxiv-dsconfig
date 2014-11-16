@@ -5,7 +5,8 @@ try:
 except ImportError:
     from unittest import TestCase
 
-from dsconfig.configure import update_server, update_class, update_properties
+from dsconfig.configure import (update_server, update_device_or_class,
+                                update_properties)
 from dsconfig.utils import ObjectWrapper, find_device
 from dsconfig.appending_dict import AppendingDict
 
@@ -151,10 +152,10 @@ class ConfigureTestCase(TestCase):
 
     # === tests for update_class ===
 
-    def test_update_class_add_property(self):
+    def test_update_device_or_class_add_property(self):
         new_classname = "SomeClass"
         cls = {"properties": {"test": ["hello"]}}
-        update_class(self.db, new_classname, cls, {})
+        update_device_or_class(self.db, new_classname, {}, cls, cls=True)
         self.assertEqual(len(self.db.calls), 1)
         dbcall, args, kwargs = self.db.calls[0]
         self.assertEqual(dbcall, "put_class_property")
