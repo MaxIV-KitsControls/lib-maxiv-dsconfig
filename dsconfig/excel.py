@@ -19,10 +19,6 @@ MODE_MAPPING = CaselessDict({"ATTR": "DynamicAttributes",
                              "STATE": "DynamicStates",
                              "STATUS": "DynamicStatus"})
 
-SPECIAL_PROPERTIES = [
-    "polled_attr", "logging_level", "logging_target"
-]
-
 SPECIAL_ATTRIBUTE_PROPERTIES = ["label", "format", "unit",
                                 "min_value", "min_alarm", "min_warning",
                                 "max_value", "min_alarm", "min_warning",

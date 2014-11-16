@@ -193,6 +193,17 @@ class ConfigureTestCase(TestCase):
             self.db.calls,
             [('delete_device_property', ('sys/tg_test/2', {'bepa': ['45']}), {})])
 
+    def test_update_properties_remove_property_leaves_protected(self):
+        devname = "sys/tg_test/2"
+        dev = find_device(self.dbdict, devname)[0]
+        dev["properties"]["polled_attr"] = ["a", "b"]
+        orig_dev = find_device(self.dbdict, devname)[0]
+        added, removed = update_properties(self.db, devname,
+                                           orig_dev["properties"],
+                                           dev["properties"])
+        self.assertDictEqual(added, {})
+        self.assertDictEqual(removed, {})
+
     def test_update_properties_replace_property(self):
         devname = "sys/tg_test/2"
         dev = find_device(self.data, devname)[0]

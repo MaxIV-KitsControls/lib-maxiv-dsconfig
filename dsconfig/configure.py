@@ -31,15 +31,25 @@ from excel import SPECIAL_ATTRIBUTE_PROPERTIES
 module_path = path.dirname(path.realpath(__file__))
 SCHEMA_FILENAME = path.join(module_path, "schema/dsconfig.json")
 
+# These are special properties that we need to keep
+# We may have to write them sooner or later but lets leave them
+# alone until then.
+PROTECTED_PROPERTIES = [
+    "polled_attr", "logging_level", "logging_target"
+]
 
-def check_attribute_properties(attr_props):
-    bad = {}
-    for attr, ap in attr_props.items():
-        for prop, value in ap.items():
-            # Is this too strict? Do we ever need non-standard attr props?
-            if prop not in SPECIAL_ATTRIBUTE_PROPERTIES:
-                bad[attr] = prop
-    return bad
+
+def is_protected(prop, attr=False):
+    """Ignore all properties starting with underscore (typically Tango
+    created) and some special ones"""
+    return prop.startswith("_") or (not attr and prop in PROTECTED_PROPERTIES)
+
+
+def check_attribute_property(propname):
+    # Is this too strict? Do we ever need non-standard attr props?
+    if propname not in SPECIAL_ATTRIBUTE_PROPERTIES:
+        raise KeyError("Bad attribute property name: %s" % propname)
+    return True
 
 
 def update_properties(db, parent, db_props, new_props,
@@ -59,18 +69,21 @@ def update_properties(db, parent, db_props, new_props,
         added_props = dict((prop, value)
                            for prop, value in new_props.items()
                            for attr_prop, value2 in value.items()
-                           if db_props.get(prop, {}).get(attr_prop) != value2)
+                           if (db_props.get(prop, {}).get(attr_prop) != value2
+                               and check_attribute_property(attr_prop)))
         removed_props = dict((prop, value)
                              for prop, value in db_props.items()
                              for attr_prop in value
-                             if attr_prop not in new_props.get(prop, {}))
+                             if attr_prop not in new_props.get(prop, {})
+                             and not is_protected(attr_prop, True))
     else:
         added_props = dict((prop, value)
                            for prop, value in new_props.items()
                            if db_props.get(prop) != value)
         removed_props = dict((prop, value)
                              for prop, value in db_props.items()
-                             if prop not in new_props)
+                             if prop not in new_props
+                             and not is_protected(prop))
 
     # Find the appropriate DB method to call. Thankfully the API is
     # consistent here.
@@ -225,6 +238,11 @@ def clean_metadata(data):
 
 
 def configure(data, write=False, update=False):
+
+    """Takes a data dict and compares it to the Tango DB. If the
+    write flag is given, also modifies the DB to equal the data.
+    The update flag means no devices or properties will be removed.
+    Returns the DB calls needed, and the original DB state."""
 
     # remove any metadata at the top level
     clean_metadata(data)
