@@ -16,6 +16,7 @@ could prevent embarrassing mistakes.
 """
 
 from collections import Mapping
+from functools import partial
 from os import path
 import sys
 import json
@@ -24,7 +25,7 @@ import PyTango
 
 from utils import (red, green, yellow, ObjectWrapper,
                    get_dict_from_db, decode_dict, decode_pointer)
-#from appending_dict import AppendingDict
+
 from excel import SPECIAL_ATTRIBUTE_PROPERTIES
 
 module_path = path.dirname(path.realpath(__file__))
@@ -32,7 +33,7 @@ SCHEMA_FILENAME = path.join(module_path, "schema/dsconfig.json")
 
 
 def check_attribute_properties(attr_props):
-    bad = {}  #AppendingDict()
+    bad = {}
     for attr, ap in attr_props.items():
         for prop, value in ap.items():
             # Is this too strict? Do we ever need non-standard attr props?
@@ -110,9 +111,10 @@ def update_server(db, difactory, server_name, server_dict, db_dict,
                 db.add_device(devinfo)
                 db_dict[class_name][device_name] = {}
 
-            update_device_or_class(db, device_name,
-                                   db_dict[class_name][device_name], dev,
-                                   update=update)
+            update_device(db, device_name,
+                          db_dict[class_name][device_name], dev,
+                          update=update)
+
 
 def update_device_or_class(db, name, db_dict, new_dict, cls=False, update=False):
 
@@ -121,15 +123,18 @@ def update_device_or_class(db, name, db_dict, new_dict, cls=False, update=False)
     if "properties" in new_dict:
         db_props = db_dict.get("properties", {})
         new_props = new_dict["properties"]
-        added, removed = update_properties(db, name, db_props,
-                                           new_props, cls=cls,
-                                           delete=not update)
+        update_properties(db, name, db_props, new_props, cls=cls,
+                          delete=not update)
     if "attribute_properties" in new_dict:
         db_attr_props = db_dict.get("attribute_properties", {})
         new_attr_props = new_dict["attribute_properties"]
-        added, removed = update_properties(db, name, db_attr_props,
-                                           new_attr_props, attr=True, cls=cls,
-                                           delete=not update)
+        update_properties(db, name, db_attr_props, new_attr_props,
+                          attr=True, cls=cls, delete=not update)
+
+
+# nicer aliases
+update_device = partial(update_device_or_class, cls=False)
+update_class = partial(update_device_or_class, cls=True)
 
 
 def dump_value(value):
@@ -240,8 +245,8 @@ def configure(data, write=False, update=False):
         update_server(db, PyTango.DbDevInfo, servername, serverdata,
                       dbdict["servers"][servername], update)
     for classname, classdata in data.get("classes", {}).items():
-        update_device_or_class(db, classname, dbdict["classes"][classname],
-                               classdata, update, cls=True)
+        update_class(db, classname, dbdict["classes"][classname],
+                     classdata, update, cls=True)
 
     return db.calls, dbdict
 
