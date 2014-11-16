@@ -1,6 +1,6 @@
 import unittest
 
-from appending import SetterDict, AppendingDict
+from . import SetterDict, AppendingDict
 
 
 class SetterDictTestCase(unittest.TestCase):
@@ -59,6 +59,12 @@ class SetterDictTestCase(unittest.TestCase):
         sd = SetterDict()
         sd.a.b.c = 4
         self.assertDictEqual(sd, {"a": {"b": {"c": 4}}})
+
+    def test_to_dict(self):
+        orig = {"a": {"b": ["3"], "c": {"d": ["4"]}, "e": ["1"]}}
+        sd = SetterDict(orig)
+        d = sd.to_dict()
+        self.assertDictEqual(orig, d)
 
 
 class AppendingDictTestCase(unittest.TestCase):
@@ -124,3 +130,9 @@ class AppendingDictTestCase(unittest.TestCase):
         ad = AppendingDict()
         ad.a = "abc"
         self.assertDictEqual(ad, {"a": ["abc"]})
+
+    def test_to_dict(self):
+        orig = {"a": {"b": ["3"], "c": {"d": ["4"]}, "e": ["1"]}}
+        ad = AppendingDict(orig)
+        d = ad.to_dict()
+        self.assertDictEqual(orig, d)
