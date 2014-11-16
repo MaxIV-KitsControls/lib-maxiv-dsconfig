@@ -1,6 +1,6 @@
 This is the JSON based device config system.
 
-*** This is not well tested! Be very careful when using in production! ***
+*** This is not exhaustively tested! Be very careful when using in production! ***
 
 The goal of this project is to provide tools for configuring a Tango database in a convenient way. Right now the focus is on supporting Excel files as input ("xls2json"), but support for other formats should follow.
 
@@ -9,10 +9,57 @@ The main idea is that the input files are parsed and turned into an intermediate
 The JSON format is easy to create and supported by many tools and languages, so generating them from various sources should be straightforward. Once you have such a file, it should be a simple thing to configure the Tango database.
 
 
+=== JSON format ===
+
+This is an example of the format, with comments (not actually supported by JSON so don't copy-paste this!):
+
+{
+    // these lines are meta information and are ignored so far
+    "_version": 1,
+    "_source": "ConfigInjectorDiag.xls",
+    "_title": "MAX-IV Tango JSON intermediate format",
+    "_date": "2014-11-03 17:45:04.258926",
+
+    // here comes the actual Tango data
+    // First, server instances and devices...
+    "servers": {
+        "some-server/instance": {
+            "SomeDeviceClass": {
+                "some/device/1": {
+                    "properties": {
+                        "someImportantProperty": [
+                            "foo",
+                            "bar"
+                        ],
+                        "otherProperty": ["7"]
+                    },
+                    "attribute_properties": {
+                        "anAttribute": {
+                            "min_value": ["-5"],
+                            "unit": ["mV"]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    // Here you can list your class properties
+    "classes": {
+        "SomeDeviceClass": {
+            "properties": {
+                "aClassProperty": ["67.4"]
+            }
+        }
+    }
+}
+
+Note that all properties are given as lists of strings. This is how the Tango DB represents them so it gets a lot easier to compare things if we do it too.
+
+
 === xls2json ===
 
 The format supported is almost identical to the dsgenerator format, with a few changes:
- - It is now possible to spread derver definitions over any number of pages, and to selectively use only a subset of these by giving their names to the xls2json tool.
+ - It is now possible to spread server definitions over any number of pages, and to selectively use only a subset of these by giving their names to the xls2json tool.
  - The column names (the first line of each column) are now significant, so that their order can be relaxed. There are a few differences to the "standard" sheet though; "ServerName" should be "Server", "Devices" should be "Device" and, in the "ParamConfig" tab, "Parameter" should now be "Attribute". These changes were made for consistency.
  - A few features have been added for flexibility; see the example Excel file.
 
@@ -20,7 +67,7 @@ Converting an excel file is done like this:
 
  $ xls2json config.xls
 
-This will output the resulting JSON data to stdout. If there are errors or warnings, they will be printed on stderr.
+This will output the resulting JSON data to stdout. If there are errors or warnings, they will be printed on stderr. To save the JSON to a file, just redirect the output.
 
 By default, all sheets are processed. If you want to only include some of them, include the sheet names as further arguments to the command:
 
@@ -32,16 +79,18 @@ The command is quite verbose and it will by default happily skip lines that cont
 
 Useful flags:
 
- --fatal (-f) means that the command will treat any parsing failure as a fatal error and exit instead of skipping the line as normal.
+ --fatal (-f) means that the command will treat any parsing failure as a fatal error and exit instead of skipping the line as normal. Use if you don't like the lenient default behavior.
 
 
 === json2tango ===
 
-This tool reads a JSON file (or from stdout), validates it and (optionally) configures a Tango database accordingly. By default, it will only check the current DB state and print out the differences. This should always be the first step, in order to catch errors before they are permanently written to the DB.
+This tool reads a JSON file (or from stdout if no filename is given), validates it and (optionally) configures a Tango database accordingly. By default, it will only check the current DB state and print out the differences. This should always be the first step, in order to catch errors before they are permanently written to the DB.
 
  $ json2tango config.json
 
 Inspect the output of this command carefully. Lines in red will be removed, green added and yellow changed. Also the old and new values are printed. Note that everything is stored as lists of strings in the DB, so don't be confused by the fact that your numeric properties turn up as strings.
+
+[Pro-tip: since this tool is still under development and not to be considered stable, it's a good idea to inspect the output of the "-d" argument (see below) before doing any non-trivial changes. It's less readable than the normal diff output but garanteed to be accurate.]
 
 Eventually the command will tell you if any changes were made.
 
@@ -55,6 +104,6 @@ Some useful flags:
 
 Some less useful flags:
 
- --no-valudation (-v) skips the JSON validation step. If you know what you're doing, this may be useful as the validation is very strict although the tool itself is more forgiving. Watch out for unexpected behavior though; you're on your own!
+ --no-validation (-v) skips the JSON validation step. If you know what you're doing, this may be useful as the validation is very strict, while the tool itself is more forgiving. Watch out for unexpected behavior though; you're on your own! It's probably a better idea to fix your JSON, though.
 
  --dbcalls (-d) prints out all the Tango database API calls that were, or would have been, made to perform the changes. This is mostly handy for debugging problems.
