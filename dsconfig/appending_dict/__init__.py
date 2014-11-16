@@ -39,6 +39,15 @@ class SetterDict(defaultdict):
     def __repr__(self):
         return json.dumps(self)
 
+    def to_dict(self):
+        result = {}
+        for key, value in self.items():
+            if isinstance(value, SetterDict):
+                result[key] = value.to_dict()
+            else:
+                result[key] = value
+        return result
+
 
 def merge(d, u):
     "Recursively 'merge' a Mapping into another"
