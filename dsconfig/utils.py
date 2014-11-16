@@ -84,7 +84,7 @@ def get_devices_from_dict(dbdict):
 def get_dict_from_db(db, data):
 
     """Takes a data dict, checks if any if the definitions are already
-    in the DB and returns them."""
+    in the DB and returns a dict describing them."""
 
     # This is where we'll collect all the relevant data
     dbdict = AppendingDict()
@@ -151,7 +151,7 @@ def get_dict_from_db(db, data):
                              for prop, values in props.items())
                 dbdict.classes[class_name].attribute_properties[attr] = props
 
-    return dbdict, moved_devices
+    return dbdict.to_dict(), moved_devices
 
 
 class ObjectWrapper(object):
@@ -320,3 +320,43 @@ class CaselessDict(dict):
     def __repr__(self):
         """A caselessDict version of __repr__ """
         return 'caselessDict(' + dict.__repr__(self) + ')'
+
+
+"""A tuctionary, or tuct, is the combination of a tuple with
+a dictionary. A tuct has named items, but they cannot be
+deleted or rebound, nor new can be added.
+"""
+
+class ImmutableDict(object):
+    """The tuct class. An immutable dictionary.
+    """
+
+    def __init__(self, dict=None, **kwds):
+            self.__data = {}
+            if dict is not None:
+                    self.__data.update(dict)
+            if len(kwds):
+                    self.__data.update(kwds)
+
+    #del __init__
+
+    def __repr__(self):
+            return repr(self.__data)
+
+    def __cmp__(self, dict):
+            if isinstance(dict, ImmutableDict):
+                    return cmp(self.__data, dict.__data)
+            else:
+                    return cmp(self.__data, dict)
+
+    def __len__(self):
+            return len(self.__data)
+
+    def __getitem__(self, key):
+            return self.__data[key]
+
+    def copy(self):
+            if self.__class__ is ImmutableDict:
+                    return ImmutableDict(self.__data.copy())
+            import copy
+            __data = self.__data

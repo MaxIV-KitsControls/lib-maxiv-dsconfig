@@ -46,6 +46,8 @@ def update_properties(db, parent, db_props, new_props,
     """
     Updates properties in DB. Covers both device and class
     properties/attribute properties.
+
+    'parent' is the name of the containing device or class.
     """
 
     # Figure out what's going to be added/changed or removed
@@ -91,33 +93,32 @@ def update_server(db, difactory, server_name, server_dict, db_dict,
     """Creates/removes devices for a given server. Optionally
     ignores removed devices, only adding new and updating old ones."""
 
-    devinfo = difactory()
-    devinfo.server = server_name
-
     for class_name, cls in server_dict.items():  # classes
-        devinfo._class = class_name
         removed_devices = [dev for dev in db_dict[class_name]
                            if dev not in cls]
         added_devices = cls.items()
-
         if not update:
             for device_name in removed_devices:
                 db.delete_device(device_name)
 
         for device_name, dev in added_devices:
-            devinfo.name = device_name
             if device_name not in db_dict[class_name]:
+                devinfo = difactory()
+                devinfo.server = server_name
+                devinfo._class = class_name
+                devinfo.name = device_name
                 db.add_device(devinfo)
+                db_dict[class_name][device_name] = {}
 
             if "properties" in dev:
-                db_props = db_dict[class_name][device_name]["properties"]
+                db_props = db_dict[class_name][device_name].get("properties", {})
                 new_props = dev["properties"]
                 added, removed = update_properties(db, device_name,
                                                    db_props, new_props,
                                                    delete=not update)
             if "attribute_properties" in dev:
                 db_attr_props = (db_dict[class_name][device_name]
-                                 ["attribute_properties"])
+                                 .get("attribute_properties", {}))
                 new_attr_props = dev["attribute_properties"]
                 added, removed = update_properties(db, device_name,
                                                    db_attr_props,
@@ -131,13 +132,13 @@ def update_class(db, class_name, class_dict, db_dict, update=False):
     "Configure a class"
 
     if "properties" in class_dict:
-        db_props = db_dict["properties"]
+        db_props = db_dict.get("properties", {})
         new_props = class_dict["properties"]
         added, removed = update_properties(db, class_name, db_props,
                                            new_props, cls=True,
                                            delete=not update)
     if "attribute_properties" in class_dict:
-        db_attr_props = db_dict["attribute_properties"]
+        db_attr_props = db_dict.get("attribute_properties", {})
         new_attr_props = class_dict["attribute_properties"]
         removed, added = update_properties(db, class_name, db_attr_props,
                                            new_attr_props, attr=True, cls=True,
@@ -300,7 +301,7 @@ def main():
 
     # Print out a nice diff
     if options.verbose:
-        print_diff(dbdict.to_dict(), data, removes=not options.update)
+        print_diff(dbdict, data, removes=not options.update)
 
     if options.dbcalls:
         print "\nTango database calls:"
