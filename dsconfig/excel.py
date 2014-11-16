@@ -221,12 +221,7 @@ def xls_to_dict(xls_filename, pages=None, skip=False):
     if not pages:
         pages = xls.sheet_names()
 
-
     for page in pages:
-
-        #PJB hack: page should be Servers, Dynamics or ParamConfig. Allows other documentation sheets.
-        if page not in ["Servers","Dynamics","ParamConfig"]:
-            continue
 
         print >>sys.stderr, "\nPage: %s" % page
         sheet = xls.sheet_by_name(page)
