@@ -29,6 +29,12 @@
             "type": "object",
             "additionalProperties": {
                 "$ref": "#definitions/device"
+            },
+
+            "properties": {
+                "properties": {
+                    "$ref": "#definitions/property"
+                }
             }
         }
     },
@@ -83,6 +89,13 @@
             "type": "object",
             "additionalProperties": {
                 "$ref": "#/definitions/property"
+            }
+        },
+        "class_property": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "$ref": "#definitions/property"
             }
         }
     }
