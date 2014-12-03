@@ -57,17 +57,12 @@ def make_eth_ip_properties(row):
     if "." in row["Tag"]:
         newname = row["Tag"].replace(".","__")
 
-    if "Tag" in row and "Scan period" in row:
-        arg = row["tag"] + ", " + row["Scan period"]
-    elif "Tag" in row:
-        arg = row["tag"] 
+    arg = row["tag"] + ", " + row["Scan period"]
 
     if newname != "":
         arg = arg + ", " + newname 
 
     prop_dict["Tags"] = arg
-
-    print "RETURNING 1", prop_dict
 
     return prop_dict
 
@@ -79,7 +74,7 @@ def make_pyalarm_properties(etherip_dev, origrow, alarms_rows):
     prop_dict = AppendingDict()
 
     #do something for pyalarm here?
-    #look for individual alma tags in other sheet
+    #look for individual alma and almd tags in other sheet
     added = []
     column_names = alarms_rows[0]
     for i, row_ in enumerate(alarms_rows[1:]):
@@ -87,20 +82,26 @@ def make_pyalarm_properties(etherip_dev, origrow, alarms_rows):
         row = CaselessDict(dict((str(name), str(col).strip())
                                 for name, col in zip(column_names, row_)
                                 if col not in ("", None)))
+
+        if "Tag" not in row: #might be a section divider
+            continue
+
+        altype = origrow["Data Type"]
+
         if row["Tag"].split(".")[0] == origrow["Tag"] and row["Tag"] not in added:
-            print "matched alarm row ", origrow, row
+
             added.append(row["Tag"])
 
             newname = row["Tag"].replace(".","__")
 
-            if "HHIn" in newname or "LLIn" in newname or "HIn" in newname or "LIn" in newname:
-                
-                severity = ""
+            if "InAlarm" in newname:
+
+                severity = "ALARM" #For HH and LL and all ALMD
+                if altype=="ALMA":
+                    if "_HIn" in newname or "_LIn" in newname:
+                        severity = "WARNING"
+
                 condition = ""
-                if "HHIn" in newname or "LLIn" in newname:
-                    severity = "ALARM"
-                elif "HIn" in newname or "LIn" in newname:
-                    severity = "WARNING"
                 condition = etherip_dev+"/"+newname
 
                 desc =  row["Alarm text"]
@@ -109,20 +110,18 @@ def make_pyalarm_properties(etherip_dev, origrow, alarms_rows):
                 prop_dict["AlarmSeverities"]  = newname+":"+severity
                 prop_dict["AlarmDescriptions"]  = newname+":"+desc
 
-
-    print "RETURNING 3", prop_dict
     return prop_dict
 
 ###############################################################################################
 
 def make_eth_ip_alarm_properties(origrow, alarms_rows):
-    "Set tag properties of ether ip device coming from alma block"
+    "Set tag properties of ether ip device coming from alma/almd block"
 
     prop_dict = AppendingDict()
 
     
     #do something for pyalarm here?
-    #look for individual alma tags in other sheet
+    #look for individual alma/almd tags in other sheet
     added = []
     column_names = alarms_rows[0]
     for i, row_ in enumerate(alarms_rows[1:]):
@@ -130,17 +129,18 @@ def make_eth_ip_alarm_properties(origrow, alarms_rows):
         row = CaselessDict(dict((str(name), str(col).strip())
                                 for name, col in zip(column_names, row_)
                                 if col not in ("", None)))
+
+        if "Tag" not in row:
+            continue
+
         if row["Tag"].split(".")[0] == origrow["Tag"] and row["Tag"] not in added:
-            print "matched alarm row ", origrow, row
+
             added.append(row["Tag"])
 
             newname = row["Tag"].replace(".","__")
-            if "Scan period" in row:
-                prop_dict["Tags"] = row["Tag"] + ", " + row["Scan period"] + ", " + newname
-            else:
-                prop_dict["Tags"] = row["Tag"] + ", " + newname
+            prop_dict["Tags"] = row["Tag"] + ", " + origrow["Scan period"] + ", " + newname
 
-    print "RETURNING 2", prop_dict
+
     return prop_dict
   
 ###############################################################################################
@@ -157,7 +157,10 @@ def make_eth_ip_device(plcnum,achromat,plcsystem):
     """
     #EtherIP device is like R-311/VAC/PLC-01
     #The achromat changes and PLC can be 01 or 02, this is always VAC subsystem
-    domain = "R3-"+achromat
+    if str(achromat)=="R3":
+        domain = achromat
+    else:
+        domain = "R3-"+achromat
     family = plcsystem
     member = "PLC-0%i"%plcnum
     
@@ -166,7 +169,11 @@ def make_eth_ip_device(plcnum,achromat,plcsystem):
 ###############################################################################################
 
 def make_eth_ip_server(achromat):
-    return "%s/%s" % ("AllenBradleyEIP", "R3-"+achromat)
+    if str(achromat)=="R3":
+        inst = achromat
+    else:
+        inst = "R3-"+achromat
+    return "%s/%s" % ("AllenBradleyEIP", inst)
 
 ###############################################################################################
 
@@ -185,7 +192,11 @@ def make_pyalarm_device(plcnum,achromat,plcsystem):
 ###############################################################################################
 
 def make_pyalarm_server(achromat):
-    return "%s/%s" % ("PyAlarm", "R3-"+achromat)
+    if str(achromat)=="R3":
+        inst = achromat
+    else:
+        inst = "R3-"+achromat 
+    return "%s/%s" % ("PyAlarm", inst)
 
 ###############################################################################################
 
@@ -196,7 +207,10 @@ def make_py_att_device(achromat,subsystem,number):
     
     #PyAttProc device is like R-311/VAC/TC0-01
     #get "311", "WAT" and "TCO06"
-    domain = "R3-"+achromat
+    if achromat=="R3":
+        domain = achromat
+    else:
+        domain = "R3-"+achromat
     family = subsystem
     member = number[:-2] + '-' + number[-2:]
     
@@ -213,9 +227,12 @@ def convert(plc_config, plctype, plcnum,rows, alarms_rows, definitions, skip=Tru
 
     "Update a dict of definitions from data"
 
-    al=-1
     errors = []
     column_names = rows[0]
+
+    already_added_ethip = []
+    already_added_pyala = []
+    already_added_tags = []
 
     def handle_error(i, msg):
         if skip:
@@ -225,7 +242,7 @@ def convert(plc_config, plctype, plcnum,rows, alarms_rows, definitions, skip=Tru
 
     for i, row_ in enumerate(rows[1:]):
 
-        is_alma = False
+        is_almad = False
 
         # The plan is to try to find all information on the
         # line, raising exceptions if there are unrecoverable
@@ -242,26 +259,34 @@ def convert(plc_config, plctype, plcnum,rows, alarms_rows, definitions, skip=Tru
             continue
 
         # Target of the properties; device or class?
-        if "Achromat" in row and "Subsystem" in row and "No" in row:
+        if "Subsystem" in row and "No" in row:
+
+            #shouldn't need such a check:
+            if "Tag" not in row:
+                continue
+            if row["Tag"] in already_added_tags:
+                continue
+            already_added_tags.append(row["Tag"])   
+
+            achromat = row["Achromat"]
             #xxxpjbpy_att_device = make_py_att_device(row["Achromat"],row["Subsystem"],row["No"])
-            eth_ip_device = make_eth_ip_device(plcnum,row["Achromat"],plctype)
+            eth_ip_device = make_eth_ip_device(plcnum,achromat,plctype)
             try:
                 # full device definition
                 #xxpjbpyatt_srvr = make_py_att_server(row["Subsystem"])
-                ethip_srvr = make_eth_ip_server(row["Achromat"])
+                ethip_srvr = make_eth_ip_server(achromat)
                 # target is "lazily" evaluated, so that we don't create
                 # an empty dict if it turns out there are no members
                 #xxxpjbpyatt_target = lambda: definitions.servers[pyatt_srvr]["PyAttributeProcessor"][py_att_device]
                 ethip_target = lambda: definitions.servers[ethip_srvr]["AllenBradleyEIP"][eth_ip_device]
 
                 #if type is alma there must be alarm tags in other sheet
-                if row["Data Type"]=="ALMA":
-                    print "found an alarm tag"
+                if row["Data Type"]=="ALMA" or row["Data Type"]=="ALMD":
                     #make pyalarm device and server
-                    pyalarm_device = make_pyalarm_device(plcnum,row["Achromat"],plctype)
-                    pylarm_srvr = make_pyalarm_server(row["Achromat"])
+                    pyalarm_device = make_pyalarm_device(plcnum,achromat,plctype)
+                    pylarm_srvr = make_pyalarm_server(achromat)
                     pyalarm_target = lambda: definitions.servers[pylarm_srvr]["PyAlarm"][pyalarm_device]
-                    is_alma = True
+                    is_almad = True
 
             except KeyError:
                 # is the device already defined?
@@ -277,42 +302,55 @@ def convert(plc_config, plctype, plcnum,rows, alarms_rows, definitions, skip=Tru
         ###    pyatt_target().properties = py_att_props
 
         #put tags as properties into ether ip device (skip alma ones)
-        if not is_alma:
+        if not is_almad:
             eth_ip_props = make_eth_ip_properties(row)
 
         #put alarm tags from other sheet as properties into ether ip device
-        if is_alma:
-            al = al+1
-            print "doing something with alma tags for ", row["tag"]
+        if is_almad:
+
             eth_ip_alarm_props = make_eth_ip_alarm_properties(row, alarms_rows)
-            print "is alma", eth_ip_alarm_props
 
             #set pyalarm props, too
             pyalarm_props = make_pyalarm_properties(eth_ip_device, row, alarms_rows)
 
-
-        #add one-off properties
-        if i==0:
-            eth_ip_props["MinimumScanPeriod"] = plc_config["minscan"]
-            eth_ip_props["CPUSlot"] = plc_config["slot"]
-            eth_ip_props["PLC"] = plc_config["ip"]
-
-        if al==0:
-            pyalarm_props["AutoReset"] = PYALARM_AUTORESET
-            pyalarm_props["StartupDelay"] = PYALARM_STARTUPDELAY
-            pyalarm_props["AlarmThreshold"] = PYALARM_THRESHOLD
-
-        if not is_alma and eth_ip_props:
+    
+        if not is_almad and eth_ip_props:
             ethip_target().properties = eth_ip_props
-            print "ADD PROPS", eth_ip_props
-        if is_alma and eth_ip_alarm_props:
+
+            #add one-off properties. This assumes one etherip device for one achromat, not very flexible!
+            if achromat not in already_added_ethip:
+                already_added_ethip.append(achromat)
+                single_prop_dict = {} #not appending!
+                single_prop_dict["MinimumScanPeriod"] = plc_config["minscan"]
+                single_prop_dict["CPUSlot"] = plc_config["slot"]
+                single_prop_dict["PLC"] = plc_config["ip"]
+                ethip_target().properties = single_prop_dict
+
+
+
+        if is_almad and eth_ip_alarm_props:
             ethip_target().properties = eth_ip_alarm_props
-            print "ADD ALARMS", eth_ip_alarm_props
-            #pyalarm
+            #For pyalarm
             pyalarm_target().properties = pyalarm_props
 
+            #add one-off properties. Some etherip device (achromat) may only have alarms, if achromat is really e.g A11xxxx
+            #This assumes one etherip device for one achromat, not very flexible!
+            if achromat not in already_added_ethip:
+                already_added_ethip.append(achromat)
+                single_prop_dict = {} #not appending!
+                single_prop_dict["MinimumScanPeriod"] = plc_config["minscan"]
+                single_prop_dict["CPUSlot"] = plc_config["slot"]
+                single_prop_dict["PLC"] = plc_config["ip"]
+                ethip_target().properties = single_prop_dict
 
-        print "FINAL", ethip_target().properties
+            #add one-off properties. This assumes one alarm device for one achromat, not very flexible!
+            if achromat not in already_added_pyala:
+                already_added_pyala.append(achromat)
+                single_prop_dict = {}
+                single_prop_dict["AutoReset"] = PYALARM_AUTORESET
+                single_prop_dict["StartupDelay"] = PYALARM_STARTUPDELAY
+                single_prop_dict["AlarmThreshold"] = PYALARM_THRESHOLD
+                pyalarm_target().properties = single_prop_dict
 
     return errors
 
@@ -347,7 +385,7 @@ def xls_to_dict(xls_filename, pages=None, skip=False):
     #read config page first
     sheet = xls.sheet_by_name("Config")
     rows = [sheet.row_values(i) for i in xrange(sheet.nrows)]
-    print rows
+
     plc1_config["ip"]=rows[1][1]
     plc1_config["slot"]=rows[1][2]
     plc1_config["minscan"]=rows[1][3]
@@ -361,30 +399,36 @@ def xls_to_dict(xls_filename, pages=None, skip=False):
         if page == "Config":
             continue #we already read this one!
 
+        if "PLC:" not in page:
+            continue
+
         #Specific to PLC tag files
         #Sheets named like "PLC:01,Achromat:301-310,Tags", "PLC:01,Achromat:301-310,Alarms"
         page_l = str(page).split(",")
         plc_num = page_l[0].split(":")[1]
-        type = page_l[2]
-        print type, plc_num
+        ach_num = page_l[1].split(":")[1]
+        type    = page_l[2]
+
+        print type, plc_num, ach_num
         
-        #which plc
-        if int(plc_num)==1:
-            print "dealing with plc 1"
-            plc_config=plc1_config
-            print plc_config
-        else:
-            print "dealing with plc 2"
-            plc_config=plc2_config
-            print plc_config
-            
         rows_tags   = []
         rows_alarms = []
 
         if type=="Tags":
+
+            #which plc
+            if int(plc_num)==1:
+                print "dealing with plc 1"
+                plc_config=plc1_config
+                print plc_config
+            else:
+                print "dealing with plc 2"
+                plc_config=plc2_config
+                print plc_config
+            
             sheet = xls.sheet_by_name(page)
             #deduce alarms sheet name
-            alarms_page = "PLC:"+plc_num+",Achromat:301-310,Alarms"
+            alarms_page = "PLC:"+plc_num+",Achromat:"+ach_num+",Alarms"
             print "alarms ", alarms_page
             alarms_sheet = xls.sheet_by_name(alarms_page)
             rows = [sheet.row_values(i) for i in xrange(sheet.nrows)]
