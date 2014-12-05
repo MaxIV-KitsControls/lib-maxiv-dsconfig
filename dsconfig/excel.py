@@ -51,7 +51,8 @@ def get_properties(row):
             name, = match.groups()
             if isinstance(value, float):    # TODO: numeric values become floats, but what if we only want integers?
                 value = str(value)
-            prop_dict[name] = value.strip()
+            values = [v.strip() for v in value.decode("string-escape").split()]
+            prop_dict[name] = values
 
     return prop_dict
 

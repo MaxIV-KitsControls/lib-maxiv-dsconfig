@@ -108,7 +108,7 @@ def update_server(db, difactory, server_name, server_dict, db_dict,
     ignores removed devices, only adding new and updating old ones."""
 
     for class_name, cls in server_dict.items():  # classes
-        removed_devices = [dev for dev in db_dict[class_name]
+        removed_devices = [dev for dev in db_dict.get(class_name, {})
                            if dev not in cls]
         added_devices = cls.items()
         if not update:
@@ -116,16 +116,16 @@ def update_server(db, difactory, server_name, server_dict, db_dict,
                 db.delete_device(device_name)
 
         for device_name, dev in added_devices:
-            if device_name not in db_dict[class_name]:
+            if device_name not in db_dict.get(class_name, {}):
                 devinfo = difactory()
                 devinfo.server = server_name
                 devinfo._class = class_name
                 devinfo.name = device_name
                 db.add_device(devinfo)
-                db_dict[class_name][device_name] = {}
+                #db_dict.setdefault(class_name, {})[device_name] = {}
 
             update_device(db, device_name,
-                          db_dict[class_name][device_name], dev,
+                          db_dict.get(class_name, {}).get(device_name, {}), dev,
                           update=update)
 
 
@@ -261,9 +261,9 @@ def configure(data, write=False, update=False):
 
     for servername, serverdata in data.get("servers", {}).items():
         update_server(db, PyTango.DbDevInfo, servername, serverdata,
-                      dbdict["servers"][servername], update)
+                      dbdict.get("servers", {}).get(servername, {}), update)
     for classname, classdata in data.get("classes", {}).items():
-        update_class(db, classname, dbdict["classes"][classname],
+        update_class(db, classname, dbdict.get("classes", {}).get(classname, {}),
                      classdata, update, cls=True)
 
     return db.calls, dbdict
