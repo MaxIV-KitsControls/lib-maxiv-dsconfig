@@ -272,6 +272,7 @@ def configure(data, write=False, update=False):
 def main():
 
     from optparse import OptionParser
+    from tempfile import NamedTemporaryFile
 
     usage = "Usage: %prog [options] JSONFILE"
     parser = OptionParser(usage=usage)
@@ -314,18 +315,23 @@ def main():
         print_diff(dbdict, data, removes=not options.update)
 
     if options.dbcalls:
-        print "\nTango database calls:"
+        print >>sys.stderr, "Tango database calls:"
         for method, args, kwargs in dbcalls:
             print method, args
 
     if dbcalls:
         if options.write:
             print >>sys.stderr, red("\n*** Data was written to the Tango DB ***")
+            with NamedTemporaryFile(prefix="dsconfig", delete=False) as f:
+                f.write(json.dumps(dbdict, indent=4))
+                print >>sys.stderr, ("The previous DB data was saved to %s." %
+                                     f.name)
         else:
             print >>sys.stderr, yellow(
                 "\n*** Nothing was written to the Tango DB (use -w) ***")
     else:
         print >>sys.stderr, green("\n*** No changes needed in Tango DB ***")
+
 
 
 if __name__ == "__main__":
