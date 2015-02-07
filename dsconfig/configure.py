@@ -322,16 +322,16 @@ def main():
     if dbcalls:
         if options.write:
             print >>sys.stderr, red("\n*** Data was written to the Tango DB ***")
-            with NamedTemporaryFile(prefix="dsconfig", delete=False) as f:
+            with NamedTemporaryFile(prefix="dsconfig-", suffix=".json",
+                                    delete=False) as f:
                 f.write(json.dumps(dbdict, indent=4))
-                print >>sys.stderr, ("The previous DB data was saved to %s." %
+                print >>sys.stderr, ("The previous DB data was saved to %s" %
                                      f.name)
         else:
             print >>sys.stderr, yellow(
                 "\n*** Nothing was written to the Tango DB (use -w) ***")
     else:
         print >>sys.stderr, green("\n*** No changes needed in Tango DB ***")
-
 
 
 if __name__ == "__main__":

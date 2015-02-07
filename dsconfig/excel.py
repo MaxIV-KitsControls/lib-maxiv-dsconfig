@@ -40,7 +40,7 @@ def get_properties(row):
         try:
             for prop in properties.split(";"):
                 name, value = prop.split("=")
-                prop_dict[name.strip()] = value.strip()
+                prop_dict[name.strip()] = [v.strip() for v in value.decode("string-escape").split("\n")]
         except ValueError:
             raise ValueError("could not parse Properties")
 

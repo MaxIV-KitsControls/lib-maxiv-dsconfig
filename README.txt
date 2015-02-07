@@ -73,7 +73,7 @@ By default, all sheets are processed. If you want to only include some of them, 
 
  $ xls2json config.xls sheet1 sheet2
 
-The "Dynamics" and "ParamConfig" sheets are always included if they exist (for now). Some syntax checking is done on dynamic formulas, to make sure they compile. Failures are printed to stderr and the corresponding properties skipped, so be careful.
+The "Dynamics" and "ParamConfig" sheets are always included if they exist (for now). Some syntax checking is done on dynamic formulas, to make sure they compile. Failures are printed to stderr and the corresponding properties skipped, so be careful (see the -f flag to override this).
 
 The command is quite verbose and it will by default happily skip lines that contain incomplete information. Make sure to check the stderr output for hints about this. At the end the command prints a line of statistics, listing the number of servers, etc, it has found. This is intended as a useful sanity check. Also look over the JSON result to see if it makes sense.
 
@@ -92,7 +92,7 @@ Inspect the output of this command carefully. Lines in red will be removed, gree
 
 [Pro-tip: since this tool is still under development and not to be considered stable, it's a good idea to inspect the output of the "-d" argument (see below) before doing any non-trivial changes. It's less readable than the normal diff output but garanteed to be accurate.]
 
-Eventually the command will tell you if any changes were made.
+Eventually the command will tell you if any changes were made. For safety and convenience, the program also always writes the previous DB state that was to be changed into a temp file and prints its name. It should be possible to undo the changes made by swapping your input JSON file for the relevant temp file (this is a new feature that is not tested for many cases so don't rely on it.)
 
 The command only really cares about devices, which is to say that if you rename a device, the old device will be removed, but renaming a server will not cause the old *server* to be removed. Only stuff within the servers defined in your JSON file will be affected by what you do. The exception is of course any devices you define that are already present somewhere else in the database; they will be removed from there as there can only ever be at most one device with a given name.
 
