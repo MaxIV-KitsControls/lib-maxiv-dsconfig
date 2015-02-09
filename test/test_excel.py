@@ -25,6 +25,16 @@ class TestExcel(TestCase):
         result = excel.get_properties(row)
         self.assertDictEqual(result, {"a": ["1"], "b": ["2"], "c": ["3"]})
 
+    def test_get_properties_splits_combined(self):
+        row = CaselessDict({"Properties": "a=1\n2\n3"})
+        result = excel.get_properties(row)
+        self.assertDictEqual(result, {"a": ["1", "2", "3"]})
+
+    def test_get_properties_splits_separate(self):
+        row = CaselessDict({"Property:a": "1\n2\n3"})
+        result = excel.get_properties(row)
+        self.assertDictEqual(result, {"a": ["1", "2", "3"]})
+
     def test_get_dynamic_attribute(self):
         row = CaselessDict({"name": "TestAttribute", "formula": "a + b",
                             "type": "int", "mode": "attr"})
