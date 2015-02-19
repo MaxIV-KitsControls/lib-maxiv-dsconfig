@@ -534,29 +534,29 @@ class LatticeFileItem:
 
                         #create arrays of this dimensions, other dimension is 11
 
-                        fieldsmatrix = [[0 for x in xrange(11)] for x in xrange(dim)] 
+                        fieldsmatrix = [[0 for x in xrange(19)] for x in xrange(dim)] 
                         #print fieldsmatrix
-                        currentsmatrix = [[0 for x in xrange(11)] for x in xrange(dim)] 
+                        currentsmatrix = [[0 for x in xrange(19)] for x in xrange(dim)] 
 
                         #iterate over keys and add to the array
                         for key in calib_dict[self.itemName.split("_")[0]]:
                             print '--- ', key, 'corresponds to', calib_dict[self.itemName.split("_")[0]][key]
-                            currents = calib_dict[self.itemName.split("_")[0]][key][5:17]
-                            fields   = calib_dict[self.itemName.split("_")[0]][key][17:29]
+                            currents = calib_dict[self.itemName.split("_")[0]][key][5:25]
+                            fields   = calib_dict[self.itemName.split("_")[0]][key][25:45]
                             print '--- ',currents, fields
 
                             fieldsmatrix[key-1]=fields
                             currentsmatrix[key-1]=currents
                             #key here is the multipole order. any one should have same polarity
-                            polarity = calib_dict[self.itemName.split("_")[0]][key][2]
-                            orientation = calib_dict[self.itemName.split("_")[0]][key][3]
+                            polarity = calib_dict[self.itemName.split("_")[0]][key][3]
+                            orientation = calib_dict[self.itemName.split("_")[0]][key][2]
                             #print "P, O", polarity, orientation
 
                         print '--- ',fieldsmatrix
                         print '--- ',currentsmatrix
 
                         #now trim the matrices (lists)
-                        maxlength = 12
+                        maxlength = 20
                         for i,val in enumerate(fieldsmatrix[dim-1]):
                             if val=='':
                                 print i , val
@@ -779,32 +779,36 @@ if __name__ == '__main__':
     if doCalib:
         #open excel sheet
         xls = xlrd.open_workbook(excelName)
-        sheet = xls.sheet_by_name('linac')
-        rows = [sheet.row_values(i) for i in xrange(sheet.nrows)]    
-        column_names = rows[7]
-        print "cols ", column_names
 
-        for row in enumerate(rows[9:]):  
-            print row[1]
-            if row[1][2]=="":
-                continue
-            #this is like 
-            #[5.0, u'I.S01A', u'I.S01A.MAG.QE.1', 202005.0, u'#1168-10030-0001', 1.0, -1.0, 2.0, 6.3167, 5.6757, 5.0307500000000003, 4.4208999999999996, 3.8452999999999999, 3.1463999999999999, 2.5179624999999999, 1.8892374999999999, 1.2808725000000001, 0.63988750000000016, 0.0, 0.70470485548532313, 0.63908274382966312, 0.56946571499960408, 0.50203927491440703, 0.43686121069898298, 0.35966476443894108, 0.288993167760146, 0.21848942173091002, 0.14957521795596601, 0.077488874695939805, 0.0052044472873010797, u'T', u'Rotating coil-C1168, #0001.xls', u'https://alfresco.maxlab.lu.se/share/page/site/maxiv/document-details?nodeRef=workspace://SpacesStore/23cdc9d1-a01e-443e-b578-1538637a1472', u'Scanditronix Magnet', 40690.0, '']
-            if row[1][2].strip() not in calib_dict:
-                if row[1][7] is not "":
-                    data_key = int(row[1][7])
-                    data_list = row[1][3:33]
-                    data_dict = {data_key : data_list}
-                    calib_dict[row[1][2].strip()]=data_dict
-                #calib_dict[row[1][2]]=row[1][3:33]
-            else:
-                if row[1][7] is not "":
-               #we found more curves for the same magnet 
-                    print "found another entry", row[1][2], row[1][7]
-                    data_key = int(row[1][7])
-                    data_list = row[1][3:33]
-                    data_dict = {data_key : data_list}
-                    calib_dict[row[1][2].strip()][data_key]=data_list
+        for name in ["Linac", "Transfer1GeV", "Transfer3GeV", "ThermionicGun"]:
+
+            #sheet = xls.sheet_by_name('Linac')
+            sheet = xls.sheet_by_name(name)
+            rows = [sheet.row_values(i) for i in xrange(sheet.nrows)]    
+            column_names = rows[7]
+            print "cols ", column_names
+
+            for row in enumerate(rows[9:]):  
+                print row[1]
+                if row[1][2]=="":
+                    continue
+                #this is like 
+                #[5.0, u'I.S01A', u'I.S01A.MAG.QE.1', 202005.0, u'#1168-10030-0001', 1.0, -1.0, 2.0, 6.3167, 5.6757, 5.0307500000000003, 4.4208999999999996, 3.8452999999999999, 3.1463999999999999, 2.5179624999999999, 1.8892374999999999, 1.2808725000000001, 0.63988750000000016, 0.0, 0.70470485548532313, 0.63908274382966312, 0.56946571499960408, 0.50203927491440703, 0.43686121069898298, 0.35966476443894108, 0.288993167760146, 0.21848942173091002, 0.14957521795596601, 0.077488874695939805, 0.0052044472873010797, u'T', u'Rotating coil-C1168, #0001.xls', u'https://alfresco.maxlab.lu.se/share/page/site/maxiv/document-details?nodeRef=workspace://SpacesStore/23cdc9d1-a01e-443e-b578-1538637a1472', u'Scanditronix Magnet', 40690.0, '']
+                if row[1][2].strip() not in calib_dict:
+                    if row[1][7] is not "":
+                        data_key = int(row[1][7])
+                        data_list = row[1][3:48]
+                        data_dict = {data_key : data_list}
+                        calib_dict[row[1][2].strip()]=data_dict
+                    #calib_dict[row[1][2]]=row[1][3:33]
+                else:
+                    if row[1][7] is not "":
+                    #we found more curves for the same magnet 
+                        print "found another entry", row[1][2], row[1][7]
+                        data_key = int(row[1][7])
+                        data_list = row[1][3:48]
+                        data_dict = {data_key : data_list}
+                        calib_dict[row[1][2].strip()][data_key]=data_list
 
         print "DICT IS ", calib_dict
         

@@ -30,40 +30,115 @@ PYALARM_AUTORESET = "60"
 PYALARM_MAXMESSAGES = "1"
 PYALARM_THRESHOLD ="1"
 PYALARM_STARTUPDELAY = "0"
+PYALARM_POLLING = "3"
 
 ###############################################################################################
 
-def make_py_att_properties(row):
+def make_py_att_tc_properties(row, ethipdev):
     "Set tag properties of Py Att Processor"
 
     prop_dict = AppendingDict()
 
-    # Properties column are the tags
-    if "Tag" in row:
-        prop_dict["tag_list"] = row["tag"]
+    #ignore alarms for now - handle as part of state?
+    if "Data Type" in row and "Tag" in row:
+        if row["Data Type"] != "ALMA":
+
+            datatype=""
+            if row["Data Type"]=="BOOL":
+                datatype="bool"
+            if row["Data Type"]=="INT" or row["Data Type"]=="DINT" or row["Data Type"]=="SINT":
+                datatype="int"
+            if row["Data Type"]=="REAL":
+                datatype="float"
+
+            #prop_dict["tag_list"] = row["tag"]
+            prop_dict["DynamicAttributes"] = row["tag"]+"="+datatype+"(XATTR('%s/%s' % (PROPERTY('etherip_device'),'"+row["tag"]+"')))"
+
+    #point to Ether IP device
+    if ethipdev is not None:
+        prop_dict["etherip_device"] = str(ethipdev)
+
 
     return prop_dict
 
 ###############################################################################################
 
-def make_eth_ip_properties(row):
+def make_py_att_vgc_properties(row, vgc_rows, ethipdev):
+    "Set tag properties of Py Att Processor"
+
+    prop_dict = AppendingDict()
+
+    print "---------------- in make props ", vgc_rows
+
+    #ignore alarms for now - handle as part of state?
+    column_names = vgc_rows[0]
+    for i, row_ in enumerate(vgc_rows[1:]):
+        # now loop over vgc tags!
+        vgcrow = CaselessDict(dict((str(name), str(col).strip())
+                                   for name, col in zip(column_names, row_)
+                                   if col not in ("", None)))
+
+        print "-------------------------------- in make props, row ", vgcrow
+
+        if vgcrow["Used in Device"] == "1":
+            fulltag = row["Tag"] + "." + vgcrow["Input Parameter"]
+            tangoname = fulltag.replace(".","__")
+
+            datatype=""
+            if vgcrow["DataType"]=="BOOL":
+                datatype="bool"
+            if vgcrow["DataType"]=="INT" or vgcrow["DataType"]=="DINT" or vgcrow["DataType"]=="SINT":
+                datatype="int"
+            if vgcrow["DataType"]=="REAL":
+                datatype="float"
+            
+
+            #prop_dict["Tags"] = fulltag + ", " + vgcrow["Scan Period"] + ", " + tangoname
+            prop_dict["DynamicAttributes"] = tangoname+"="+datatype+"(XATTR('%s/%s' % (PROPERTY('etherip_device'),'"+tangoname+"')))"
+
+    #point to Ether IP device
+    if ethipdev is not None:
+        prop_dict["etherip_device"] = str(ethipdev)
+
+
+    return prop_dict
+
+###############################################################################################
+
+def make_eth_ip_properties(row, vgc_rows=None):
     "Set tag properties of ether ip device"
 
     prop_dict = AppendingDict()
 
-    # Properties column are the tags - here can add a polling period            
+    #look for individual VGC tags other sheet
+    if vgc_rows is not None:
+        column_names = vgc_rows[0]
+        for i, row_ in enumerate(vgc_rows[1:]):
+            # now loop over vgc tags!
+            vgcrow = CaselessDict(dict((str(name), str(col).strip())
+                                       for name, col in zip(column_names, row_)
+                                       if col not in ("", None)))
 
-    newname = ""
-    if "." in row["Tag"]:
-        newname = row["Tag"].replace(".","__")
+            fulltag = row["Tag"] + "." + vgcrow["Input Parameter"]
+            tangoname = fulltag.replace(".","__")
 
-    arg = row["tag"] + ", " + row["Scan period"]
+            prop_dict["Tags"] = fulltag + ", " + vgcrow["Scan Period"] + ", " + tangoname
 
-    if newname != "":
-        arg = arg + ", " + newname 
+    #or else just a single tag
+    else:
+        #tag and scan period
+        arg = row["tag"] + ", " + row["Scan period"]
 
-    prop_dict["Tags"] = arg
+        #optionally also the tango name
+        if "Tango Name" in row:        
+            #print "xxxxxxxxxxxxxxx -------------------- TN"
+            newname = row["Tango Name"]
+            arg = arg + ", " + newname 
 
+        #add tag
+        prop_dict["Tags"] = arg
+
+    print "returning ", prop_dict
     return prop_dict
 
 ###############################################################################################
@@ -143,10 +218,16 @@ def make_eth_ip_alarm_properties(origrow, alarms_rows):
 
 ###############################################################################################
 def process_achromat_col_name(name):
-    if str(name)=="R3" or str(name[0])=="B":
+    if str(name)=="R3" or str(name[0])=="B" or str(name)=="R3-3":
         newname = str(name)
     elif "PLC0" in str(name): #put tags related to plc itself under r3
         newname = "R3"
+    elif "A1" in str(name): #all AXXX under R3
+        newname = "R3"
+    #magnet tag list has achromats with names like 301M1, ps tag list just has 301 etc.
+    #take reduced version:
+    elif str(name)[0]=="3" and len(str(name))==5:
+        newname = "R3-"+str(name[0:3])
     else:
         newname = "R3-"+str(name)
     return newname
@@ -160,7 +241,6 @@ def make_eth_ip_device(plcnum,achromat,plcsystem):
     #EtherIP device is typically like R-311/VAC/PLC-01
     #In the spreadsheet, achromat may be "R3" for something general, 3xx for an achromat
     #or Bxxx for a beamline
-    #domain = process_achromat_col_name(achromat)
     domain = achromat
     family = plcsystem
     member = "PLC-0%i"%plcnum
@@ -182,41 +262,99 @@ def make_pyalarm_device(plcnum,achromat,plcsystem):
 
 ###############################################################################################
 
-def make_eth_ip_server(achromat):
+def make_eth_ip_server(achromat,plctype):
     #inst = process_achromat_col_name(achromat)
     inst = achromat
-    return "%s/%s" % ("AllenBradleyEIP", inst)
+    #return "%s/%s" % ("AllenBradleyEIP", inst)
+    return "%s/%s" % ("AllenBradleyEIP", inst+"-"+plctype)
+    #PJB ignore achromat, just a single R3-MAG server?
+    #return "%s/%s" % ("AllenBradleyEIP", "R3-"+plctype)
 
 ###############################################################################################
 
-def make_pyalarm_server(achromat):
+def make_pyalarm_server(achromat,plctype):
     #inst = process_achromat_col_name(achromat)
     inst = achromat
-    return "%s/%s" % ("PyAlarm", inst)
+    #return "%s/%s" % ("PyAlarm", inst)
+    #PJB ignore achromat, just a single R3-MAG server?
+    return "%s/%s" % ("PyAlarm", "R3-"+plctype)
 
 ###############################################################################################
 
-def make_py_att_device(achromat,subsystem,number):
+def make_py_att_tc_device(achromat):
     """
-    Return pyattribute processor device name
+    Return pyattribute processor device name for thermocouple device
     """
     
-    #PyAttProc device is like R-311/VAC/TC0-01
-    #get "311", "WAT" and "TCO06"
-    domain = process_achromat_col_name(achromat)
-    family = subsystem
-    member = number[:-2] + '-' + number[-2:]
-    
+    #PyAttProc device is like R-311/DIA/TC0-01
+    domain = achromat
+    family = "VAC"
+    member = "DIA-TCO"
     return domain+"/"+family+"/"+member
 
 ###############################################################################################
 
-def make_py_att_server(subsystem):
-    return "%s/%s" % ("PyAttributeProcessor", subsystem)
+def make_py_att_vgc_device(achromat):
+    """
+    Return pyattribute processor device name for VGC device
+    """
+    
+    #PyAttProc device is like R-311/VAC/VGC-01
+    domain = achromat
+    family = "VAC"
+    member = "VGC"
+    return domain+"/"+family+"/"+member
 
 ###############################################################################################
 
-def convert(plc_config, plctype, plcnum,rows, alarms_rows, definitions, skip=True, dynamic=False, config=False):
+def make_py_att_tc_server():
+    inst = "R3-TCO"
+    return "%s/%s" % ("PyAttributeProcessor", inst)
+
+###############################################################################################
+
+def make_py_att_vgc_server():
+    inst = "R3-VGC"
+    return "%s/%s" % ("PyAttributeProcessor", inst)
+
+###############################################################################################
+
+def get_mag_name(magname):
+    magname = str(magname)
+    print "in get mag name for ", magname
+    #mag name in PLC tag list component is like 
+    #R3_301M2_MAG_SXDE01_TSW70 
+    #and should be 
+    #R3-301M2/MAG/SXDE-01
+    if "MAG" in magname and "TSW" in magname:
+        name_l = magname.split("_")
+        domain = name_l[0]+"-"+name_l[1]
+        family = name_l[2]
+        member = name_l[3][:-2] + "-" + name_l[3][-2:]
+        return domain+"/"+family+"/"+member
+    else:
+        return None
+
+def make_magnet_server(magname):
+    inst = magname.split("/")[0][:-2]
+    print "---------making server name ", inst
+    return "%s/%s" % ("Magnet", inst)
+
+def make_magnet_properties(etherip_dev, row):
+    "Set magnet alarm properties"
+
+    prop_dict = AppendingDict()
+
+    #property is like "etherip device, tag as exposed, desc"
+
+    prop_dict["TemperatureInterlock"] = etherip_dev+","+row["Tag"]+"__InAlarm,"+row["Description"]
+
+    return prop_dict
+
+
+###############################################################################################
+
+def convert(plc_config, plctype, plcnum,rows, alarms_rows, vgc_rows, definitions, skip=True, dynamic=False, config=False):
 
     "Update a dict of definitions from data"
 
@@ -225,6 +363,8 @@ def convert(plc_config, plctype, plcnum,rows, alarms_rows, definitions, skip=Tru
 
     already_added_ethip = []
     already_added_pyala = []
+    already_added_tc_pyatt = []
+    already_added_vgc_pyatt = []
     already_added_tags = []
 
     def handle_error(i, msg):
@@ -236,6 +376,7 @@ def convert(plc_config, plctype, plcnum,rows, alarms_rows, definitions, skip=Tru
     for i, row_ in enumerate(rows[1:]):
 
         is_almad = False
+        is_almagal = False
 
         # The plan is to try to find all information on the
         # line, raising exceptions if there are unrecoverable
@@ -265,25 +406,60 @@ def convert(plc_config, plctype, plcnum,rows, alarms_rows, definitions, skip=Tru
 
             #rename what is in first column. e.g. add R3 prefix if needed
             #special case for plc01 and 02, get merged into r3
-            achromat = process_achromat_col_name(achromat)
 
-            #py_att_device = make_py_att_device(row["Achromat"],row["Subsystem"],row["No"])
+            #print "before ", achromat
+            achromat = process_achromat_col_name(achromat)
+            print "achromat:  ", achromat
+
+            #make thermocouple pyattproc device in vac PLC
+            if plctype == "VAC" and row["Component Type"] == "Thermocouple":
+                print "dealing with a thermocouple"
+                py_att_tc_device = make_py_att_tc_device(achromat)
+
+            #make vgc pyattproc device in vac PLC
+            if plctype == "VAC" and row["Component Type"] == "Vacuum Gauge":
+                print "dealing with a VGC"
+                py_att_vgc_device = make_py_att_vgc_device(achromat)
+
+
             eth_ip_device = make_eth_ip_device(plcnum,achromat,plctype)
 
             try:
-                # full device definition
-                #pyatt_srvr = make_py_att_server(row["Subsystem"])
-                ethip_srvr = make_eth_ip_server(achromat)
-                #pyatt_target = lambda: definitions.servers[pyatt_srvr]["PyAttributeProcessor"][py_att_device]
+                #server for pyatt proc for thermocouples
+                if plctype == "VAC" and row["Component Type"] == "Thermocouple":
+                    pyatt_tc_srvr = make_py_att_tc_server()
+                    pyatt_tc_target = lambda: definitions.servers[pyatt_tc_srvr]["PyAttributeProcessor"][py_att_tc_device]
+
+                #server for pyatt proc for vgc
+                if plctype == "VAC" and row["Component Type"] == "Vacuum Gauge":
+                    pyatt_vgc_srvr = make_py_att_vgc_server()
+                    pyatt_vgc_target = lambda: definitions.servers[pyatt_vgc_srvr]["PyAttributeProcessor"][py_att_vgc_device]
+
+                #etherip server
+                ethip_srvr = make_eth_ip_server(achromat,plctype)
                 ethip_target = lambda: definitions.servers[ethip_srvr]["AllenBradleyEIP"][eth_ip_device]
 
                 #if type is alma there must be alarm tags in other sheet
                 if row["Data Type"]=="ALMA" or row["Data Type"]=="ALMD":
                     #make pyalarm device and server
                     pyalarm_device = make_pyalarm_device(plcnum,achromat,plctype)
-                    pylarm_srvr = make_pyalarm_server(achromat)
+                    pylarm_srvr = make_pyalarm_server(achromat,plctype)
                     pyalarm_target = lambda: definitions.servers[pylarm_srvr]["PyAlarm"][pyalarm_device]
                     is_almad = True
+
+                    #for magnets only
+                    if plctype=="MAG":
+                        print "looking for magnet alarm"
+                        magname =  row["Component"]
+                        print "will process", magname
+                        validmagname = get_mag_name(magname)
+                        print "found alarm for magnet", validmagname
+                        if validmagname is not None:
+                            is_almagal = True
+                            magnet_device = validmagname
+                            magnet_srvr = make_magnet_server(validmagname)
+                            magnet_target = lambda: definitions.servers[magnet_srvr]["Magnet"][magnet_device]
+
 
             except KeyError:
                 # is the device already defined?
@@ -291,14 +467,34 @@ def convert(plc_config, plctype, plcnum,rows, alarms_rows, definitions, skip=Tru
         else:  
             print "ROW NOT PARSED", row
 
-        #put some properties into py att device - everything but alarms
-        ###py_att_props = make_py_att_properties(row)
-        ###if py_att_props:
-        ###    pyatt_target().properties = py_att_props
+        #put some properties into py att TC device - everything but alarms
+        if plctype == "VAC" and row["Component Type"] == "Thermocouple":
+            if achromat not in already_added_tc_pyatt:
+                already_added_tc_pyatt.append(achromat)
+                py_att_props = make_py_att_tc_properties(row,eth_ip_device)
+            else:
+                py_att_props = make_py_att_tc_properties(row,None)
+            pyatt_tc_target().properties = py_att_props
+
+        #put some properties into py att VGC device - everything but alarms
+        if plctype == "VAC" and row["Data Type"] == "VGC":
+            if achromat not in already_added_vgc_pyatt:
+                already_added_vgc_pyatt.append(achromat)
+                py_att_props = make_py_att_vgc_properties(row,vgc_rows,eth_ip_device)
+            else:
+                py_att_props = make_py_att_vgc_properties(row,vgc_rows,None)
+            pyatt_vgc_target().properties = py_att_props
+
 
         #put tags as properties into ether ip device (skip alma and almd ones)
         if not is_almad:
-            eth_ip_props = make_eth_ip_properties(row)
+            #maybe just a single tag, or maybe a FB and have to find tags in other sheet
+            #specific case for vaccum gauge (VGC) for now
+            if row["Data Type"] == "VGC":
+                print "VGC"
+                eth_ip_props = make_eth_ip_properties(row, vgc_rows)
+            else:
+                eth_ip_props = make_eth_ip_properties(row, None)
 
         #put alarm tags from other sheet as properties into ether ip device
         if is_almad:
@@ -306,7 +502,13 @@ def convert(plc_config, plctype, plcnum,rows, alarms_rows, definitions, skip=Tru
             #set pyalarm props, too
             pyalarm_props = make_pyalarm_properties(eth_ip_device, row, alarms_rows)
 
-    
+        #magnet alarm properties
+        if is_almagal:
+            print "making magnet props using ether ip ", str(eth_ip_device)
+            magnet_props = make_magnet_properties(str(eth_ip_device), row)
+            magnet_target().properties = magnet_props
+
+
         if not is_almad and eth_ip_props:
             ethip_target().properties = eth_ip_props
 
@@ -343,7 +545,11 @@ def convert(plc_config, plctype, plcnum,rows, alarms_rows, definitions, skip=Tru
                 single_prop_dict["AutoReset"] = PYALARM_AUTORESET
                 single_prop_dict["StartupDelay"] = PYALARM_STARTUPDELAY
                 single_prop_dict["AlarmThreshold"] = PYALARM_THRESHOLD
+                single_prop_dict["PollingPeriod"] = PYALARM_POLLING
                 pyalarm_target().properties = single_prop_dict
+
+
+
 
     return errors
 
@@ -358,14 +564,14 @@ def print_errors(errors):
 
 ###############################################################################################
 
-def xls_to_dict(xls_filename, pages=None, skip=False):
+def xls_to_dict(xls_filename, plctype, pages=None, skip=False):
 
     """Make JSON out of an XLS sheet of device definitions."""
 
     plc_config = {}
     plc1_config = {}
     plc2_config = {}
-    plctype = "VAC"
+    plctype = plctype
     import xlrd
 
     xls = xlrd.open_workbook(xls_filename)
@@ -380,11 +586,15 @@ def xls_to_dict(xls_filename, pages=None, skip=False):
     rows = [sheet.row_values(i) for i in xrange(sheet.nrows)]
 
     plc1_config["ip"]=rows[1][1]
-    plc1_config["slot"]=rows[1][2]
-    plc1_config["minscan"]=rows[1][3]
-    plc2_config["ip"]=rows[2][1]
-    plc2_config["slot"]=rows[2][2]
-    plc2_config["minscan"]=rows[2][3]
+    plc1_config["slot"]=rows[1][5]
+    plc1_config["minscan"]=rows[1][6]
+
+    if len(rows) > 2: #first row is header
+        plc2_config["ip"]=rows[2][1]
+        plc2_config["slot"]=rows[2][5]
+        plc2_config["minscan"]=rows[2][6]
+    else:
+        plc2_config=None
     print " configs ", plc1_config, plc2_config
 
     for page in pages:
@@ -392,14 +602,14 @@ def xls_to_dict(xls_filename, pages=None, skip=False):
         if page == "Config":
             continue #we already read this one!
 
-        if "PLC:" not in page:
+        if "PLC_" not in page:
             continue
 
         #Specific to PLC tag files
         #Sheets named like "PLC:01,Achromat:301-310,Tags", "PLC:01,Achromat:301-310,Alarms"
         page_l = str(page).split(",")
-        plc_num = page_l[0].split(":")[1]
-        ach_num = page_l[1].split(":")[1]
+        plc_num = page_l[0].split("_")[1]
+        ach_num = page_l[1].split("_")[1]
         type    = page_l[2]
 
         print type, plc_num, ach_num
@@ -420,14 +630,19 @@ def xls_to_dict(xls_filename, pages=None, skip=False):
                 print plc_config
             
             sheet = xls.sheet_by_name(page)
+            rows = [sheet.row_values(i) for i in xrange(sheet.nrows)]
+
             #deduce alarms sheet name
-            alarms_page = "PLC:"+plc_num+",Achromat:"+ach_num+",Alarms"
+            alarms_page = "PLC_"+plc_num+",Achromat_"+ach_num+",Alarms"
             print "alarms ", alarms_page
             alarms_sheet = xls.sheet_by_name(alarms_page)
-            rows = [sheet.row_values(i) for i in xrange(sheet.nrows)]
             alarms_rows = [alarms_sheet.row_values(i) for i in xrange(alarms_sheet.nrows)]
             
-            errors = convert(plc_config, plctype, int(plc_num),rows, alarms_rows,definitions, skip=skip)
+            #get vacuum gauge sheet (VGC)
+            vgc_sheet = xls.sheet_by_name("VGC")
+            vgc_rows = [vgc_sheet.row_values(i) for i in xrange(vgc_sheet.nrows)]
+
+            errors = convert(plc_config, plctype, int(plc_num),rows, alarms_rows,vgc_rows,definitions, skip=skip)
             print_errors(errors)
 
     return definitions
@@ -477,7 +692,11 @@ def main():
     filename = args[0]
     pages = args[1:]
 
-    data = xls_to_dict(filename, pages, skip=options.skip)
+    ##xxx
+    #plctype = "MAG"
+    plctype = "VAC"
+
+    data = xls_to_dict(filename, plctype, pages, skip=options.skip)
     metadata = dict(
         _title="MAX-IV Tango JSON intermediate format",
         _source=os.path.split(sys.argv[1])[-1],
