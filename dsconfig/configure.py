@@ -17,14 +17,16 @@ could prevent embarrassing mistakes.
 
 from collections import Mapping
 from functools import partial
+import json
 from os import path
 import sys
-import json
+import re
 
 import PyTango
 
 from utils import (red, green, yellow, ObjectWrapper,
-                   get_dict_from_db, decode_dict, decode_pointer)
+                   get_dict_from_db, decode_dict, decode_pointer,
+                   filter_nested_dict)
 
 from excel import SPECIAL_ATTRIBUTE_PROPERTIES
 
@@ -269,6 +271,35 @@ def configure(data, write=False, update=False):
     return db.calls, dbdict
 
 
+def filter_json(data, filters, levels, invert=False):
+
+    """Filter the given config data according to a list of filters.
+    May be a positive filter (i.e. includes only matching things)
+    or inverted (i.e. includes everything that does not match)."""
+
+    filtered = data if invert else {}
+    for fltr in filters:
+        try:
+            what = fltr[:fltr.index(":")]
+            depth = levels[what]
+            pattern = re.compile(fltr[fltr.index(":") + 1:],
+                                 flags=re.IGNORECASE)
+        except (ValueError, IndexError):
+            raise ValueError(
+                "Bad filter '%s'; should be '<term>:<pattern>'" % fltr)
+        except KeyError:
+            raise ValueError("Bad filter '%s'; term should be one of: %s"
+                             % (fltr, ", ".join(levels.keys())))
+        except re.error as e:
+            raise ValueError("Bad regular expression '%s': %s" % (fltr, e))
+        if invert:
+            filtered = filter_nested_dict(filtered, pattern, depth,
+                                          invert=True)
+        else:
+            filtered.update(filter_nested_dict(data, pattern, depth))
+    return filtered
+
+
 def main():
 
     from optparse import OptionParser
@@ -292,6 +323,17 @@ def main():
     parser.add_option("-v", "--no-validation", dest="validate", default=True,
                       action="store_false", help=("Skip JSON validation"))
 
+    parser.add_option("-i", "--include", dest="include", action="append",
+                      help=("Inclusive filter on server configutation"))
+    parser.add_option("-x", "--exclude", dest="exclude", action="append",
+                      help=("Exclusive filter on server configutation"))
+    parser.add_option("-I", "--include-classes", dest="include_classes",
+                      action="append",
+                      help=("Inclusive filter on class configuration"))
+    parser.add_option("-X", "--exclude-classes", dest="exclude_classes",
+                      action="append",
+                      help=("Exclusive filter on class configuration"))
+
     options, args = parser.parse_args()
 
     if len(args) == 0:
@@ -305,6 +347,30 @@ def main():
     if options.validate:
         validate_json(data)
 
+    # filtering
+    try:
+        servers_levels = {"server": 0, "class": 1, "device": 2, "property": 4}
+        if options.include:
+            data["servers"] = filter_json(data["servers"], options.include,
+                                          servers_levels)
+        if options.exclude:
+            data["servers"] = filter_json(data["servers"], options.exclude,
+                                          servers_levels, invert=True)
+
+        classes_levels = {"class": 1, "property": 2}
+        if options.include_classes:
+            data["classes"] = filter_json(data["classes"], options.include,
+                                          classes_levels)
+        if options.exclude_classes:
+            data["classes"] = filter_json(data["classes"], options.exclude,
+                                          classes_levels, invert=True)
+    except ValueError as e:
+        sys.exit("Filter error:\n%s" % e)
+
+    if not data.get("servers") and not data.get("classes"):
+        sys.exit("No config data; exiting!")
+
+    # perform the actual database configuration
     dbcalls, dbdict = configure(data, options.write, options.update)
 
     if options.output:

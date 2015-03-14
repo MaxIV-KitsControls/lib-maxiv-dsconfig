@@ -360,3 +360,22 @@ class ImmutableDict(object):
                     return ImmutableDict(self.__data.copy())
             import copy
             __data = self.__data
+
+
+def filter_nested_dict(node, pattern, depth, level=0, invert=False):
+    """
+    Filter the parts of a nested dict where keys match regex pattern,
+    at the given depth.
+    """
+    if level == depth:
+        return dict((key, value) for key, value in node.iteritems()
+                    if (not invert and pattern.search(key)) or
+                    (invert and not pattern.search(key)))
+    else:
+        dupe_node = {}
+        for key, val in node.iteritems():
+            cur_node = filter_nested_dict(val, pattern, depth, level+1,
+                                          invert)
+            if cur_node:
+                dupe_node[key] = cur_node
+        return dupe_node or None
