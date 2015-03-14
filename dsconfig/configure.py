@@ -40,6 +40,9 @@ PROTECTED_PROPERTIES = [
     "polled_attr", "logging_level", "logging_target"
 ]
 
+SERVERS_LEVELS = {"server": 0, "class": 1, "device": 2, "property": 4}
+CLASSES_LEVELS = {"class": 1, "property": 2}
+
 
 def is_protected(prop, attr=False):
     """Ignore all properties starting with underscore (typically Tango
@@ -271,7 +274,7 @@ def configure(data, write=False, update=False):
     return db.calls, dbdict
 
 
-def filter_json(data, filters, levels, invert=False):
+def filter_config(data, filters, levels, invert=False):
 
     """Filter the given config data according to a list of filters.
     May be a positive filter (i.e. includes only matching things)
@@ -296,7 +299,9 @@ def filter_json(data, filters, levels, invert=False):
             filtered = filter_nested_dict(filtered, pattern, depth,
                                           invert=True)
         else:
-            filtered.update(filter_nested_dict(data, pattern, depth))
+            tmp = filter_nested_dict(data, pattern, depth)
+            if tmp:
+                filtered.update(tmp)
     return filtered
 
 
@@ -349,21 +354,20 @@ def main():
 
     # filtering
     try:
-        servers_levels = {"server": 0, "class": 1, "device": 2, "property": 4}
-        if options.include:
-            data["servers"] = filter_json(data["servers"], options.include,
-                                          servers_levels)
-        if options.exclude:
-            data["servers"] = filter_json(data["servers"], options.exclude,
-                                          servers_levels, invert=True)
 
-        classes_levels = {"class": 1, "property": 2}
+        if options.include:
+            data["servers"] = filter_config(data["servers"], options.include,
+                                            SERVERS_LEVELS)
+        if options.exclude:
+            data["servers"] = filter_config(data["servers"], options.exclude,
+                                            SERVERS_LEVELS, invert=True)
+
         if options.include_classes:
-            data["classes"] = filter_json(data["classes"], options.include,
-                                          classes_levels)
+            data["classes"] = filter_config(data["classes"], options.include,
+                                            CLASSES_LEVELS)
         if options.exclude_classes:
-            data["classes"] = filter_json(data["classes"], options.exclude,
-                                          classes_levels, invert=True)
+            data["classes"] = filter_config(data["classes"], options.exclude,
+                                            CLASSES_LEVELS, invert=True)
     except ValueError as e:
         sys.exit("Filter error:\n%s" % e)
 
