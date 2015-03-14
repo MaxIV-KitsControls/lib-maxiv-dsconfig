@@ -6,7 +6,8 @@ except ImportError:
     from unittest import TestCase
 
 from dsconfig.configure import (update_server, update_device_or_class,
-                                update_properties)
+                                update_properties, filter_config,
+                                CLASSES_LEVELS, SERVERS_LEVELS)
 from dsconfig.utils import ObjectWrapper, find_device
 from dsconfig.appending_dict import AppendingDict
 
@@ -49,7 +50,8 @@ class ConfigureTestCase(TestCase):
         self.data = deepcopy(TEST_DATA)
 
     def test_update_server_no_changes(self):
-        update_server(self.db, Mock, "test", self.dbdict["servers"]["TangoTest/test"],
+        update_server(self.db, Mock, "test",
+                      self.dbdict["servers"]["TangoTest/test"],
                       self.dbdict["servers"]["TangoTest/test"])
 
         self.assertListEqual(self.db.calls, [])
@@ -235,6 +237,134 @@ class ConfigureTestCase(TestCase):
             self.db.calls,
             [('put_device_attribute_property',
               ('sys/tg_test/2', {'someAttr': {'label': [label]}}), {})])
+
+    def test_filter_json_include_server(self):
+        data = {
+            "TangoTest/test": {
+                "TangoTest": {
+                    "sys/tg_test/3": {
+                        "properties": {
+                            "apa": ["4"]
+                        },
+                    },
+                }
+            },
+            "OtherServer/1": {
+                "OtherServer": {
+                    "a/b/c": {},
+                }
+            }
+        }
+        filtered = filter_config(data, ["server:TangoTest/test"],
+                                 SERVERS_LEVELS)
+
+        self.assertTrue("TangoTest/test" in filtered)
+        self.assertTrue("OtherServer/1" not in filtered)
+        self.assertEqual(data["TangoTest/test"], filtered["TangoTest/test"])
+
+    def test_filter_json_include_class(self):
+        data = {
+            "TangoTest/test": {
+                "TangoTest": {
+                    "sys/tg_test/3": {
+                        "properties": {
+                            "apa": ["4"]
+                        },
+                    },
+                }
+            },
+            "OtherServer/1": {
+                "OtherServer": {
+                    "a/b/c": {},
+                }
+            }
+        }
+        filtered = filter_config(data, ["class:TangoTest"], SERVERS_LEVELS)
+
+        self.assertTrue("TangoTest/test" in filtered)
+        self.assertTrue("OtherServer/1" not in filtered)
+        self.assertEqual(data["TangoTest/test"], filtered["TangoTest/test"])
+
+    def test_filter_json_include_device(self):
+        data = {
+            "TangoTest/test": {
+                "TangoTest": {
+                    "sys/tg_test/3": {
+                        "properties": {
+                            "apa": ["4"]
+                        },
+                    },
+                    "sys/tg_test/4": {
+                        "properties": {
+                            "bepa": ["5"]
+                        },
+                    }
+                }
+            },
+            "OtherServer/1": {
+                "OtherServer": {
+                    "a/b/c": {},
+                    "d/e/f": {}
+                }
+            }
+        }
+        expected = {
+            "TangoTest/test": {
+                "TangoTest": {
+                    "sys/tg_test/3": {
+                        "properties": {
+                            "apa": ["4"]
+                        },
+                    }
+                }
+            }
+        }
+        filtered = filter_config(data, ["device:test/3"], SERVERS_LEVELS)
+        self.assertEqual(filtered, expected)
+
+    def test_filter_json_include_several(self):
+        data = {
+            "TangoTest/test": {
+                "TangoTest": {
+                    "sys/tg_test/3": {
+                        "properties": {
+                            "apa": ["4"]
+                        },
+                    },
+                    "sys/tg_test/4": {
+                        "properties": {
+                            "bepa": ["5"]
+                        },
+                    }
+                }
+            },
+            "OtherServer/1": {
+                "OtherServer": {
+                    "a/b/c": {},
+                    "d/a/b": {}
+                }
+            }
+        }
+        expected = {
+            "TangoTest/test": {
+                "TangoTest": {
+                    "sys/tg_test/3": {
+                        "properties": {
+                            "apa": ["4"]
+                        }
+                    }
+                }
+            },
+            "OtherServer/1": {
+                "OtherServer": {
+                    "a/b/c": {}
+                }
+            }
+        }
+
+        filtered = filter_config(data, ["device:test/3", "device:^a/"],
+                                 SERVERS_LEVELS)
+        self.assertEqual(filtered, expected)
 
     # def test_update_properties_remove_property(self):
     #     devname = "sys/tg_test/2"
