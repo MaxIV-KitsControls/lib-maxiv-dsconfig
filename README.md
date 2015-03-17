@@ -63,7 +63,7 @@ Note that all properties are given as lists of strings. This is how the Tango DB
 The format supported is almost identical to the dsgenerator format, with a few changes:
  - It is now possible to spread server definitions over any number of pages, and to selectively use only a subset of these by giving their names to the xls2json tool.
  - The column names (the first line of each column) are now significant, so that their order can be relaxed. There are a few differences to the "standard" sheet though; "ServerName" should be "Server", "Devices" should be "Device" and, in the "ParamConfig" tab, "Parameter" should now be "Attribute". These changes were made for consistency.
- - A few features have been added for flexibility; see the example Excel file.
+ - A few features have been added for flexibility; see the example Excel file in "test/files/test.xls".
 
 Converting an excel file is done like this:
 
@@ -75,7 +75,7 @@ By default, all sheets are processed. If you want to only include some of them, 
 
     $ xls2json config.xls sheet1 sheet2
 
-The "Dynamics" and "ParamConfig" sheets are always included if they exist (for now). Some syntax checking is done on dynamic formulas, to make sure they compile. Failures are printed to stderr and the corresponding properties skipped, so be careful (see the -f flag to override this).
+The "Dynamics" and "ParamConfig" (ParamConfig does not work right now!) sheets are treated specially as they follow a different style. Some syntax checking is done on dynamic formulas, to make sure they compile. Failures are printed to stderr and the corresponding properties skipped, so be careful (see the -f flag to override this).
 
 The command is quite verbose and it will by default happily skip lines that contain incomplete information. Make sure to check the stderr output for hints about this. At the end the command prints a line of statistics, listing the number of servers, etc, it has found. This is intended as a useful sanity check. Also look over the JSON result to see if it makes sense.
 

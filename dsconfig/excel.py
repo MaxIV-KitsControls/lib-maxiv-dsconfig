@@ -49,12 +49,40 @@ def get_properties(row):
         match = re.match("property:(.*)", col_name, re.IGNORECASE)
         if match and value:
             name, = match.groups()
-            if isinstance(value, float):    # TODO: numeric values become floats, but what if we only want integers?
-                value = str(value)
-            values = [v.strip() for v in value.decode("string-escape").split("\n")]
+            values = [v.strip() for v in value.split("\n")]
             prop_dict[name] = values
 
     return prop_dict
+
+
+def get_attribute_properties(row):
+
+    if "attribute" in row:
+        attribute = row["attribute"]
+        prop_dict = AppendingDict()
+        if "attributeproperties" in row:
+            properties = row["attributeproperties"]
+            try:
+                for prop in properties.split(";"):
+                    name, value = prop.split("=")
+                    value = value.decode("string-escape")  # for linebreaks
+                    prop_dict[name.strip()] = [v.strip()
+                                               for v in value.split("\n")]
+            except ValueError:
+                raise ValueError("could not parse AttributeProperties")
+
+        for col_name, value in row.items():
+            match = re.match("attrprop:(.*)", col_name, re.IGNORECASE)
+            if match and value:
+                name, = match.groups()
+                name = make_db_name(name)
+                if name in SPECIAL_ATTRIBUTE_PROPERTIES:
+                    if isinstance(value, float):
+                        value = str(value)
+                    values = [v.strip() for v in value.split("\n")]
+                    prop_dict[name] = values
+
+        return {attribute: prop_dict}
 
 
 def get_dynamic(row):
@@ -85,38 +113,16 @@ def make_db_name(name):
     return name.strip().lower().replace(" ", "_")
 
 
-def get_config(row):
-    "WIP"
-    prop_dict = AppendingDict()
-
-    # "Cfg:attribute" columns
-    for col_name, value in row.items():
-        # match = re.match("cfg:(.*)", col_name, re.IGNORECASE)
-        # if match and value:
-        #     attr_name, = match.groups()
-        #     name = make_db_name(name)
-        #     prop_dict[name] = value.strip()
-
-        # Pick up columns named after attribute properties
-        db_colname = make_db_name(col_name)
-        attr = row["attribute"].strip()
-        if db_colname in SPECIAL_ATTRIBUTE_PROPERTIES:
-            prop_dict[attr][db_colname] = [value]
-
-    return prop_dict
-
-
 def check_formula(formula):
     "Syntax check a dynamic formula."
     compile(formula, "<stdin>", "single")
 
 
 def check_device_format(devname):
-    """
-    Verify that a device name is of the correct form (three parts separated by slashes,
-    only letters, numbers, dashes and underscores allowed.)
-    Note: We could put more logic here to make device names
-          conform to a standard.
+    """Verify that a device name is of the correct form (three parts
+    separated by slashes, only letters, numbers, dashes and
+    underscores allowed.)  Note: We could put more logic here to make
+    device names conform to a standard.
     """
     device_pattern = "^[\w-]+/[\w-]+/[\w-]+$"
     if not re.match(device_pattern, devname):
@@ -124,11 +130,9 @@ def check_device_format(devname):
 
 
 def format_server_instance(row):
-    "Format a server/instance string, handling numeric instance names"
-    instance = row["instance"]
-    if isinstance(instance, float):    # numeric values become floats
-        instance = str(int(instance))  # but we want integers
-    return "%s/%s" % (row["server"], instance)
+    "Format a server/instance string"
+    # TODO: handle numeric instance names? They tend to turn up as floats...
+    return "%s/%s" % (row["server"], row["instance"])
 
 
 def convert(rows, definitions, skip=True, dynamic=False, config=False):
@@ -166,6 +170,7 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
                 try:
                     # full device definition
                     srvr = format_server_instance(row)
+                    print "srver", srvr
                     # target is "lazily" evaluated, so that we don't create
                     # an empty dict if it turns out there are no members
                     target = lambda: definitions.servers[srvr]\
@@ -181,7 +186,7 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
                 if props:
                     target().properties = props
             elif config:
-                attr_props = get_config(row)
+                attr_props = get_attribute_properties(row)
                 if attr_props:
                     target().attribute_properties = attr_props
             else:
@@ -196,8 +201,8 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
             handle_error(i, "Error: %s" % ve)
         except SyntaxError as se:
             # TODO: do something here to show more info about the error
-            #ex_type, ex, tb = sys.exc_info()
-            #"\n".join(format_exc(ex).splitlines()[-3:]
+            # ex_type, ex, tb = sys.exc_info()
+            # "\n".join(format_exc(ex).splitlines()[-3:]
             handle_error(i, "SyntaxError: %s" % se)
 
     return errors
@@ -220,8 +225,15 @@ def xls_to_dict(xls_filename, pages=None, skip=False):
     xls = xlrd.open_workbook(xls_filename)
     definitions = AppendingDict()
 
-    if not pages:
+    if not pages:  # if no pages given, assume all pages are wanted
         pages = xls.sheet_names()
+    else:
+        # Always include Dynamics and ParamConfig as they only add stuff
+        # to devices already configured anyway.
+        if "Dynamics" not in pages and "Dynamics" in xls.sheet_names():
+            pages.append("Dynamics")
+        if "ParamConfig" not in pages and "ParamConfig" in xls.sheet_names():
+            pages.append("ParamConfig")
 
     for page in pages:
 
