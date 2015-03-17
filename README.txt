@@ -102,6 +102,11 @@ Some useful flags:
 
  --update (-u) means that "nothing" (be careful, see caveats below) will be removed, only changed or added. Again the exception is any existing duplicates of your devices. Also, this only applies to whole properties, not individual lines. So if your JSON has lines removed from a property, the lines will be removed from the DB as the whole property is overwritten, regardless of the --update flag.
 
+ --include (-i) [Experimental] lets you filter the configuration before applying it. You give a filter consisting of a "term" (server/class/device/property) and a regular expression, separated by colon. E.g. "--include=device:VAC/IP.*01". This will cause the command to only apply configuration that concerns thode devices matching the regex. It is possible to add several includes, just tack more "--include=..." statements on.
+
+ --exclude (-x) [Experimental] works like --include except it removes the matching parts from the config instead.
+
+
 Some less useful flags:
 
  --no-validation (-v) skips the JSON validation step. If you know what you're doing, this may be useful as the validation is very strict, while the tool itself is more forgiving. Watch out for unexpected behavior though; you're on your own! It's probably a better idea to fix your JSON, though.
