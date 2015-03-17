@@ -22,7 +22,7 @@ MODE_MAPPING = CaselessDict({"ATTR": "DynamicAttributes",
 SPECIAL_ATTRIBUTE_PROPERTIES = ["label", "format", "unit",
                                 "min_value", "min_alarm", "min_warning",
                                 "max_value", "min_alarm", "min_warning",
-                                "abs_change", "return el_change", "event_period",
+                                "abs_change", "rel_change", "event_period",
                                 "archive_abs_change", "archive_rel_change",
                                 "archive_period",
                                 "description", "mode"]
@@ -40,7 +40,9 @@ def get_properties(row):
         try:
             for prop in properties.split(";"):
                 name, value = prop.split("=")
-                prop_dict[name.strip()] = [v.strip() for v in value.decode("string-escape").split("\n")]
+                value = value.decode("string-escape")
+                prop_dict[name.strip()] = [v.strip()
+                                           for v in value.split("\n")]
         except ValueError:
             raise ValueError("could not parse Properties")
 
