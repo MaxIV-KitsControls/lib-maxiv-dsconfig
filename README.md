@@ -58,7 +58,7 @@ This is an example of the format, with comments (not actually supported by JSON 
 Note that all properties are given as lists of strings. This is how the Tango DB represents them so it gets a lot easier to compare things if we do it too.
 
 
-###xls2json
+### xls2json
 
 The format supported is almost identical to the dsgenerator format, with a few changes:
  - It is now possible to spread server definitions over any number of pages, and to selectively use only a subset of these by giving their names to the xls2json tool.
@@ -84,7 +84,7 @@ Useful flags:
  * --fatal (-f) means that the command will treat any parsing failure as a fatal error and exit instead of skipping the line as normal. Use if you don't like the lenient default behavior.
 
 
-##json2tango
+### json2tango
 
 This tool reads a JSON file (or from stdout if no filename is given), validates it and (optionally) configures a Tango database accordingly. By default, it will only check the current DB state and print out the differences. This should always be the first step, in order to catch errors before they are permanently written to the DB.
 
