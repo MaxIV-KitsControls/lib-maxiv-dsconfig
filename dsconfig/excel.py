@@ -51,7 +51,7 @@ def get_properties(row):
         match = re.match("property:(.*)", col_name, re.IGNORECASE)
         if match and value:
             name, = match.groups()
-            values = [v.strip() for v in value.split("\n")]
+            values = [v.strip() for v in str(value).split("\n")]
             prop_dict[name] = values
 
     return prop_dict
@@ -67,6 +67,10 @@ def get_attribute_properties(row):
             try:
                 for prop in properties.split(";"):
                     name, value = prop.split("=")
+                    name = name.strip()
+                    if name not in SPECIAL_ATTRIBUTE_PROPERTIES:
+                        raise ValueError(
+                            "'%s' is not a valid attribute property" % name)
                     value = value.decode("string-escape")  # for linebreaks
                     prop_dict[name.strip()] = [v.strip()
                                                for v in value.split("\n")]
@@ -77,12 +81,12 @@ def get_attribute_properties(row):
             match = re.match("attrprop:(.*)", col_name, re.IGNORECASE)
             if match and value:
                 name, = match.groups()
-                name = make_db_name(name)
-                if name in SPECIAL_ATTRIBUTE_PROPERTIES:
-                    if isinstance(value, float):
-                        value = str(value)
-                    values = [v.strip() for v in value.split("\n")]
-                    prop_dict[name] = values
+                name = make_db_name(name.strip())
+                if name not in SPECIAL_ATTRIBUTE_PROPERTIES:
+                    raise ValueError("'%s' it not a valid attribute property"
+                                     % name)
+                values = [v.strip() for v in str(value).split("\n")]
+                prop_dict[name] = values
 
         return {attribute: prop_dict}
 

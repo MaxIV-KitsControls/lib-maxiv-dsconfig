@@ -73,11 +73,24 @@ class TestExcel(TestCase):
                             "type": "int"})
         self.assertRaises(ValueError, excel.get_dynamic, row)
 
-    def test_get_config(self):
-        row = CaselessDict({"Attribute": "myAttribute", "Label": "Something", "Min value": 45, "Not valid": "foo"})
-        result = excel.get_config(row)
+    def test_get_attribute_properties(self):
+        row = CaselessDict({"Attribute": "myAttribute",
+                            "AttributeProperties": "min_value=1;max_value=2"})
+        result = excel.get_attribute_properties(row)
+        self.assertDictEqual(result,
+                             {"myAttribute": {"min_value": ["1"], "max_value": ["2"]}})
+
+    def test_get_attribute_properties_multiple(self):
+        row = CaselessDict({"Attribute": "myAttribute", "AttrProp:Label": "Something",
+                            "AttrProp:Min value": "45"})
+        result = excel.get_attribute_properties(row)
         self.assertDictEqual(result,
                              {"myAttribute": {"min_value": ["45"], "label": ["Something"]}})
+
+    def test_get_attribute_properties_errors_on_invalid_name(self):
+        row = CaselessDict({"Attribute": "myAttribute", "AttrProp:Label": "Something",
+                            "AttrProp:Min value": "45", "AttrProp:Not valid": "foo"})
+        self.assertRaises(ValueError, excel.get_attribute_properties, row)
 
     def test_check_device_format_lets_valid_names_pass(self):
         excel.check_device_format("i-a/test-test/device-0")
@@ -99,7 +112,7 @@ class TestExcel(TestCase):
         result = excel.format_server_instance(row)
         self.assertEqual(result, "TestServer/1")
 
-    def test_format_server_instance_handles_floats(self):
-        row = {"server": "TestServer", "instance": 1.0}
-        result = excel.format_server_instance(row)
-        self.assertEqual(result, "TestServer/1")
+    # def test_format_server_instance_handles_floats(self):
+    #     row = {"server": "TestServer", "instance": 1.0}
+    #     result = excel.format_server_instance(row)
+    #     self.assertEqual(result, "TestServer/1")
