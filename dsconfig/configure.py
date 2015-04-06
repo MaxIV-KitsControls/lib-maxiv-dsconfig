@@ -258,11 +258,12 @@ def configure(data, write=False, update=False):
     # wrap the database to record calls (and fake it if not writing)
     db = ObjectWrapper(db if write else None)
 
-    # remove devices already present in another server
+    # warn about devices already present in another server
+    # Need we do more here? It should not be dangerous since
+    # the devices will be intact (right?)
     for dev, cls, srv in collisions:
-        print >>sys.stderr, red("REMOVE (because of collision):")
+        print >>sys.stderr, red("MOVED (because of collision):")
         print >>sys.stderr, red(" > servers > %s > %s > %s" % (srv, cls, dev))
-        db.delete_device(dev)  # this may not strictly be needed..?
 
     for servername, serverdata in data.get("servers", {}).items():
         update_server(db, PyTango.DbDevInfo, servername, serverdata,
