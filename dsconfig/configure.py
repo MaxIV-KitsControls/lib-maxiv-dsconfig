@@ -26,7 +26,7 @@ import PyTango
 
 from utils import (red, green, yellow, ObjectWrapper,
                    get_dict_from_db, decode_dict, decode_pointer,
-                   filter_nested_dict)
+                   filter_nested_dict, is_protected)
 
 from excel import SPECIAL_ATTRIBUTE_PROPERTIES
 
@@ -73,7 +73,7 @@ def update_properties(db, parent, db_props, new_props,
                              for prop, value in db_props.items()
                              for attr_prop in value
                              if attr_prop not in new_props.get(prop, {}))
-                             # and not is_protected(attr_prop, True))
+                             and not is_protected(attr_prop, True))
     else:
         added_props = dict((prop, value)
                            for prop, value in new_props.items()
@@ -81,7 +81,7 @@ def update_properties(db, parent, db_props, new_props,
         removed_props = dict((prop, value)
                              for prop, value in db_props.items()
                              if prop not in new_props)
-                             # and not is_protected(prop))
+                             and not is_protected(prop))
 
     # Find the appropriate DB method to call. Thankfully the API is
     # consistent here.
