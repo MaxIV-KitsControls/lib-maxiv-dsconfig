@@ -72,7 +72,7 @@ def update_properties(db, parent, db_props, new_props,
         removed_props = dict((prop, value)
                              for prop, value in db_props.items()
                              for attr_prop in value
-                             if attr_prop not in new_props.get(prop, {}))
+                             if attr_prop not in new_props.get(prop, {})
                              and not is_protected(attr_prop, True))
     else:
         added_props = dict((prop, value)
@@ -80,7 +80,7 @@ def update_properties(db, parent, db_props, new_props,
                            if db_props.get(prop) != value)
         removed_props = dict((prop, value)
                              for prop, value in db_props.items()
-                             if prop not in new_props)
+                             if prop not in new_props
                              and not is_protected(prop))
 
     # Find the appropriate DB method to call. Thankfully the API is
