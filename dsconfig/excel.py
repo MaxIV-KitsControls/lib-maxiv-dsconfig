@@ -12,20 +12,12 @@ import sys
 
 from utils import find_device
 from appending_dict import AppendingDict
-from utils import CaselessDict
+from utils import CaselessDict, SPECIAL_ATTRIBUTE_PROPERTIES
 
 MODE_MAPPING = CaselessDict({"ATTR": "DynamicAttributes",
                              "CMD": "DynamicCommands",
                              "STATE": "DynamicStates",
                              "STATUS": "DynamicStatus"})
-
-SPECIAL_ATTRIBUTE_PROPERTIES = ["label", "format", "unit",
-                                "min_value", "min_alarm", "min_warning",
-                                "max_value", "min_alarm", "min_warning",
-                                "abs_change", "rel_change", "event_period",
-                                "archive_abs_change", "archive_rel_change",
-                                "archive_period",
-                                "description", "mode"]
 
 
 def get_properties(row):

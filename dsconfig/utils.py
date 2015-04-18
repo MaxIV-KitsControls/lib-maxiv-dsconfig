@@ -87,10 +87,24 @@ PROTECTED_PROPERTIES = [
 ]
 
 
+SPECIAL_ATTRIBUTE_PROPERTIES = ["label", "format", "unit",
+                                "min_value", "min_alarm", "min_warning",
+                                "max_value", "min_alarm", "min_warning",
+                                "abs_change", "rel_change", "event_period",
+                                "archive_abs_change", "archive_rel_change",
+                                "archive_period",
+                                "description", "mode"]
+
+
 def is_protected(prop, attr=False):
     """Ignore all properties starting with underscore (typically Tango
     created) and some special ones"""
-    return prop.startswith("_") or (not attr and prop in PROTECTED_PROPERTIES)
+    if attr:
+        # Consider attribute config to be protected. This means we do
+        # not remove them, but we do overwrite if included in the config.
+        return prop.startswith("_") or prop in SPECIAL_ATTRIBUTE_PROPERTIES
+    else:
+        return prop.startswith("_") or prop in PROTECTED_PROPERTIES
 
 
 def get_dict_from_db(db, data):
