@@ -33,13 +33,6 @@ from excel import SPECIAL_ATTRIBUTE_PROPERTIES
 module_path = path.dirname(path.realpath(__file__))
 SCHEMA_FILENAME = path.join(module_path, "schema/dsconfig.json")
 
-# These are special properties that we need to keep
-# We may have to write them sooner or later but lets leave them
-# alone until then.
-PROTECTED_PROPERTIES = [
-    "polled_attr", "logging_level", "logging_target"
-]
-
 SERVERS_LEVELS = {"server": 0, "class": 1, "device": 2, "property": 4}
 CLASSES_LEVELS = {"class": 1, "property": 2}
 
@@ -79,16 +72,16 @@ def update_properties(db, parent, db_props, new_props,
         removed_props = dict((prop, value)
                              for prop, value in db_props.items()
                              for attr_prop in value
-                             if attr_prop not in new_props.get(prop, {})
-                             and not is_protected(attr_prop, True))
+                             if attr_prop not in new_props.get(prop, {}))
+                             # and not is_protected(attr_prop, True))
     else:
         added_props = dict((prop, value)
                            for prop, value in new_props.items()
                            if db_props.get(prop) != value)
         removed_props = dict((prop, value)
                              for prop, value in db_props.items()
-                             if prop not in new_props
-                             and not is_protected(prop))
+                             if prop not in new_props)
+                             # and not is_protected(prop))
 
     # Find the appropriate DB method to call. Thankfully the API is
     # consistent here.

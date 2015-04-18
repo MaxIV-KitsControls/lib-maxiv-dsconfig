@@ -81,6 +81,18 @@ def get_devices_from_dict(dbdict):
             for device_name in clss]
 
 
+# These are special properties that we'll ignore for now
+PROTECTED_PROPERTIES = [
+    "polled_attr", "logging_level", "logging_target"
+]
+
+
+def is_protected(prop, attr=False):
+    """Ignore all properties starting with underscore (typically Tango
+    created) and some special ones"""
+    return prop.startswith("_") or (not attr and prop in PROTECTED_PROPERTIES)
+
+
 def get_dict_from_db(db, data):
 
     """Takes a data dict, checks if any if the definitions are already
@@ -114,7 +126,7 @@ def get_dict_from_db(db, data):
 
                 # Properties
                 for prop in db_props:
-                    if not prop.startswith("__"):  # skip e.g. __SubDevices
+                    if not is_protected(prop):
                         value = db.get_device_property(name, prop)[prop]
                         value = [str(v) for v in value]  # is this safe?
                         dev.properties[prop] = value
@@ -136,7 +148,7 @@ def get_dict_from_db(db, data):
     for class_name, cls in data.get("classes", {}).items():
 
         for prop in cls.get("properties", ()):
-            if not prop.startswith("__"):  # skip e.g. __SubDevices
+            if not is_protected(prop):
                 db_prop = db.get_class_property(class_name, prop)[prop]
                 if db_prop:
                     value = [str(v) for v in db_prop]
