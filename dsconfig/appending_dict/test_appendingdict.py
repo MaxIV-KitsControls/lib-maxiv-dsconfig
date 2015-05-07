@@ -1,6 +1,21 @@
 import unittest
 
-from . import SetterDict, AppendingDict
+from . import SetterDict, AppendingDict, merge
+
+
+class MergeTestCase(unittest.TestCase):
+
+    def test_merge(self):
+        a = {1: 2, 3: 4}
+        b = {5: 6}
+        merge(a, b)
+        self.assertEqual(a, {1: 2, 3: 4, 5: 6})
+
+    def test_merge_mapping(self):
+        a = {1: 2}
+        b = {3: {4: 5}}
+        merge(a, b)
+        self.assertEqual(a, {1: 2, 3: {4: 5}})
 
 
 class SetterDictTestCase(unittest.TestCase):

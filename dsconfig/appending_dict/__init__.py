@@ -53,7 +53,10 @@ def merge(d, u):
     "Recursively 'merge' a Mapping into another"
     for k, v in u.iteritems():
         if isinstance(v, Mapping):
-            merge(d[k], v)
+            if k in d:
+                merge(d[k], v)
+            else:
+                d[k] = v
         elif isinstance(d, Mapping):
             d[k] = u[k]
 
