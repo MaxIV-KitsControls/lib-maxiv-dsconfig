@@ -20,36 +20,6 @@ def yellow(text):
     return YELLOW + text + ENDC
 
 
-# functions to decode unicode JSON (PyTango does not like unicode strings)
-
-def decode_list(data):
-    rv = []
-    for item in data:
-        if isinstance(item, unicode):
-            item = str(item.encode('utf-8'))
-        elif isinstance(item, list):
-            item = decode_list(item)
-        elif isinstance(item, dict):
-            item = decode_dict(item)
-        rv.append(item)
-    return rv
-
-
-def decode_dict(data):
-    rv = {}
-    for key, value in data.iteritems():
-        if isinstance(key, unicode):
-            key = str(key.encode('utf-8'))
-        if isinstance(value, unicode):
-            value = str(value.encode('utf-8'))
-        elif isinstance(value, list):
-            value = decode_list(value)
-        elif isinstance(value, dict):
-            value = decode_dict(value)
-        rv[key] = value
-    return rv
-
-
 def find_device(definitions, devname):
     "Find a given device in a server dict"
     for instname, inst in definitions["servers"].items():
@@ -66,12 +36,6 @@ def find_class(definitions, clsname):
             return inst[clsname]
     raise ValueError("class '%s' not defined" % clsname)
 
-
-def decode_pointer(ptr):
-    """Take a string representing a JSON pointer and return a
-    sequence of parts, decoded."""
-    return [p.replace("~1", "/").replace("~0", "~")
-            for p in ptr.split("/")]
 
 
 def get_devices_from_dict(dbdict):
@@ -404,22 +368,3 @@ class ImmutableDict(object):
                     return ImmutableDict(self.__data.copy())
             import copy
             __data = self.__data
-
-
-def filter_nested_dict(node, pattern, depth, level=0, invert=False):
-    """
-    Filter the parts of a nested dict where keys match regex pattern,
-    at the given depth.
-    """
-    if level == depth:
-        return dict((key, value) for key, value in node.iteritems()
-                    if (not invert and pattern.search(key)) or
-                    (invert and not pattern.search(key)))
-    else:
-        dupe_node = {}
-        for key, val in node.iteritems():
-            cur_node = filter_nested_dict(val, pattern, depth, level+1,
-                                          invert)
-            if cur_node:
-                dupe_node[key] = cur_node
-        return dupe_node or None

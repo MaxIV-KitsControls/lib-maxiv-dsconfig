@@ -15,27 +15,15 @@ changes will be printed. Inspecting this before writing to the DB
 could prevent embarrassing mistakes.
 """
 
-from collections import Mapping
 from functools import partial
-import json
-from os import path
 import sys
-import re
 
 import PyTango
 
-from appending_dict import merge
-from utils import (red, green, yellow, ObjectWrapper,
-                   get_dict_from_db, decode_dict, decode_pointer,
-                   filter_nested_dict, is_protected)
+from utils import (red, ObjectWrapper,
+                   get_dict_from_db, is_protected)
 
 from excel import SPECIAL_ATTRIBUTE_PROPERTIES
-
-module_path = path.dirname(path.realpath(__file__))
-SCHEMA_FILENAME = path.join(module_path, "schema/dsconfig.json")
-
-SERVERS_LEVELS = {"server": 0, "class": 1, "device": 2, "property": 4}
-CLASSES_LEVELS = {"class": 1, "property": 2}
 
 
 def check_attribute_property(propname):
@@ -143,87 +131,6 @@ update_device = partial(update_device_or_class, cls=False)
 update_class = partial(update_device_or_class, cls=True)
 
 
-def dump_value(value):
-    "Make a string out of a value, for printing"
-    if value is not None:
-        if isinstance(value, Mapping):
-            dump = json.dumps(value, indent=4)
-            return dump
-        return repr(value)
-    else:
-        return "None"  # should never happen?
-
-
-def print_diff(dbdict, data, removes=True):
-
-    "Print a (hopefully) human readable list of changes."
-
-    # TODO: needs work, especially on multiline properties,
-    # empty properties (should probably never be allowed but still)
-    # and probably more corner cases. Also the output format could
-    # use some tweaking.
-
-    try:
-        from collections import defaultdict
-        import jsonpatch
-        from jsonpointer import resolve_pointer, JsonPointerException
-
-        ops = defaultdict(int)
-
-        diff = jsonpatch.make_patch(dbdict, data)
-        for d in diff:
-            try:
-                ptr = " > ".join(decode_pointer(d["path"]))
-                if d["op"] == "replace":
-                    print yellow("REPLACE:")
-                    print yellow(ptr)
-                    db_value = resolve_pointer(dbdict, d["path"])
-                    print red(dump_value(db_value))
-                    print green(dump_value(d["value"]))
-                    ops["replace"] += 1
-                if d["op"] == "add":
-                    print green("ADD:")
-                    print green(ptr)
-                    if d["value"]:
-                        print green(dump_value(d["value"]))
-                    ops["add"] += 1
-                if removes and d["op"] == "remove":
-                    print red("REMOVE:")
-                    print red(ptr)
-                    value = resolve_pointer(dbdict, d["path"])
-                    if value:
-                        print red(dump_value(value))
-                    ops["remove"] += 1
-            except JsonPointerException as e:
-                print " - Error parsing diff - report this!: %s" % e
-        # # The following output is a bit misleading, removing for now
-        # print "Total: %d operations (%d replace, %d add, %d remove)" % (
-        #     sum(ops.values()), ops["replace"], ops["add"], ops["remove"])
-        return diff
-    except ImportError:
-        print >>sys.stderr, ("'jsonpatch' module not available - "
-                             "no diff printouts for you! (Try -d instead.)")
-
-
-def validate_json(data):
-    """Validate that a given dict is of the right form"""
-    try:
-        from jsonschema import validate, exceptions
-        with open(SCHEMA_FILENAME) as schema_json:
-            schema = json.load(schema_json)
-        validate(data, schema)
-    except ImportError:
-        print >>sys.stderr, ("'jsonschema' not installed, could not "
-                             "validate json file. You're on your own.")
-    except exceptions.ValidationError as e:
-        print >>sys.stderr, "JSON data does not match schema: %s" % e
-        sys.exit(1)
-
-
-def load_json(f):
-    return json.load(f, object_hook=decode_dict)
-
-
 def clean_metadata(data):
     for key in data.keys():
         if key.startswith("_"):
@@ -264,137 +171,3 @@ def configure(data, write=False, update=False):
                       devicedata)
 
     return db.calls, dbdict
-
-
-def filter_config(data, filters, levels, invert=False):
-
-    """Filter the given config data according to a list of filters.
-    May be a positive filter (i.e. includes only matching things)
-    or inverted (i.e. includes everything that does not match)."""
-
-    filtered = data if invert else {}
-    for fltr in filters:
-        try:
-            what = fltr[:fltr.index(":")]
-            depth = levels[what]
-            pattern = re.compile(fltr[fltr.index(":") + 1:],
-                                 flags=re.IGNORECASE)
-        except (ValueError, IndexError):
-            raise ValueError(
-                "Bad filter '%s'; should be '<term>:<pattern>'" % fltr)
-        except KeyError:
-            raise ValueError("Bad filter '%s'; term should be one of: %s"
-                             % (fltr, ", ".join(levels.keys())))
-        except re.error as e:
-            raise ValueError("Bad regular expression '%s': %s" % (fltr, e))
-        if invert:
-            filtered = filter_nested_dict(filtered, pattern, depth,
-                                          invert=True)
-        else:
-            tmp = filter_nested_dict(data, pattern, depth)
-            if tmp:
-                merge(filtered, tmp)
-    return filtered
-
-
-def main():
-
-    from optparse import OptionParser
-    from tempfile import NamedTemporaryFile
-
-    usage = "Usage: %prog [options] JSONFILE"
-    parser = OptionParser(usage=usage)
-
-    parser.add_option("-w", "--write", dest="write", action="store_true",
-                      help="write to the Tango DB", metavar="WRITE")
-    parser.add_option("-u", "--update", dest="update", action="store_true",
-                      help="don't remove things, only add/update",
-                      metavar="UPDATE")
-    parser.add_option("-q", "--quiet",
-                      action="store_false", dest="verbose", default=True,
-                      help="don't print actions to stdout")
-    parser.add_option("-o", "--output", dest="output", action="store_true",
-                      help="Output the relevant DB state as JSON.")
-    parser.add_option("-d", "--dbcalls", dest="dbcalls", action="store_true",
-                      help="print out all db calls.")
-    parser.add_option("-v", "--no-validation", dest="validate", default=True,
-                      action="store_false", help=("Skip JSON validation"))
-
-    parser.add_option("-i", "--include", dest="include", action="append",
-                      help=("Inclusive filter on server configutation"))
-    parser.add_option("-x", "--exclude", dest="exclude", action="append",
-                      help=("Exclusive filter on server configutation"))
-    parser.add_option("-I", "--include-classes", dest="include_classes",
-                      action="append",
-                      help=("Inclusive filter on class configuration"))
-    parser.add_option("-X", "--exclude-classes", dest="exclude_classes",
-                      action="append",
-                      help=("Exclusive filter on class configuration"))
-
-    options, args = parser.parse_args()
-
-    if len(args) == 0:
-        data = load_json(sys.stdin)
-    else:
-        json_file = args[0]
-        with open(json_file) as f:
-            data = load_json(f)
-
-    # Optional validation of the JSON file format.
-    if options.validate:
-        validate_json(data)
-
-    # filtering
-    try:
-
-        if options.include:
-            data["servers"] = filter_config(data["servers"], options.include,
-                                            SERVERS_LEVELS)
-        if options.exclude:
-            data["servers"] = filter_config(data["servers"], options.exclude,
-                                            SERVERS_LEVELS, invert=True)
-
-        if options.include_classes:
-            data["classes"] = filter_config(data["classes"], options.include,
-                                            CLASSES_LEVELS)
-        if options.exclude_classes:
-            data["classes"] = filter_config(data["classes"], options.exclude,
-                                            CLASSES_LEVELS, invert=True)
-    except ValueError as e:
-        sys.exit("Filter error:\n%s" % e)
-
-    if not any(k in data for k in ("devices", "servers", "classes")):
-        sys.exit("No config data; exiting!")
-
-    # perform the actual database configuration
-    dbcalls, dbdict = configure(data, options.write, options.update)
-
-    if options.output:
-        print json.dumps(dbdict, indent=4)
-
-    # Print out a nice diff
-    if options.verbose:
-        print_diff(dbdict, data, removes=not options.update)
-
-    if options.dbcalls:
-        print >>sys.stderr, "Tango database calls:"
-        for method, args, kwargs in dbcalls:
-            print method, args
-
-    if dbcalls:
-        if options.write:
-            print >>sys.stderr, red("\n*** Data was written to the Tango DB ***")
-            with NamedTemporaryFile(prefix="dsconfig-", suffix=".json",
-                                    delete=False) as f:
-                f.write(json.dumps(dbdict, indent=4))
-                print >>sys.stderr, ("The previous DB data was saved to %s" %
-                                     f.name)
-        else:
-            print >>sys.stderr, yellow(
-                "\n*** Nothing was written to the Tango DB (use -w) ***")
-    else:
-        print >>sys.stderr, green("\n*** No changes needed in Tango DB ***")
-
-
-if __name__ == "__main__":
-    main()

@@ -6,8 +6,9 @@ except ImportError:
     from unittest import TestCase
 
 from dsconfig.configure import (update_server, update_device_or_class,
-                                update_properties, filter_config,
-                                CLASSES_LEVELS, SERVERS_LEVELS)
+                                update_properties)
+from dsconfig.filtering import filter_config
+from dsconfig.formatting import CLASSES_LEVELS, SERVERS_LEVELS
 from dsconfig.utils import ObjectWrapper, find_device
 from dsconfig.appending_dict import AppendingDict
 
@@ -36,6 +37,13 @@ TEST_DATA = {
                 "boolean_scalar":  {
                     "flipperspel": ["fiskotek"]
                 }
+            }
+        }
+    },
+    "devices": {
+        "a/b/c": {
+            "properties": {
+                "foo": ["bar"]
             }
         }
     }

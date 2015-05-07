@@ -1,5 +1,113 @@
 #!/usr/bin/env python
 
-from dsconfig.configure import main
+import json
+from optparse import OptionParser
+from tempfile import NamedTemporaryFile
+import sys
 
-main()
+from dsconfig.configure import configure
+from dsconfig.formatting import (load_json, validate_json,
+                                 SERVERS_LEVELS, CLASSES_LEVELS)
+from dsconfig.filtering import filter_config
+from dsconfig.diff import print_diff
+from dsconfig.utils import green, yellow, red
+
+
+def main():
+
+    usage = "Usage: %prog [options] JSONFILE"
+    parser = OptionParser(usage=usage)
+
+    parser.add_option("-w", "--write", dest="write", action="store_true",
+                      help="write to the Tango DB", metavar="WRITE")
+    parser.add_option("-u", "--update", dest="update", action="store_true",
+                      help="don't remove things, only add/update",
+                      metavar="UPDATE")
+    parser.add_option("-q", "--quiet",
+                      action="store_false", dest="verbose", default=True,
+                      help="don't print actions to stdout")
+    parser.add_option("-o", "--output", dest="output", action="store_true",
+                      help="Output the relevant DB state as JSON.")
+    parser.add_option("-d", "--dbcalls", dest="dbcalls", action="store_true",
+                      help="print out all db calls.")
+    parser.add_option("-v", "--no-validation", dest="validate", default=True,
+                      action="store_false", help=("Skip JSON validation"))
+
+    parser.add_option("-i", "--include", dest="include", action="append",
+                      help=("Inclusive filter on server configutation"))
+    parser.add_option("-x", "--exclude", dest="exclude", action="append",
+                      help=("Exclusive filter on server configutation"))
+    parser.add_option("-I", "--include-classes", dest="include_classes",
+                      action="append",
+                      help=("Inclusive filter on class configuration"))
+    parser.add_option("-X", "--exclude-classes", dest="exclude_classes",
+                      action="append",
+                      help=("Exclusive filter on class configuration"))
+
+    options, args = parser.parse_args()
+
+    if len(args) == 0:
+        data = load_json(sys.stdin)
+    else:
+        json_file = args[0]
+        with open(json_file) as f:
+            data = load_json(f)
+
+    # Optional validation of the JSON file format.
+    if options.validate:
+        validate_json(data)
+
+    # filtering
+    try:
+
+        if options.include:
+            data["servers"] = filter_config(data["servers"], options.include,
+                                            SERVERS_LEVELS)
+        if options.exclude:
+            data["servers"] = filter_config(data["servers"], options.exclude,
+                                            SERVERS_LEVELS, invert=True)
+
+        if options.include_classes:
+            data["classes"] = filter_config(data["classes"], options.include,
+                                            CLASSES_LEVELS)
+        if options.exclude_classes:
+            data["classes"] = filter_config(data["classes"], options.exclude,
+                                            CLASSES_LEVELS, invert=True)
+    except ValueError as e:
+        sys.exit("Filter error:\n%s" % e)
+
+    if not any(k in data for k in ("devices", "servers", "classes")):
+        sys.exit("No config data; exiting!")
+
+    # perform the actual database configuration
+    dbcalls, dbdict = configure(data, options.write, options.update)
+
+    if options.output:
+        print json.dumps(dbdict, indent=4)
+
+    # Print out a nice diff
+    if options.verbose:
+        print_diff(dbdict, data, removes=not options.update)
+
+    if options.dbcalls:
+        print >>sys.stderr, "Tango database calls:"
+        for method, args, kwargs in dbcalls:
+            print method, args
+
+    if dbcalls:
+        if options.write:
+            print >>sys.stderr, red("\n*** Data was written to the Tango DB ***")
+            with NamedTemporaryFile(prefix="dsconfig-", suffix=".json",
+                                    delete=False) as f:
+                f.write(json.dumps(dbdict, indent=4))
+                print >>sys.stderr, ("The previous DB data was saved to %s" %
+                                     f.name)
+        else:
+            print >>sys.stderr, yellow(
+                "\n*** Nothing was written to the Tango DB (use -w) ***")
+    else:
+        print >>sys.stderr, green("\n*** No changes needed in Tango DB ***")
+
+
+if __name__ == "__main__":
+    main()
