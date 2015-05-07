@@ -24,6 +24,7 @@ import re
 
 import PyTango
 
+from appending_dict import merge
 from utils import (red, green, yellow, ObjectWrapper,
                    get_dict_from_db, decode_dict, decode_pointer,
                    filter_nested_dict, is_protected)
@@ -35,12 +36,6 @@ SCHEMA_FILENAME = path.join(module_path, "schema/dsconfig.json")
 
 SERVERS_LEVELS = {"server": 0, "class": 1, "device": 2, "property": 4}
 CLASSES_LEVELS = {"class": 1, "property": 2}
-
-
-def is_protected(prop, attr=False):
-    """Ignore all properties starting with underscore (typically Tango
-    created) and some special ones"""
-    return prop.startswith("_") or (not attr and prop in PROTECTED_PROPERTIES)
 
 
 def check_attribute_property(propname):
@@ -264,6 +259,9 @@ def configure(data, write=False, update=False):
     for classname, classdata in data.get("classes", {}).items():
         update_class(db, classname, dbdict.get("classes", {}).get(classname, {}),
                      classdata, update, cls=True)
+    for devicename, devicedata in data.get("devices", {}).items():
+        update_device(db, devicename, dbdict["devices"][devicename],
+                      devicedata)
 
     return db.calls, dbdict
 
@@ -295,7 +293,7 @@ def filter_config(data, filters, levels, invert=False):
         else:
             tmp = filter_nested_dict(data, pattern, depth)
             if tmp:
-                filtered.update(tmp)
+                merge(filtered, tmp)
     return filtered
 
 
@@ -365,7 +363,7 @@ def main():
     except ValueError as e:
         sys.exit("Filter error:\n%s" % e)
 
-    if not data.get("servers") and not data.get("classes"):
+    if not any(k in data for k in ("devices", "servers", "classes")):
         sys.exit("No config data; exiting!")
 
     # perform the actual database configuration

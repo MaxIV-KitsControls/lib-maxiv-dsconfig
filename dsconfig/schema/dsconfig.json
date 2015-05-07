@@ -36,6 +36,12 @@
                     "$ref": "#definitions/property"
                 }
             }
+        },
+        "devices": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#definitions/device"
+            }
         }
     },
     "definitions": {
