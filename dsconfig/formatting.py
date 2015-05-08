@@ -4,6 +4,11 @@ import json
 from os import path
 import sys
 
+import PyTango
+
+from appending_dict import AppendingDict
+
+
 SERVERS_LEVELS = {"server": 0, "class": 1, "device": 2, "property": 4}
 CLASSES_LEVELS = {"class": 1, "property": 2}
 
@@ -58,3 +63,33 @@ def validate_json(data):
 
 def load_json(f):
     return json.load(f, object_hook=decode_dict)
+
+
+def normalize_config(config):
+
+    """Take a 'loose' config and return a new config that conforms to the
+    DSConfig format.
+
+    Current transforms:
+    - "devices" toplevel; allows to change *existing* devices by just adding
+      them directly to a "devices" key in the config, instead of having to
+      list out the server, instance and class (since this information can be
+      gotten from the DB.)
+
+    """
+
+    new_config = AppendingDict()
+    if "servers" in config:
+        new_config.servers = config["servers"]
+    if "classes" in config:
+        new_config.classes = config["classes"]
+    if "devices" in config:
+        db = PyTango.Database()
+        for device, props in config["devices"].items():
+            try:
+                info = db.get_device_info(device)
+            except PyTango.DevFailed as e:
+                sys.exit("Can't reconfigure device %s: %s" % (device, str(e[0].desc)))
+            new_config.servers[info.ds_full_name][info.class_name][device] = props
+
+    return new_config.to_dict()

@@ -77,15 +77,6 @@ def get_dict_from_db(db, data, narrow=False):
         except PyTango.DevFailed:
             pass
 
-    # Devices
-    for device_name, dev in data.get("devices", {}).items():
-        try:
-            props = get_device_properties(db, device_name, dev)
-        except PyTango.DevFailed:
-            raise PyTango.DevFailed("Found no device called '%s'!"
-                                    % device_name)
-        dbdict.devices[device_name] = props
-
     # Servers
     for server_name, srvr in data.get("servers", {}).items():
         for class_name, cls in srvr.items():

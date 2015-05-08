@@ -164,8 +164,5 @@ def configure(data, write=False, update=False):
     for classname, classdata in data.get("classes", {}).items():
         update_class(db, classname, dbdict.get("classes", {}).get(classname, {}),
                      classdata, update, cls=True)
-    for devicename, devicedata in data.get("devices", {}).items():
-        update_device(db, devicename, dbdict["devices"][devicename],
-                      devicedata)
 
     return db.calls, dbdict

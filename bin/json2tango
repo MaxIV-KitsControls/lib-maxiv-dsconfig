@@ -6,7 +6,7 @@ from tempfile import NamedTemporaryFile
 import sys
 
 from dsconfig.configure import configure
-from dsconfig.formatting import (load_json, validate_json,
+from dsconfig.formatting import (load_json, validate_json, normalize_config,
                                  SERVERS_LEVELS, CLASSES_LEVELS)
 from dsconfig.filtering import filter_config
 from dsconfig.diff import print_diff
@@ -52,6 +52,9 @@ def main():
         json_file = args[0]
         with open(json_file) as f:
             data = load_json(f)
+
+    # Normalization - making the config conform to standard
+    data = normalize_config(data)
 
     # Optional validation of the JSON file format.
     if options.validate:
