@@ -12,7 +12,8 @@ import sys
 
 from utils import find_device
 from appending_dict import AppendingDict
-from utils import CaselessDict, SPECIAL_ATTRIBUTE_PROPERTIES
+from utils import CaselessDict
+from tangodb import SPECIAL_ATTRIBUTE_PROPERTIES
 
 MODE_MAPPING = CaselessDict({"ATTR": "DynamicAttributes",
                              "CMD": "DynamicCommands",

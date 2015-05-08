@@ -20,10 +20,8 @@ import sys
 
 import PyTango
 
-from utils import (red, ObjectWrapper,
-                   get_dict_from_db, is_protected)
-
-from excel import SPECIAL_ATTRIBUTE_PROPERTIES
+from utils import red, ObjectWrapper
+from tangodb import get_dict_from_db, SPECIAL_ATTRIBUTE_PROPERTIES, is_protected
 
 
 def check_attribute_property(propname):
