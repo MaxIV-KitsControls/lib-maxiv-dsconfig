@@ -9,7 +9,7 @@ currently exported. Perhaps there is a way to do it without?
 from itertools import izip
 import json
 
-from utils import get_dict_from_db
+from tangodb import get_dict_from_db
 from appending_dict import AppendingDict
 import PyTango
 

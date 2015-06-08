@@ -1,19 +1,4 @@
-"""
-Reads a JSON file in the right format, compares it with the current
-state of the Tango DB, and generates the set of DB API commands needed
-to get to the state described by the file. These commands can also
-optionally be run.
-
-Note that the granularity is on the top (server/class) level; servers
-and classes not mentioned in the JSON file are ignored. However, any
-devices, properties, etc belonging to the mentioned servers/classes in
-the DB, but not present in the JSON file will be removed, unless the
---update flag is used.
-
-If the "jsonpatch" module is installed, a "diff" representing the
-changes will be printed. Inspecting this before writing to the DB
-could prevent embarrassing mistakes.
-"""
+"Functionality for configuring a Tango DB from a dsconfig file"
 
 from functools import partial
 import sys
@@ -21,7 +6,8 @@ import sys
 import PyTango
 
 from utils import red, ObjectWrapper
-from tangodb import get_dict_from_db, SPECIAL_ATTRIBUTE_PROPERTIES, is_protected
+from tangodb import (get_dict_from_db, SPECIAL_ATTRIBUTE_PROPERTIES,
+                     is_protected)
 
 
 def check_attribute_property(propname):
@@ -101,14 +87,14 @@ def update_server(db, difactory, server_name, server_dict, db_dict,
                 devinfo._class = class_name
                 devinfo.name = device_name
                 db.add_device(devinfo)
-                #db_dict.setdefault(class_name, {})[device_name] = {}
 
             update_device(db, device_name,
                           db_dict.get(class_name, {}).get(device_name, {}), dev,
                           update=update)
 
 
-def update_device_or_class(db, name, db_dict, new_dict, cls=False, update=False):
+def update_device_or_class(db, name, db_dict, new_dict,
+                           cls=False, update=False):
 
     "Configure a device or a class"
 

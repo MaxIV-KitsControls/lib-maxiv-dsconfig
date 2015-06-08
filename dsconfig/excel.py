@@ -169,7 +169,6 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
                 try:
                     # full device definition
                     srvr = format_server_instance(row)
-                    print "srver", srvr
                     # target is "lazily" evaluated, so that we don't create
                     # an empty dict if it turns out there are no members
                     target = lambda: definitions.servers[srvr]\

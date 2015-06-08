@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 
+"""
+Reads a JSON file in the right format, compares it with the current
+state of the Tango DB, and generates the set of DB API commands needed
+to get to the state described by the file. These commands can also
+optionally be run.
+"""
+
 import json
 from optparse import OptionParser
 from tempfile import NamedTemporaryFile
@@ -71,10 +78,10 @@ def main():
                                             SERVERS_LEVELS, invert=True)
 
         if options.include_classes:
-            data["classes"] = filter_config(data["classes"], options.include,
+            data["classes"] = filter_config(data["classes"], options.include_classes,
                                             CLASSES_LEVELS)
         if options.exclude_classes:
-            data["classes"] = filter_config(data["classes"], options.exclude,
+            data["classes"] = filter_config(data["classes"], options.exclude_classes,
                                             CLASSES_LEVELS, invert=True)
     except ValueError as e:
         sys.exit("Filter error:\n%s" % e)
