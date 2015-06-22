@@ -19,25 +19,24 @@ SPECIAL_ATTRIBUTE_PROPERTIES = [
 
 
 def is_protected(prop, attr=False):
-    """Ignore all properties starting with underscore (typically Tango
-    created) and some special ones"""
+    """There are certain properties that need special treatment as they
+    are handled in particular ways by Tango. In general, we don't want to
+    remove these if they exist, but we do allow overwriting them."""
     if attr:
-        # Consider attribute config to be protected. This means we do
-        # not remove them, but we do overwrite if included in the config.
+        # Attribute config properties
         return prop.startswith("_") or prop in SPECIAL_ATTRIBUTE_PROPERTIES
     else:
         return prop.startswith("_") or prop in PROTECTED_PROPERTIES
 
 
-def get_device_properties(db, name, data):
+def get_device_properties(db, devname, data):
     dev = AppendingDict()
-    db_props = db.get_device_property_list(name, "*")
+    db_props = db.get_device_property_list(devname, "*")
     # Properties
-    for prop in db_props:
-        if not is_protected(prop):  # skip e.g. __SubDevices
-            value = db.get_device_property(name, prop)[prop]
-            value = [str(v) for v in value]  # is this safe?
-            dev.properties[prop] = value
+    props = db.get_device_property(devname, list(db_props))
+    for prop, value in props.items():
+        value = [str(v) for v in value]  # is this safe?
+        dev.properties[prop] = value
 
     # Attribute properties
     # Seems impossible to get the full list of defined attribute
@@ -45,7 +44,7 @@ def get_device_properties(db, name, data):
     # the attributes we know about.
     attr_props = data.get("attribute_properties")
     if attr_props:
-        dbprops = db.get_device_attribute_property(name,
+        dbprops = db.get_device_attribute_property(devname,
                                                    attr_props.keys())
         for attr, props in dbprops.items():
             props = dict((prop, [str(v) for v in values])
@@ -74,6 +73,7 @@ def get_dict_from_db(db, data, narrow=False):
             if devinfo.ds_full_name != server:
                 moved_devices.append((devinfo.name, devinfo.class_name,
                                       devinfo.ds_full_name))
+            # TODO: check if any servers become empty
         except PyTango.DevFailed:
             pass
 
@@ -93,12 +93,11 @@ def get_dict_from_db(db, data, narrow=False):
     # Classes
     for class_name, cls in data.get("classes", {}).items():
 
-        for prop in cls.get("properties", ()):
-            if not is_protected(prop):
-                db_prop = db.get_class_property(class_name, prop)[prop]
-                if db_prop:
-                    value = [str(v) for v in db_prop]
-                    dbdict.classes[class_name].properties[prop] = value
+        db_props = cls.get("properties", ())
+        for prop, value in db.get_class_property(class_name, db_props).items():
+            if value:
+                value = [str(v) for v in value]
+                dbdict.classes[class_name].properties[prop] = value
 
         attr_props = cls.get("attribute_properties")
         if attr_props:
