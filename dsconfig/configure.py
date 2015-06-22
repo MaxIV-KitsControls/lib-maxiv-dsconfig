@@ -34,21 +34,21 @@ def update_properties(db, parent, db_props, new_props,
         added_props = dict((prop, value)
                            for prop, value in new_props.items()
                            for attr_prop, value2 in value.items()
-                           if (db_props.get(prop, {}).get(attr_prop) != value2
-                               and check_attribute_property(attr_prop)))
+                           if (db_props.get(prop, {}).get(attr_prop) != value2 and
+                               check_attribute_property(attr_prop)))
         removed_props = dict((prop, value)
                              for prop, value in db_props.items()
                              for attr_prop in value
-                             if attr_prop not in new_props.get(prop, {})
-                             and not is_protected(attr_prop, True))
+                             if attr_prop not in new_props.get(prop, {}) and
+                             not is_protected(attr_prop, True))
     else:
         added_props = dict((prop, value)
                            for prop, value in new_props.items()
                            if db_props.get(prop) != value)
         removed_props = dict((prop, value)
                              for prop, value in db_props.items()
-                             if prop not in new_props
-                             and not is_protected(prop))
+                             if prop not in new_props and
+                             not is_protected(prop))
 
     # Find the appropriate DB method to call. Thankfully the API is
     # consistent here.
