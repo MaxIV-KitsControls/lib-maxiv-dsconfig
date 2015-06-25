@@ -607,7 +607,13 @@ class LatticeFileItem:
                         
                     else:
                         #if we aleady made this circuit device, add it to this magnet properties
-                        print "!!!ALART!!! already added a circuit device for ", self.itemName
+                        print "!!!ALART!!! already added a circuit device for ", self.itemName, name, system, location
+
+                        if system == "R3":
+                            system= "I"
+                        if location == "301L":
+                            location = "TR3"
+
                         self.parameters['CircuitProxies'] = [circuit_ps_list[powersupplyname]]
 
                         #need to get the name of the circuit device from the ps dict though
@@ -620,14 +626,14 @@ class LatticeFileItem:
                         #for circuits json
                         print "cir name from ps ", circuit_ps_list[powersupplyname], psdict
                         ps_current_mags = psdict.Circuits[circuit_ps_list[powersupplyname]].Properties
-
+                        print "current mags ", current_mags['MagnetProxies']
                         if name in current_mags['MagnetProxies']:
                             print "circuit already has magnet ", name
                         else:
                             ps_current_mags['MagnetProxies'].append(name)
                             current_mags['MagnetProxies'].append(name)
 
-                        print "magnets on cir ", current_mags['MagnetProxies'], len(current_mags['MagnetProxies'])
+                        print "magnets on cir ", current_mags['ExcitationCurveFields'], current_mags['MagnetProxies'], len(current_mags['MagnetProxies'])
                         #need to average the currents, even if already done so in excel (depends on field order)
                         if 'ExcitationCurveFields' in current_mags:
 
@@ -645,7 +651,13 @@ class LatticeFileItem:
                             
                             for i in xrange(dim):
                                 print i
-                                newFields  =  [ ( x*(len(current_mags['MagnetProxies']) -1) + y ) / len(current_mags['MagnetProxies'])  for y,x in zip(this_field_m[i],assoc_field_m[i])]
+
+                                #fix for CRSM take abs field values since opp sign
+                                if circuit_ps_list[powersupplyname] == "I-TR3/MAG/CRSM-01":
+                                    newFields  =  [ ( abs(x)*(len(current_mags['MagnetProxies']) -1) + abs(y) ) / len(current_mags['MagnetProxies'])  for y,x in zip(this_field_m[i],assoc_field_m[i])]
+                                else:
+                                    newFields  =  [ ( x*(len(current_mags['MagnetProxies']) -1) + y ) / len(current_mags['MagnetProxies'])  for y,x in zip(this_field_m[i],assoc_field_m[i])]
+
                                 newCurrents = [ ( x*(len(current_mags['MagnetProxies']) -1) + y ) / len(current_mags['MagnetProxies'])  for y,x in zip(this_curr_m[i],assoc_curr_m[i])]
 
                             print "new fields   ", newFields
@@ -780,7 +792,7 @@ if __name__ == '__main__':
         #open excel sheet
         xls = xlrd.open_workbook(excelName)
 
-        for name in ["Linac", "Transfer1GeV", "Transfer3GeV", "ThermionicGun"]:
+        for name in ["linac", "transfer 1,5 GeV", "transfer 3 GeV", "thermionic gun"]:
 
             #sheet = xls.sheet_by_name('Linac')
             sheet = xls.sheet_by_name(name)
