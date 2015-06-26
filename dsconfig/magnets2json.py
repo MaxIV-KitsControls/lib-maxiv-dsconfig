@@ -653,7 +653,7 @@ class LatticeFileItem:
                                 print i
 
                                 #fix for CRSM take abs field values since opp sign
-                                if circuit_ps_list[powersupplyname] == "I-TR3/MAG/CRSM-01":
+                                if circuit_ps_list[powersupplyname] in ["I-TR3/MAG/CRSM-01","I-TR3/MAG/CRDI-01"]:
                                     newFields  =  [ ( abs(x)*(len(current_mags['MagnetProxies']) -1) + abs(y) ) / len(current_mags['MagnetProxies'])  for y,x in zip(this_field_m[i],assoc_field_m[i])]
                                 else:
                                     newFields  =  [ ( x*(len(current_mags['MagnetProxies']) -1) + y ) / len(current_mags['MagnetProxies'])  for y,x in zip(this_field_m[i],assoc_field_m[i])]
