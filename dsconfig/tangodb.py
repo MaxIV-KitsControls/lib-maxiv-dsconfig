@@ -35,8 +35,11 @@ def get_device_properties(db, devname, data):
     # Properties
     props = db.get_device_property(devname, list(db_props))
     for prop, value in props.items():
-        value = [str(v) for v in value]  # is this safe?
-        dev.properties[prop] = value
+        # We'll ignore "protected" properties unless they are present
+        # in the input data (in that case we want to show that they are changed)
+        if not is_protected(prop) or prop in data.get("properties", {}):
+            value = [str(v) for v in value]  # is this safe?
+            dev.properties[prop] = value
 
     # Attribute properties
     # Seems impossible to get the full list of defined attribute
