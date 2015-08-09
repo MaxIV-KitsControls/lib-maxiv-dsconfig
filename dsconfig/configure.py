@@ -71,7 +71,6 @@ def update_server(db, difactory, server_name, server_dict, db_dict,
 
     """Creates/removes devices for a given server. Optionally
     ignores removed devices, only adding new and updating old ones."""
-
     for class_name, cls in server_dict.items():  # classes
         removed_devices = [dev for dev in db_dict.get(class_name, {})
                            if dev not in cls]
@@ -89,8 +88,8 @@ def update_server(db, difactory, server_name, server_dict, db_dict,
                 db.add_device(devinfo)
 
             update_device(db, device_name,
-                          db_dict.get(class_name, {}).get(device_name, {}), dev,
-                          update=update)
+                          db_dict.get(class_name, {}).get(device_name, {}),
+                          dev, update=update)
 
 
 def update_device_or_class(db, name, db_dict, new_dict,
@@ -140,13 +139,18 @@ def configure(data, write=False, update=False):
     # warn about devices already present in another server
     # Need we do more here? It should not be dangerous since
     # the devices will be intact (right?)
-    for dev, cls, srv in collisions:
+    for srv, inst, cls, dev in collisions:
         print >>sys.stderr, red("MOVED (because of collision):")
-        print >>sys.stderr, red(" > servers > %s > %s > %s" % (srv, cls, dev))
+        print >>sys.stderr, red(" > servers > %s > %s > %s > %s"
+                                % (srv, inst, cls, dev))
 
     for servername, serverdata in data.get("servers", {}).items():
-        update_server(db, PyTango.DbDevInfo, servername, serverdata,
-                      dbdict.get("servers", {}).get(servername, {}), update)
+        for instname, instdata in serverdata.items():
+            update_server(db, PyTango.DbDevInfo, "%s/%s" % (servername, instname),
+                          instdata,
+                          (dbdict.get("servers", {})
+                           .get(servername, {})
+                           .get(instname, {})), update)
     for classname, classdata in data.get("classes", {}).items():
         update_class(db, classname, dbdict.get("classes", {}).get(classname, {}),
                      classdata, update, cls=True)

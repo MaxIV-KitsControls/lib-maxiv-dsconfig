@@ -14,14 +14,14 @@
             "type": "string"
         },
         "_version": {
-            "enum": [1]
+            "enum": [2]
         },
         "servers": {
             "type": "object",
             "additionalProperties": false,
             "patternProperties": {
-                "^[\\-\\w]+/[\\-\\w]+$": {
-                    "$ref": "#definitions/instance"
+                "^[\\-\\w]+$": {
+                    "$ref": "#definitions/server"
                 }
             }
         },
@@ -36,19 +36,23 @@
                     "$ref": "#definitions/property"
                 }
             }
-        },
-        "devices": {
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#definitions/device"
-            }
         }
     },
     "definitions": {
+        "server": {
+            "type": "object",
+            "patternProperties": {
+                "^[\\-\\w]+$": {
+                    "$ref": "#definitions/instance"
+                }
+            }
+        },
         "instance": {
             "type": "object",
-            "additionalProperties": {
-                "$ref": "#definitions/class"
+            "patternProperties": {
+                "^[\\-\\w]+$": {
+                    "$ref": "#definitions/class"
+                }
             }
         },
         "class": {

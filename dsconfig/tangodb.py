@@ -1,7 +1,7 @@
 import PyTango
 
 from appending_dict import AppendingDict
-from utils import get_devices_from_dict
+#from utils import get_devices_from_dict
 
 
 # These are special properties that we'll ignore for now
@@ -18,6 +18,14 @@ SPECIAL_ATTRIBUTE_PROPERTIES = [
 ]
 
 
+def get_devices_from_dict(dbdict):
+    return [(server_name, instance_name, class_name, device_name)
+            for server_name, server in dbdict.items()
+            for instance_name, instance in server.items()
+            for class_name, clss in instance.items()
+            for device_name in clss]
+
+
 def is_protected(prop, attr=False):
     """There are certain properties that need special treatment as they
     are handled in particular ways by Tango. In general, we don't want to
@@ -32,6 +40,7 @@ def is_protected(prop, attr=False):
 def get_device_properties(db, devname, data):
     dev = AppendingDict()
     db_props = db.get_device_property_list(devname, "*")
+
     # Properties
     props = db.get_device_property(devname, list(db_props))
     for prop, value in props.items():
@@ -70,28 +79,30 @@ def get_dict_from_db(db, data, narrow=False):
     moved_devices = []
 
     # Devices that are already defined somewhere else
-    for server, clss, device in get_devices_from_dict(data.get("servers", {})):
+    for server, inst, clss, device in get_devices_from_dict(data.get("servers", {})):
         try:
             devinfo = db.get_device_info(device)
-            if devinfo.ds_full_name != server:
-                moved_devices.append((devinfo.name, devinfo.class_name,
-                                      devinfo.ds_full_name))
+            if devinfo.ds_full_name != "%s/%s" % (server, inst):
+                moved_devices.append((server, inst, devinfo.class_name,
+                                      devinfo.name))
             # TODO: check if any servers become empty
         except PyTango.DevFailed:
             pass
 
     # Servers
     for server_name, srvr in data.get("servers", {}).items():
-        for class_name, cls in srvr.items():
-            if narrow:
-                devices = cls.keys()
-            else:
-                devices = db.get_device_name(server_name, class_name)
-
-            for device_name in devices:
-                dev = get_device_properties(db, device_name,
-                                            cls.get(device_name, {}))
-                dbdict.servers[server_name][class_name][device_name] = dev
+        for instance_name, inst in srvr.items():
+            for class_name, cls in inst.items():
+                if narrow:
+                    devices = cls.keys()
+                else:
+                    srv_full_name = "%s/%s" % (server_name, instance_name)
+                    devices = db.get_device_name(srv_full_name, class_name)
+                for device_name in devices:
+                    dev = get_device_properties(db, device_name,
+                                                cls.get(device_name, {}))
+                    dbdict.servers[server_name][instance_name][class_name]\
+                        [device_name] = dev
 
     # Classes
     for class_name, cls in data.get("classes", {}).items():

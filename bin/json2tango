@@ -35,6 +35,8 @@ def main():
                       help="don't print actions to stdout")
     parser.add_option("-o", "--output", dest="output", action="store_true",
                       help="Output the relevant DB state as JSON.")
+    parser.add_option("-p", "--input", dest="input", action="store_true",
+                      help="Output the input JSON (after filtering).")
     parser.add_option("-d", "--dbcalls", dest="dbcalls", action="store_true",
                       help="print out all db calls.")
     parser.add_option("-v", "--no-validation", dest="validate", default=True,
@@ -94,6 +96,8 @@ def main():
 
     if options.output:
         print json.dumps(dbdict, indent=4)
+    elif options.input:
+        print json.dumps(data, indent=4)
 
     # Print out a nice diff
     if options.verbose:

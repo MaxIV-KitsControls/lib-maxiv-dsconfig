@@ -22,10 +22,11 @@ def yellow(text):
 
 def find_device(definitions, devname):
     "Find a given device in a server dict"
-    for instname, inst in definitions["servers"].items():
-        for classname, cls in inst.items():
-            if devname in cls:
-                return cls[devname], (instname, classname, devname)
+    for srvname, srv in definitions["servers"].items():
+        for instname, inst in srv.items():
+            for classname, cls in inst.items():
+                if devname in cls:
+                    return cls[devname], (instname, classname, devname)
     raise ValueError("device '%s' not defined" % devname)
 
 
@@ -38,9 +39,10 @@ def find_class(definitions, clsname):
 
 
 def get_devices_from_dict(dbdict):
-    return [(server_name, class_name, device_name)
+    return [(server_name, inst_name, class_name, device_name)
             for server_name, server in dbdict.items()
-            for class_name, clss in server.items()
+            for inst_name, inst in server.items()
+            for class_name, clss in inst.items()
             for device_name in clss]
 
 

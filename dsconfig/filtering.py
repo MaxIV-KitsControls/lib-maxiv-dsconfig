@@ -26,18 +26,20 @@ def filter_config(data, filters, levels, invert=False):
 
     """Filter the given config data according to a list of filters.
     May be a positive filter (i.e. includes only matching things)
-    or inverted (i.e. includes everything that does not match)."""
+    or inverted (i.e. includes everything that does not match).
+    The _levels_ argument is used to find at what depth in the data
+    the filtering should happen.
+    """
 
     filtered = data if invert else {}
     for fltr in filters:
         try:
-            what = fltr[:fltr.index(":")]
+            what, regex = fltr.split(":")
             depth = levels[what]
-            pattern = re.compile(fltr[fltr.index(":") + 1:],
-                                 flags=re.IGNORECASE)
+            pattern = re.compile(regex, flags=re.IGNORECASE)
         except (ValueError, IndexError):
             raise ValueError(
-                "Bad filter '%s'; should be '<term>:<pattern>'" % fltr)
+                "Bad filter '%s'; should be '<term>:<regex>'" % fltr)
         except KeyError:
             raise ValueError("Bad filter '%s'; term should be one of: %s"
                              % (fltr, ", ".join(levels.keys())))

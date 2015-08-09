@@ -15,16 +15,18 @@ from dsconfig.appending_dict import AppendingDict
 
 TEST_DATA = {
     "servers": {
-        "TangoTest/test": {
-            "TangoTest": {
-                "sys/tg_test/2": {
-                    "properties": {
-                        "bepa": ["45"]
-                    },
-                    "attribute_properties": {
-                        "ampliz": {
-                            "min_value": ["100"],
-                            "unit": ["hejsan"]
+        "TangoTest": {
+            "test": {
+                "TangoTest": {
+                    "sys/tg_test/2": {
+                        "properties": {
+                            "bepa": ["45"]
+                        },
+                        "attribute_properties": {
+                            "ampliz": {
+                                "min_value": ["100"],
+                                "unit": ["hejsan"]
+                            }
                         }
                     }
                 }
@@ -34,7 +36,7 @@ TEST_DATA = {
     "classes": {
         "TangoTest": {
             "attribute_properties": {
-                "boolean_scalar":  {
+                "boolean_scalar": {
                     "flipperspel": ["fiskotek"]
                 }
             }
@@ -59,12 +61,12 @@ class ConfigureTestCase(TestCase):
 
     def test_update_server_no_changes(self):
         update_server(self.db, Mock, "test",
-                      self.dbdict["servers"]["TangoTest/test"],
-                      self.dbdict["servers"]["TangoTest/test"])
+                      self.dbdict["servers"]["TangoTest"]["test"],
+                      self.dbdict["servers"]["TangoTest"]["test"])
 
         self.assertListEqual(self.db.calls, [])
 
-    def test_update_server_add_device(self):
+    def test_update_server_add_device_2(self):
 
         new_data = {
             "TangoTest": {
@@ -86,8 +88,8 @@ class ConfigureTestCase(TestCase):
         dev = find_device(self.data, "sys/tg_test/2")[0]
         dev["properties"]["flepp"] = ["56"]
 
-        update_server(self.db, Mock, "test", self.data["servers"]["TangoTest/test"],
-                      self.dbdict["servers"]["TangoTest/test"])
+        update_server(self.db, Mock, "test", self.data["servers"]["TangoTest"]["test"],
+                      self.dbdict["servers"]["TangoTest"]["test"])
 
         self.assertListEqual(
             self.db.calls,
@@ -98,8 +100,9 @@ class ConfigureTestCase(TestCase):
         dev = find_device(self.data, "sys/tg_test/2")[0]
         del dev["properties"]["bepa"]
 
-        update_server(self.db, Mock, "test", self.data["servers"]["TangoTest/test"],
-                      self.dbdict["servers"]["TangoTest/test"])
+        update_server(self.db, Mock, "test",
+                      self.data["servers"]["TangoTest"]["test"],
+                      self.dbdict["servers"]["TangoTest"]["test"])
 
         self.assertEqual(len(self.db.calls), 1)
         dbcall, args, kwargs = self.db.calls[0]
@@ -110,10 +113,10 @@ class ConfigureTestCase(TestCase):
 
     def test_update_server_remove_device(self):
         devname = "sys/tg_test/2"
-        del self.data["servers"]["TangoTest/test"]["TangoTest"][devname]
+        del self.data["servers"]["TangoTest"]["test"]["TangoTest"][devname]
         update_server(self.db, Mock, "test",
-                      self.data["servers"]["TangoTest/test"],
-                      self.dbdict["servers"]["TangoTest/test"])
+                      self.data["servers"]["TangoTest"]["test"],
+                      self.dbdict["servers"]["TangoTest"]["test"])
         self.assertEqual(len(self.db.calls), 1)
         dbcall, args, kwargs = self.db.calls[0]
         self.assertEqual(dbcall, "delete_device")
@@ -122,33 +125,35 @@ class ConfigureTestCase(TestCase):
 
     def test_update_server_remove_device_update_skips(self):
         devname = "sys/tg_test/2"
-        del self.data["servers"]["TangoTest/test"]["TangoTest"][devname]
+        del self.data["servers"]["TangoTest"]["test"]["TangoTest"][devname]
         update_server(self.db, Mock, "test",
-                      self.data["servers"]["TangoTest/test"],
-                      self.dbdict["servers"]["TangoTest/test"],
+                      self.data["servers"]["TangoTest"]["test"],
+                      self.dbdict["servers"]["TangoTest"]["test"],
                       update=True)
         self.assertEqual(len(self.db.calls), 0)
 
-    def test_update_server_add_device(self):
+    def test_update_server_add_empty_device(self):
         new_devname = "a/new/dev"
         dev = {}
-        self.data["servers"]["TangoTest/test"]["TangoTest"][new_devname] = dev
-        update_server(self.db, Mock, "test",
-                      self.data["servers"]["TangoTest/test"],
-                      self.dbdict["servers"]["TangoTest/test"])
+        self.data["servers"]["TangoTest"]["test"]["TangoTest"][new_devname] = dev
+        update_server(self.db, Mock, "TangoTest/test",
+                      self.data["servers"]["TangoTest"]["test"],
+                      self.dbdict["servers"]["TangoTest"]["test"])
+        # verify the db calls made
         self.assertEqual(len(self.db.calls), 1)
         dbcall, args, kwargs = self.db.calls[0]
         self.assertEqual(dbcall, "add_device")
         self.assertEqual(len(args), 1)
+        self.assertEqual(args[0].server, "TangoTest/test")
         self.assertEqual(args[0].name, new_devname)
 
     def test_update_server_add_device_with_property(self):
         new_devname = "a/new/dev"
         dev = {"properties": {"test": ["hello"]}}
-        self.data["servers"]["TangoTest/test"]["TangoTest"][new_devname] = dev
-        update_server(self.db, Mock, "test",
-                      self.data["servers"]["TangoTest/test"],
-                      self.dbdict["servers"]["TangoTest/test"])
+        self.data["servers"]["TangoTest"]["test"]["TangoTest"][new_devname] = dev
+        update_server(self.db, Mock, "TangoTest/test",
+                      self.data["servers"]["TangoTest"]["test"],
+                      self.dbdict["servers"]["TangoTest"]["test"])
         self.assertEqual(len(self.db.calls), 2)
         dbcall, args, kwargs = self.db.calls[0]
         self.assertEqual(dbcall, "add_device")
@@ -248,81 +253,105 @@ class ConfigureTestCase(TestCase):
 
     def test_filter_json_include_server(self):
         data = {
-            "TangoTest/test": {
-                "TangoTest": {
-                    "sys/tg_test/3": {
-                        "properties": {
-                            "apa": ["4"]
+            "TangoTest": {
+                "test": {
+                    "TangoTest": {
+                        "sys/tg_test/3": {
+                            "properties": {
+                                "apa": ["4"]
+                            },
                         },
-                    },
-                }
+                    }
+                },
             },
-            "OtherServer/1": {
-                "OtherServer": {
-                    "a/b/c": {},
+            "OtherServer": {
+                "1": {
+                    "OtherServer": {
+                        "a/b/c": {},
+                    }
                 }
             }
         }
-        filtered = filter_config(data, ["server:TangoTest/test"],
+        filtered = filter_config(data, ["server:TangoTest"],
                                  SERVERS_LEVELS)
 
-        self.assertTrue("TangoTest/test" in filtered)
-        self.assertTrue("OtherServer/1" not in filtered)
-        self.assertEqual(data["TangoTest/test"], filtered["TangoTest/test"])
+        self.assertTrue("TangoTest" in filtered)
+        self.assertTrue("OtherServer" not in filtered)
+        self.assertEqual(data["TangoTest"], filtered["TangoTest"])
 
     def test_filter_json_include_class(self):
         data = {
-            "TangoTest/test": {
-                "TangoTest": {
-                    "sys/tg_test/3": {
-                        "properties": {
-                            "apa": ["4"]
-                        },
+            "TangoTest": {
+                "test": {
+                    "TangoTest": {
+                        "sys/tg_test/3": {
+                            "properties": {
+                                "apa": ["4"]
+                            }
+                        }
                     },
+                    "IrrelevantClass": {
+                        "a/b/c": {}
+                    }
+                },
+                "test2": {
+                    "TangoTest": {}
                 }
+
             },
-            "OtherServer/1": {
-                "OtherServer": {
-                    "a/b/c": {},
+
+            "OtherServer": {
+                "1": {
+                    "OtherServer": {
+                        "a/b/c": {},
+                    }
                 }
             }
         }
         filtered = filter_config(data, ["class:TangoTest"], SERVERS_LEVELS)
 
-        self.assertTrue("TangoTest/test" in filtered)
-        self.assertTrue("OtherServer/1" not in filtered)
-        self.assertEqual(data["TangoTest/test"], filtered["TangoTest/test"])
+        self.assertTrue("TangoTest" in filtered)
+        self.assertTrue("OtherServer" not in filtered)
+        self.assertTrue("test2") in filtered["TangoTest"]
+        self.assertTrue("TangoTest" in filtered["TangoTest"]["test"])
+        self.assertTrue("IrrelevantClass" not in filtered["TangoTest"]["test"])
 
     def test_filter_json_include_device(self):
         data = {
-            "TangoTest/test": {
-                "TangoTest": {
-                    "sys/tg_test/3": {
-                        "properties": {
-                            "apa": ["4"]
+            "TangoTest": {
+                "test": {
+                    "TangoTest": {
+                        "sys/tg_test/3": {
+                            "properties": {
+                                "apa": ["4"]
+                            },
                         },
-                    },
-                    "sys/tg_test/4": {
-                        "properties": {
-                            "bepa": ["5"]
-                        },
+                        "sys/tg_test/4": {
+                            "properties": {
+                                "bepa": ["5"]
+                            }
+                        }
                     }
                 }
             },
-            "OtherServer/1": {
-                "OtherServer": {
-                    "a/b/c": {},
-                    "d/e/f": {}
+            "OtherServer": {
+                "1": {
+                    "OtherServer": {
+                        "a/b/c": {},
+                        "d/e/f": {}
+                    }
                 }
             }
         }
         expected = {
-            "TangoTest/test": {
-                "TangoTest": {
-                    "sys/tg_test/3": {
-                        "properties": {
-                            "apa": ["4"]
-                        },
+            "TangoTest": {
+                "test": {
+                    "TangoTest": {
+                        "sys/tg_test/3": {
+                            "properties": {
+                                "apa": ["4"]
+                            }
+                        }
                     }
                 }
             }
@@ -332,40 +361,48 @@ class ConfigureTestCase(TestCase):
 
     def test_filter_json_include_several(self):
         data = {
-            "TangoTest/test": {
-                "TangoTest": {
-                    "sys/tg_test/3": {
-                        "properties": {
-                            "apa": ["4"]
+            "TangoTest": {
+                "test": {
+                    "TangoTest": {
+                        "sys/tg_test/3": {
+                            "properties": {
+                                "apa": ["4"]
+                            },
                         },
-                    },
-                    "sys/tg_test/4": {
-                        "properties": {
-                            "bepa": ["5"]
-                        },
-                    }
-                }
-            },
-            "OtherServer/1": {
-                "OtherServer": {
-                    "a/b/c": {},
-                    "d/a/b": {}
-                }
-            }
-        }
-        expected = {
-            "TangoTest/test": {
-                "TangoTest": {
-                    "sys/tg_test/3": {
-                        "properties": {
-                            "apa": ["4"]
+                        "sys/tg_test/4": {
+                            "properties": {
+                                "bepa": ["5"]
+                            }
                         }
                     }
                 }
             },
-            "OtherServer/1": {
-                "OtherServer": {
-                    "a/b/c": {}
+            "OtherServer": {
+                "1": {
+                    "OtherServer": {
+                        "a/b/c": {},
+                        "d/a/b": {}
+                    }
+                }
+            }
+        }
+        expected = {
+            "TangoTest": {
+                "test": {
+                    "TangoTest": {
+                        "sys/tg_test/3": {
+                            "properties": {
+                                "apa": ["4"]
+                            }
+                        }
+                    }
+                }
+            },
+            "OtherServer": {
+                "1": {
+                    "OtherServer": {
+                        "a/b/c": {}
+                    }
                 }
             }
         }
