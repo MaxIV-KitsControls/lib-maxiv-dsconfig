@@ -160,7 +160,6 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
             # problems. Those are caught and reported.
 
             # Filter out empty columns
-            # Note: is just casting col to str OK? What could happen to e.g. floats?
             row = CaselessDict(dict((str(name), col)
                                     for name, col in zip(column_names, row_)
                                     if col not in ("", None)))
