@@ -35,6 +35,12 @@ class TestExcel(TestCase):
         result = excel.get_properties(row)
         self.assertDictEqual(result, {"a": ["1", "2", "3"]})
 
+    def test_get_properties_with_types(self):
+        row = CaselessDict({"Property(int):a": 1.0,
+                            "Property(float):b": 1.0})
+        result = excel.get_properties(row)
+        self.assertDictEqual(result, {"a": ["1"], "b": ["1.0"]})
+
     def test_get_dynamic_attribute(self):
         row = CaselessDict({"name": "TestAttribute", "formula": "a + b",
                             "type": "int", "mode": "attr"})
