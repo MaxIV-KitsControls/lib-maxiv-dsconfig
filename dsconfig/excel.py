@@ -20,6 +20,8 @@ MODE_MAPPING = CaselessDict({"ATTR": "DynamicAttributes",
                              "STATE": "DynamicStates",
                              "STATUS": "DynamicStatus"})
 
+TYPE_MAPPING = CaselessDict({"INT": int,
+                             "FLOAT": float})
 
 def get_properties(row):
 
@@ -39,12 +41,16 @@ def get_properties(row):
         except ValueError:
             raise ValueError("could not parse Properties")
 
-    # "Property:xyz" columns
+    # "Property:xyz" and "Property(type):xyz columns
     for col_name, value in row.items():
-        match = re.match("property:(.*)", col_name, re.IGNORECASE)
+        match = re.match("property(?:\((.*)\))?:(.*)", col_name, re.IGNORECASE)
         if match and value:
-            name, = match.groups()
-            values = [v.strip() for v in str(value).split("\n")]
+            type_, name = match.groups()
+            if type_:
+                convert = TYPE_MAPPING[type_]
+                values = [convert(value)]
+            else:
+                values = [v.strip() for v in str(value).split("\n")]            
             prop_dict[name] = values
 
     return prop_dict
@@ -95,7 +101,7 @@ def get_dynamic(row):
             # TODO: Sanity check type?
             formula = "%s(%s)" % (row["type"], formula)
         check_formula(formula)
-        mode = row["mode"]
+        mode = str(row["mode"])
         if mode.lower() == "status":
             dyn = formula
         else:
@@ -155,7 +161,7 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
 
             # Filter out empty columns
             # Note: is just casting col to str OK? What could happen to e.g. floats?
-            row = CaselessDict(dict((str(name), str(col).strip())
+            row = CaselessDict(dict((str(name), col)
                                     for name, col in zip(column_names, row_)
                                     if col not in ("", None)))
 
