@@ -1,5 +1,5 @@
 unittest2
-nose >= 1.0
+pytest
 mock
 coverage
 jsonschema
