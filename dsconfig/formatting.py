@@ -2,7 +2,7 @@
 
 import sys
 import json
-from copy import deepcopy
+from copy import deepcopy, copy
 from os import path
 
 from appending_dict import AppendingDict
@@ -82,6 +82,15 @@ def expand_config(config):
             else:
                 expanded["servers"][server] = {instance: data}
     return expanded
+
+
+def clean_metadata(data):
+    "Removes any keys in the data that begin with '_'"
+    tmp = copy(data)
+    for key in tmp.keys():
+        if key.startswith("_"):
+            tmp.pop(key, None)
+    return tmp
 
 
 def normalize_config(config):

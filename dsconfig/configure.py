@@ -1,13 +1,11 @@
-"Functionality for configuring a Tango DB from a dsconfig file"
+"""Functionality for configuring a Tango DB from a dsconfig file"""
 
 from functools import partial
-import sys
 
 import PyTango
 
-from utils import red, ObjectWrapper
-from tangodb import (get_dict_from_db, SPECIAL_ATTRIBUTE_PROPERTIES,
-                     is_protected)
+from utils import ObjectWrapper
+from tangodb import SPECIAL_ATTRIBUTE_PROPERTIES, is_protected
 
 
 def check_attribute_property(propname):
@@ -71,6 +69,7 @@ def update_server(db, difactory, server_name, server_dict, db_dict,
 
     """Creates/removes devices for a given server. Optionally
     ignores removed devices, only adding new and updating old ones."""
+
     for class_name, cls in server_dict.items():  # classes
         removed_devices = [dev for dev in db_dict.get(class_name, {})
                            if dev not in cls]
@@ -114,45 +113,30 @@ update_device = partial(update_device_or_class, cls=False)
 update_class = partial(update_device_or_class, cls=True)
 
 
-def clean_metadata(data):
-    for key in data.keys():
-        if key.startswith("_"):
-            data.pop(key, None)
+def configure(data, dbdata, update=False):
 
+    """Takes an input data dict and the relevant current DB data.  Returns
+    the DB calls needed to bring the Tango DB to the state described
+    by 'data'.  The 'update' flag means that servers/devices are not
+    removed, only added or changed.
 
-def configure(data, write=False, update=False):
-
-    """Takes a data dict and compares it to the Tango DB. If the
-    write flag is given, also modifies the DB to equal the data.
-    The update flag means no devices or properties will be removed.
-    Returns the DB calls needed, and the original DB state."""
-
-    # remove any metadata at the top level
-    clean_metadata(data)
-
-    db = PyTango.Database()
-    dbdict, collisions = get_dict_from_db(db, data)
+    Note: This function does *not* itself modify the Tango DB. It passes a
+    "fake" database object around that just records what the various other
+    functions do to it, and then returns the list of calls made.
+    """
 
     # wrap the database to record calls (and fake it if not writing)
-    db = ObjectWrapper(db if write else None)
-
-    # warn about devices already present in another server
-    # Need we do more here? It should not be dangerous since
-    # the devices will be intact (right?)
-    for srv, inst, cls, dev in collisions:
-        print >>sys.stderr, red("MOVED (because of collision):")
-        print >>sys.stderr, red(" > servers > %s > %s > %s > %s"
-                                % (srv, inst, cls, dev))
+    db = ObjectWrapper()
 
     for servername, serverdata in data.get("servers", {}).items():
         for instname, instdata in serverdata.items():
             update_server(db, PyTango.DbDevInfo, "%s/%s" % (servername, instname),
                           instdata,
-                          (dbdict.get("servers", {})
+                          (dbdata.get("servers", {})
                            .get(servername, {})
                            .get(instname, {})), update)
     for classname, classdata in data.get("classes", {}).items():
-        update_class(db, classname, dbdict.get("classes", {}).get(classname, {}),
+        update_class(db, classname, dbdata.get("classes", {}).get(classname, {}),
                      classdata, update, cls=True)
 
-    return db.calls, dbdict
+    return db.calls

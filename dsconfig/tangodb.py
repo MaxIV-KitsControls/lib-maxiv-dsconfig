@@ -123,3 +123,11 @@ def get_dict_from_db(db, data, narrow=False):
                 dbdict.classes[class_name].attribute_properties[attr] = props
 
     return dbdict.to_dict(), moved_devices
+
+
+def find_empty_servers(db, data):
+    "Find any servers in the data that contain no devices, and remove them"
+    servers = ["%s/%s" for s in data["servers"].keys() for i in s.keys()]
+    return [server for server in servers
+            if all(d.lower().startswith('dserver')
+                   for d in db.get_device_class_list(s))]

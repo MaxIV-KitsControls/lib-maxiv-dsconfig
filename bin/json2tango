@@ -7,17 +7,21 @@ to get to the state described by the file. These commands can also
 optionally be run.
 """
 
+import sys
+import time
 import json
 from optparse import OptionParser
 from tempfile import NamedTemporaryFile
-import sys
 
+import PyTango
 from dsconfig.configure import configure
-from dsconfig.formatting import (load_json, validate_json, normalize_config,
-                                 SERVERS_LEVELS, CLASSES_LEVELS)
-from dsconfig.filtering import filter_config
 from dsconfig.diff import print_diff
-from dsconfig.utils import green, yellow, red
+from dsconfig.filtering import filter_config
+from dsconfig.formatting import (CLASSES_LEVELS, SERVERS_LEVELS, load_json,
+                                 normalize_config, validate_json,
+                                 clean_metadata)
+from dsconfig.tangodb import get_dict_from_db, find_empty_servers
+from dsconfig.utils import green, red, yellow
 
 
 def main():
@@ -65,6 +69,9 @@ def main():
     # Normalization - making the config conform to standard
     data = normalize_config(data)
 
+    # remove any metadata at the top level (should we use this for something?)
+    data = clean_metadata(data)
+
     # Optional validation of the JSON file format.
     if options.validate:
         validate_json(data)
@@ -91,29 +98,57 @@ def main():
     if not any(k in data for k in ("devices", "servers", "classes")):
         sys.exit("No config data; exiting!")
 
-    # perform the actual database configuration
-    dbcalls, dbdict = configure(data, options.write, options.update)
+    # check if there is anything in the DB that will be changed or removed
+    db = PyTango.Database()
+    original, collisions = get_dict_from_db(db, data)
 
-    if options.output:
-        print json.dumps(dbdict, indent=4)
-    elif options.input:
-        print json.dumps(data, indent=4)
+    # warn about devices already present in another server
+    # Need we do more here? It should not be dangerous since
+    # the devices will be intact (right?)
+    for srv, inst, cls, dev in collisions:
+        print >>sys.stderr, red("MOVED (because of collision):")
+        print >>sys.stderr, red(" > servers > %s > %s > %s > %s"
+                                % (srv, inst, cls, dev))
 
     # Print out a nice diff
     if options.verbose:
-        print_diff(dbdict, data, removes=not options.update)
+        print_diff(original, data, removes=not options.update)
 
+    # get the list of DB calls needed
+    dbcalls = configure(data, original, options.update)
+
+    # perform the db operations (if we're supposed to)
+    if options.write and dbcalls:
+        for i, (method, args, kwargs) in enumerate(dbcalls):
+            if options.verbose:
+                sys.stderr.write("\033[K")
+                print >>sys.stderr, "\r%d of %d\t%s... " % (i + 1, len(dbcalls), method),
+            getattr(db, method)(*args, **kwargs)
+        if options.verbose:
+            print >>sys.stderr, "DONE!"
+
+        empty = find_empty_servers(db, original)
+        for server in empty:
+            db.delete_server(server)
+        print "Cleaned up %d empty servers!" % len(empty)
+
+    # optionally dump some information to stdout
+    if options.output:
+        print json.dumps(original, indent=4)
+    elif options.input:
+        print json.dumps(data, indent=4)
     if options.dbcalls:
         print >>sys.stderr, "Tango database calls:"
         for method, args, kwargs in dbcalls:
             print method, args
 
+    # finally print out a brief summary of what was done
     if dbcalls:
         if options.write:
             print >>sys.stderr, red("\n*** Data was written to the Tango DB ***")
             with NamedTemporaryFile(prefix="dsconfig-", suffix=".json",
                                     delete=False) as f:
-                f.write(json.dumps(dbdict, indent=4))
+                f.write(json.dumps(original, indent=4))
                 print >>sys.stderr, ("The previous DB data was saved to %s" %
                                      f.name)
         else:
