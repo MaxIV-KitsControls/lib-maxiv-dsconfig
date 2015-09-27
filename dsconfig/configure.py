@@ -137,6 +137,6 @@ def configure(data, dbdata, update=False):
                            .get(instname, {})), update)
     for classname, classdata in data.get("classes", {}).items():
         update_class(db, classname, dbdata.get("classes", {}).get(classname, {}),
-                     classdata, update, cls=True)
+                     classdata, update=update)
 
     return db.calls
