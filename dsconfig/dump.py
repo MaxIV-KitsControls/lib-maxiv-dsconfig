@@ -24,20 +24,22 @@ def get_empty_data(db, patterns=None):
     if not patterns:
         servers = db.get_server_list("*")
         for server in servers:
+            srv, inst = server.split("/")
             devs_clss = db.get_device_class_list(server)
             for dev, clss in pairwise(devs_clss):
                 if clss != "DServer":
-                    data.servers[server][clss][dev] = {}
+                    data.servers[srv][inst][clss][dev] = {}
         return data
     for pattern in patterns:
         prefix, pattern = pattern.split(":")
         if prefix == "server":
             servers = db.get_server_list(pattern)
             for server in servers:
+                srv, inst = server.split("/")
                 devs_clss = db.get_device_class_list(server)
                 for dev, clss in pairwise(devs_clss):
                     if clss != "DServer":
-                        data.servers[server][clss][dev] = {}
+                        data.servers[srv][inst][clss][dev] = {}
         elif prefix == "class":
             classes = db.get_class_list(pattern)
             for clss in classes:
@@ -45,15 +47,16 @@ def get_empty_data(db, patterns=None):
                 for dev in devs:
                     info = db.get_device_info(dev)
                     server = info.ds_full_name
-                    print server
-                    data.servers[server][clss][dev] = {}
+                    srv, inst = server.split("/")
+                    data.servers[srv][inst][clss][dev] = {}
         elif prefix == "device":
             devices = db.get_device_exported(pattern)
             for device in devices:
                 info = db.get_device_info(device)
                 server = info.ds_full_name
                 clss = info.class_name
-                data.servers[server][clss][device] = {}
+                srv, inst = server.split("/")
+                data.servers[srv][inst][clss][device] = {}
 
     return data.to_dict()
 
