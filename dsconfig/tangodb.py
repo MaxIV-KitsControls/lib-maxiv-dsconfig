@@ -40,6 +40,8 @@ def is_protected(prop, attr=False):
 def get_device_properties(db, devname, data):
     dev = AppendingDict()
     db_props = db.get_device_property_list(devname, "*")
+    if not db_props:
+        return dev
 
     # Properties
     props = db.get_device_property(devname, list(db_props))
