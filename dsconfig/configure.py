@@ -125,7 +125,6 @@ def configure(data, dbdata, update=False):
     functions do to it, and then returns the list of calls made.
     """
 
-    # wrap the database to record calls (and fake it if not writing)
     db = ObjectWrapper()
 
     for servername, serverdata in data.get("servers", {}).items():
