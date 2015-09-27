@@ -78,18 +78,23 @@ class TestExcel(TestCase):
                             "AttributeProperties": "min_value=1;max_value=2"})
         result = excel.get_attribute_properties(row)
         self.assertDictEqual(result,
-                             {"myAttribute": {"min_value": ["1"], "max_value": ["2"]}})
+                             {"myAttribute": {"min_value": ["1"],
+                                              "max_value": ["2"]}})
 
     def test_get_attribute_properties_multiple(self):
-        row = CaselessDict({"Attribute": "myAttribute", "AttrProp:Label": "Something",
+        row = CaselessDict({"Attribute": "myAttribute",
+                            "AttrProp:Label": "Something",
                             "AttrProp:Min value": "45"})
         result = excel.get_attribute_properties(row)
         self.assertDictEqual(result,
-                             {"myAttribute": {"min_value": ["45"], "label": ["Something"]}})
+                             {"myAttribute": {"min_value": ["45"],
+                                              "label": ["Something"]}})
 
     def test_get_attribute_properties_errors_on_invalid_name(self):
-        row = CaselessDict({"Attribute": "myAttribute", "AttrProp:Label": "Something",
-                            "AttrProp:Min value": "45", "AttrProp:Not valid": "foo"})
+        row = CaselessDict({"Attribute": "myAttribute",
+                            "AttrProp:Label": "Something",
+                            "AttrProp:Min value": "45",
+                            "AttrProp:Not valid": "foo"})
         self.assertRaises(ValueError, excel.get_attribute_properties, row)
 
     def test_check_device_format_lets_valid_names_pass(self):
@@ -99,7 +104,8 @@ class TestExcel(TestCase):
         excel.check_device_format("I-A/TEST-TEST/DEVICE-0")
 
     def test_check_device_format_catches_bad_names(self):
-        self.assertRaises(ValueError, excel.check_device_format, "not/a/device/name")
+        self.assertRaises(ValueError, excel.check_device_format,
+                          "not/a/device/name")
 
     def test_check_device_format_catches_non_device_names(self):
         self.assertRaises(ValueError, excel.check_device_format, "just a string")
