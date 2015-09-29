@@ -5,3 +5,5 @@ coverage
 jsonschema
 jsonpatch
 PyTango
+pytest
+fake-factory
