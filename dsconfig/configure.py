@@ -98,6 +98,9 @@ def update_device_or_class(db, name, db_dict, new_dict,
 
     "Configure a device or a class"
 
+    # Note: if the "properties" key is missing, we'll just ignore any
+    # existing properties in the DB. Ditto for attribute_properties.
+
     if "properties" in new_dict:
         db_props = db_dict.get("properties", {})
         new_props = new_dict["properties"]
