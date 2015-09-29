@@ -1,6 +1,11 @@
+from collections import defaultdict
+
 import PyTango
 
 from appending_dict import AppendingDict
+from dsconfig.utils import green, red, yellow
+
+
 #from utils import get_devices_from_dict
 
 
@@ -35,6 +40,71 @@ def is_protected(prop, attr=False):
         return prop.startswith("_") or prop in SPECIAL_ATTRIBUTE_PROPERTIES
     else:
         return prop.startswith("_") or prop in PROTECTED_PROPERTIES
+
+
+def present_calls(indata, dbdata, dbcalls):
+
+    # WIP!
+
+    def add_device(devname, devinfo):
+        msg = ("ADD DEVICE\n" +
+               "{info.server_id} / {info.dev_class} / {info.name}"
+               .format(info=devinfo))
+        return (green, msg)
+
+    def delete_device(devname):
+        return red, "DELETE DEVICE\n {0}".format(devname)
+
+
+def summarise_calls(dbcalls):
+
+    methods = [
+        "add_device",
+        "delete_device",
+        "put_device_property",
+        "delete_device_property",
+        "put_device_attribute_property",
+        "delete_device_attribute_property",
+        "put_class_property",
+        "delete_class_property",
+        "put_class_attribute_property",
+        "delete_class_attribute_property"
+    ]
+
+    counts = defaultdict(int)
+
+    for method, args, kwargs in dbcalls:
+        if "attribute_property" in method:
+            n = sum(len(ps) for attr, ps in args[1].items())
+        elif "property" in method:
+            n = len(args[1])
+        else:
+            n = 1
+        counts[method] += n
+
+    messages = {
+        "add_device": (green, "Add %d devices."),
+        "delete_device": (red, "Delete %d devices."),
+        "put_device_property": (yellow, "Add/change %d device properties."),
+        "delete_device_property": (red, "Delete %d device properties."),
+        "put_device_attribute_property": (
+            yellow, "Add/change %d device attribute properties"),
+        "delete_device_attribute_property": (
+            red, "Delete %d device attribute properties."),
+        "put_class_property": (yellow, "Add/change %d class properties."),
+        "delete_class_property": (red, "Delete %d class properties."),
+        "put_class_attribute_property": (
+            yellow, "Add/change %d class attribute properties"),
+        "delete_class_attribute_property": (
+            red, "Delete %d class attribute properties."),
+    }
+
+    summary = []
+    for method in methods:
+        if method in counts:
+            color, message = messages[method]
+            summary.append(color(message % counts[method]))
+    return summary
 
 
 def get_device_properties(db, devname, data):
@@ -78,16 +148,17 @@ def get_dict_from_db(db, data, narrow=False):
 
     # This is where we'll collect all the relevant data
     dbdict = AppendingDict()
-    moved_devices = []
+    moved_devices = defaultdict(list)
 
     # Devices that are already defined somewhere else
-    for server, inst, clss, device in get_devices_from_dict(data.get("servers", {})):
+    for server, inst, clss, device in get_devices_from_dict(
+            data.get("servers", {})):
         try:
             devinfo = db.get_device_info(device)
-            if devinfo.ds_full_name != "%s/%s" % (server, inst):
-                moved_devices.append((server, inst, devinfo.class_name,
-                                      devinfo.name))
-            # TODO: check if any servers become empty
+            srvname = "%s/%s" % (server, inst)
+            if devinfo.ds_full_name != srvname:
+                moved_devices[devinfo.ds_full_name].append((clss, device))
+
         except PyTango.DevFailed:
             pass
 

@@ -90,6 +90,8 @@ def update_server(db, difactory, server_name, server_dict, db_dict,
                           db_dict.get(class_name, {}).get(device_name, {}),
                           dev, update=update)
 
+    return added_devices, removed_devices
+
 
 def update_device_or_class(db, name, db_dict, new_dict,
                            cls=False, update=False):
@@ -129,11 +131,12 @@ def configure(data, dbdata, update=False):
 
     for servername, serverdata in data.get("servers", {}).items():
         for instname, instdata in serverdata.items():
-            update_server(db, PyTango.DbDevInfo, "%s/%s" % (servername, instname),
-                          instdata,
-                          (dbdata.get("servers", {})
+            added, removed = update_server(
+                db, PyTango.DbDevInfo, "%s/%s" % (servername, instname),
+                instdata, (dbdata.get("servers", {})
                            .get(servername, {})
                            .get(instname, {})), update)
+
     for classname, classdata in data.get("classes", {}).items():
         update_class(db, classname, dbdata.get("classes", {}).get(classname, {}),
                      classdata, update=update)

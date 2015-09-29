@@ -19,7 +19,7 @@ from dsconfig.filtering import filter_config
 from dsconfig.formatting import (CLASSES_LEVELS, SERVERS_LEVELS, load_json,
                                  normalize_config, validate_json,
                                  clean_metadata)
-from dsconfig.tangodb import get_dict_from_db, find_empty_servers
+from dsconfig.tangodb import get_dict_from_db, summarise_calls
 from dsconfig.utils import green, red, yellow
 
 
@@ -35,7 +35,7 @@ def main():
                       metavar="UPDATE")
     parser.add_option("-q", "--quiet",
                       action="store_false", dest="verbose", default=True,
-                      help="don't print actions to stdout")
+                      help="don't print actions to stderr")
     parser.add_option("-o", "--output", dest="output", action="store_true",
                       help="Output the relevant DB state as JSON.")
     parser.add_option("-p", "--input", dest="input", action="store_true",
@@ -100,14 +100,6 @@ def main():
     db = PyTango.Database()
     original, collisions = get_dict_from_db(db, data)
 
-    # warn about devices already present in another server
-    # Need we do more here? It should not be dangerous since
-    # the devices will be intact (right?)
-    for srv, inst, cls, dev in collisions:
-        print >>sys.stderr, red("MOVED (because of collision):")
-        print >>sys.stderr, red(" > servers > %s > %s > %s > %s"
-                                % (srv, inst, cls, dev))
-
     # Print out a nice diff
     if options.verbose:
         print_diff(original, data, removes=not options.update)
@@ -125,11 +117,11 @@ def main():
         if options.verbose:
             print >>sys.stderr, "DONE!"
 
-        empty = find_empty_servers(db, original)
-        for server in empty:
-            print "empty", empty
-            # db.delete_server(server)
-        print "Cleaned up %d empty servers!" % len(empty)
+        # empty = find_empty_servers(db, original)
+        # for server in empty:
+        #     print "empty", empty
+        #     # db.delete_server(server)
+        # print "Cleaned up %d empty servers!" % len(empty)
 
     # optionally dump some information to stdout
     if options.output:
@@ -141,8 +133,34 @@ def main():
         for method, args, kwargs in dbcalls:
             print method, args
 
+    # warn about devices already present in another server
+    # Need we do more here? It should not be dangerous since
+    # the devices will be intact (right?)
+    empty = set()
+    for srvname, devs in collisions.items():
+        if options.verbose:
+            srv, inst = srvname.split("/")
+            for cls, dev in devs:
+                print >>sys.stderr, red("MOVED (because of collision):")
+                print >>sys.stderr, red(" > servers > %s > %s > %s > %s"
+                                        % (srv, inst, cls, dev))
+        if len(db.get_device_class_list(srvname)) == 0:
+            empty.add(srvname)
+            if options.write:
+                db.delete_server(srvname)
+
     # finally print out a brief summary of what was done
     if dbcalls:
+        print
+        print "\n".join(summarise_calls(dbcalls))
+        if collisions:
+            servers = len(collisions)
+            devices = sum(len(devs) for devs in collisions.values())
+            print >>sys.stderr, red("Move %d devices from %d servers" %
+                                    (devices, servers))
+        if empty and options.verbose:
+            print >>sys.stderr, red("Removed %d empty servers" % len(empty))
+
         if options.write:
             print >>sys.stderr, red("\n*** Data was written to the Tango DB ***")
             with NamedTemporaryFile(prefix="dsconfig-", suffix=".json",
