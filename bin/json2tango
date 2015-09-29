@@ -8,6 +8,7 @@ optionally be run.
 """
 
 import sys
+import time
 import json
 from optparse import OptionParser
 from tempfile import NamedTemporaryFile
@@ -44,6 +45,9 @@ def main():
                       help="print out all db calls.")
     parser.add_option("-v", "--no-validation", dest="validate", default=True,
                       action="store_false", help=("Skip JSON validation"))
+    parser.add_option("-s", "--sleep", dest="sleep", default=0.01,
+                      type="float",
+                      help=("Number of seconds to sleep between DB calls"))
 
     parser.add_option("-i", "--include", dest="include", action="append",
                       help=("Inclusive filter on server configutation"))
@@ -110,6 +114,8 @@ def main():
     # perform the db operations (if we're supposed to)
     if options.write and dbcalls:
         for i, (method, args, kwargs) in enumerate(dbcalls):
+            if options.sleep:
+                time.sleep(options.sleep)
             if options.verbose:
                 sys.stderr.write("\033[K")
                 print >>sys.stderr, "\r%d of %d\t%s... " % (i + 1, len(dbcalls), method),
@@ -117,11 +123,6 @@ def main():
         if options.verbose:
             print >>sys.stderr, "DONE!"
 
-        # empty = find_empty_servers(db, original)
-        # for server in empty:
-        #     print "empty", empty
-        #     # db.delete_server(server)
-        # print "Cleaned up %d empty servers!" % len(empty)
 
     # optionally dump some information to stdout
     if options.output:
