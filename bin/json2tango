@@ -134,9 +134,7 @@ def main():
         for method, args, kwargs in dbcalls:
             print method, args
 
-    # warn about devices already present in another server
-    # Need we do more here? It should not be dangerous since
-    # the devices will be intact (right?)
+    # Check for moved devices and remove empty servers
     empty = set()
     for srvname, devs in collisions.items():
         if options.verbose:
@@ -145,7 +143,7 @@ def main():
                 print >>sys.stderr, red("MOVED (because of collision):")
                 print >>sys.stderr, red(" > servers > %s > %s > %s > %s"
                                         % (srv, inst, cls, dev))
-        if len(db.get_device_class_list(srvname)) == 0:
+        if len(db.get_device_class_list(srvname)) == 2:  # just dserver
             empty.add(srvname)
             if options.write:
                 db.delete_server(srvname)
