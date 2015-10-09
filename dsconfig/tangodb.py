@@ -66,6 +66,8 @@ def present_calls(indata, dbdata, dbcalls):
 
 def summarise_calls(dbcalls, dbdata):
 
+    "A brief summary of the operations performed by a list of DB calls"
+
     methods = [
         "add_device",
         "delete_device",
@@ -81,19 +83,23 @@ def summarise_calls(dbcalls, dbdata):
 
     old_servers = get_servers_from_dict(dbdata)
     new_servers = set()
-    servers = set()
-
+    servers = defaultdict(set)
+    devices = defaultdict(set)
     counts = defaultdict(int)
 
     for method, args, kwargs in dbcalls:
         if method == "add_device":
             info = args[0]
-            servers.add(info.server)
+            servers[method].add(info.server)
             if not info.server.lower() in old_servers:
                 new_servers.add(info.server)
             n = 1
+        elif "device_property" in method:
+            n = len(args[1])
+            devices[method].add(args[0].upper())
         elif "attribute_property" in method:
             n = sum(len(ps) for attr, ps in args[1].items())
+            devices[method].add(args[0].upper())
         elif "property" in method:
             n = len(args[1])
         else:
@@ -101,14 +107,21 @@ def summarise_calls(dbcalls, dbdata):
         counts[method] += n
 
     messages = {
-        "add_device": (green, "Add %%d devices to %d servers." % len(servers)),
+        "add_device": (green, "Add %%d devices to %d servers." %
+                       len(servers["add_device"])),
         "delete_device": (red, "Delete %d devices."),
-        "put_device_property": (yellow, "Add/change %d device properties."),
-        "delete_device_property": (red, "Delete %d device properties."),
+        "put_device_property": (
+            yellow, "Add/change %%d device properties in %d devices." %
+            len(devices["put_device_property"])),
+        "delete_device_property": (
+            red, "Delete %%d device properties from %d devices." %
+            len(devices["delete_device_property"])),
         "put_device_attribute_property": (
-            yellow, "Add/change %d device attribute properties"),
+            yellow, "Add/change %%d device attribute properties in %d devices." %
+            len(devices["put_device_attribute_property"])),
         "delete_device_attribute_property": (
-            red, "Delete %d device attribute properties."),
+            red, "Delete %%d device attribute properties from %d devices.",
+            len(devices["delete_device_attribute_property"])),
         "put_class_property": (yellow, "Add/change %d class properties."),
         "delete_class_property": (red, "Delete %d class properties."),
         "put_class_attribute_property": (
@@ -119,7 +132,7 @@ def summarise_calls(dbcalls, dbdata):
 
     summary = []
     if new_servers:
-        summary.append(green("Add %d servers" % len(new_servers)))
+        summary.append(green("Add %d servers." % len(new_servers)))
     for method in methods:
         if method in counts:
             color, message = messages[method]

@@ -147,14 +147,14 @@ def main():
     # finally print out a brief summary of what was done
     if dbcalls:
         print
-        print "\n".join(summarise_calls(dbcalls))
+        print "\n".join(summarise_calls(dbcalls, original))
         if collisions:
             servers = len(collisions)
             devices = sum(len(devs) for devs in collisions.values())
-            print >>sys.stderr, red("Move %d devices from %d servers" %
+            print >>sys.stderr, red("Move %d devices from %d servers." %
                                     (devices, servers))
         if empty and options.verbose:
-            print >>sys.stderr, red("Removed %d empty servers" % len(empty))
+            print >>sys.stderr, red("Removed %d empty servers." % len(empty))
 
         if options.write:
             print >>sys.stderr, red("\n*** Data was written to the Tango DB ***")
