@@ -6,9 +6,6 @@ from appending_dict import AppendingDict
 from dsconfig.utils import green, red, yellow
 
 
-#from utils import get_devices_from_dict
-
-
 # These are special properties that we'll ignore for now
 PROTECTED_PROPERTIES = [
     "polled_attr", "logging_level", "logging_target"
@@ -29,6 +26,17 @@ def get_devices_from_dict(dbdict):
             for instance_name, instance in server.items()
             for class_name, clss in instance.items()
             for device_name in clss]
+
+
+def get_servers_from_dict(dbdict):
+    servers = set()
+    for server, children in dbdict["servers"].items():
+        if "/" in server:
+            servers.add(server)
+        else:
+            for inst in children:
+                servers.add(("%s/%s" % (server, inst)).lower())
+    return servers
 
 
 def is_protected(prop, attr=False):
@@ -56,7 +64,7 @@ def present_calls(indata, dbdata, dbcalls):
         return red, "DELETE DEVICE\n {0}".format(devname)
 
 
-def summarise_calls(dbcalls):
+def summarise_calls(dbcalls, dbdata):
 
     methods = [
         "add_device",
@@ -71,10 +79,20 @@ def summarise_calls(dbcalls):
         "delete_class_attribute_property"
     ]
 
+    old_servers = get_servers_from_dict(dbdata)
+    new_servers = set()
+    servers = set()
+
     counts = defaultdict(int)
 
     for method, args, kwargs in dbcalls:
-        if "attribute_property" in method:
+        if method == "add_device":
+            info = args[0]
+            servers.add(info.server)
+            if not info.server.lower() in old_servers:
+                new_servers.add(info.server)
+            n = 1
+        elif "attribute_property" in method:
             n = sum(len(ps) for attr, ps in args[1].items())
         elif "property" in method:
             n = len(args[1])
@@ -83,7 +101,7 @@ def summarise_calls(dbcalls):
         counts[method] += n
 
     messages = {
-        "add_device": (green, "Add %d devices."),
+        "add_device": (green, "Add %%d devices to %d servers." % len(servers)),
         "delete_device": (red, "Delete %d devices."),
         "put_device_property": (yellow, "Add/change %d device properties."),
         "delete_device_property": (red, "Delete %d device properties."),
@@ -100,10 +118,13 @@ def summarise_calls(dbcalls):
     }
 
     summary = []
+    if new_servers:
+        summary.append(green("Add %d servers" % len(new_servers)))
     for method in methods:
         if method in counts:
             color, message = messages[method]
             summary.append(color(message % counts[method]))
+
     return summary
 
 
