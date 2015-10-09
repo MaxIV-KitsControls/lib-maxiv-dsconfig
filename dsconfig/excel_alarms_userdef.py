@@ -19,7 +19,7 @@ class SuperDict(defaultdict):
 
 def add_device(sdict, inst, dev, al_name, al_cond, al_desc, al_sev, al_rec):
     print inst, dev, al_name, al_cond, al_desc, al_sev, al_rec
-    devdict = sdict.servers["PyAlarm"]["PyAlarm/"+inst]["PyAlarm"][dev]
+    devdict = sdict.servers["PyAlarm/"+inst]["PyAlarm"][dev]
     if "AlarmList" not in devdict.properties:
         devdict.properties["AlarmList"] = []
     devdict.properties["AlarmList"].append(al_name+":"+al_cond)
@@ -50,6 +50,8 @@ def main():
     import sys
     data = xls_to_dict(sys.argv[1])
     print json.dumps(data, indent=4)
+    outfile = open('pyalarm_config.json', 'w')
+    json.dump(data, outfile, indent=4)
 
 if __name__ == "__main__":
     main()
