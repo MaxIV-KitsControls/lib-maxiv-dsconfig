@@ -1,8 +1,10 @@
 from functools import partial
+import sys
 
 import PyTango
 
 from appending_dict import AppendingDict
+
 
 #colors
 ADD = GREEN = '\033[92m'
@@ -18,6 +20,16 @@ def red(text):
 
 def yellow(text):
     return YELLOW + text + ENDC
+
+
+def progressbar(i, n, width):
+    percent = float(i) / (n - 1)
+    hashes = '#' * int(round(percent * width))
+    spaces = ' ' * (width - len(hashes))
+    sys.stdout.write(
+        "\rProgress: [{0}] {1}%".format(hashes + spaces,
+                                        int(round(percent * 100))))
+    sys.stdout.flush()
 
 
 def find_device(definitions, devname):
