@@ -30,7 +30,7 @@ def get_devices_from_dict(dbdict):
 
 def get_servers_from_dict(dbdict):
     servers = set()
-    for server, children in dbdict["servers"].items():
+    for server, children in dbdict.get("servers", {}).items():
         if "/" in server:
             servers.add(server)
         else:
