@@ -1,4 +1,4 @@
-from collections import defaultdict, Mapping, Sequence
+from collections import defaultdict, Mapping
 import json
 
 
@@ -40,6 +40,7 @@ class SetterDict(defaultdict):
         return json.dumps(self)
 
     def to_dict(self):
+        "Returns a normal dict version of itself"
         result = {}
         for key, value in self.items():
             if isinstance(value, SetterDict):
@@ -62,7 +63,7 @@ def merge(d, u):
 
 
 def list_of_strings(value):
-    if isinstance(value, list):  # handle e.g. tuple too?
+    if isinstance(value, (list, tuple)):
         return [str(v) for v in value]
     else:
         return [str(value)]
@@ -70,12 +71,20 @@ def list_of_strings(value):
 
 class AppendingDict(SetterDict):
 
-    """
-    An extra weird SetterDict where assignment adds items instead of
+    """An extra weird SetterDict where assignment adds items instead of
     overwriting. It also allows setting nested values using dicts (or
     any Mapping). Scalar values are converted into lists of strings.
 
     Plus of course the features of SetterDict.
+
+    !!!Attention!!!  This is pretty dangerous. It is only intended for
+    cases where you need to do a lot of updating and don't want the
+    hassle of creating a million recursive dicts. It will silently
+    convert things and it will create any paths that are accessed
+    (even without writing), etc. It is very risky to use it like a
+    normal dict. Always convert it to a dict using to_dict() when
+    you're done changing it! You can always create an AppendingDict
+    from it again if needed later.
 
     a = AppendingDict()
     a.b = 1
