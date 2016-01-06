@@ -2,6 +2,8 @@
 These tests use the 'faker' module to randomly generate
 configurations.  It's intended to be run many times in succession in
 order to find corner cases.
+
+It does not use a real TANGO database.
 """
 
 from copy import deepcopy
@@ -49,7 +51,17 @@ def pick_random_property(config):
     return srv, inst, clss, dev, propname, properties["properties"][propname]
 
 
+def pick_random_class_property(config):
+    classes = config["classes"]
+    classname = choice(classes.keys())
+    properties = classes[classname]
+    propname = choice(properties["properties"].keys())
+    return classname, propname, properties["properties"][propname]
+
+
 # # # #  TESTS  # # # #
+
+# === Device Properties ===
 
 def test_modify_device_property_line():
 
@@ -104,7 +116,7 @@ def test_add_device_property():
     config = fake.tango_database()
     orig_config = deepcopy(config)
 
-    name, value = fake.tango_device_property()
+    name, value = fake.tango_property()
     _, _, _, dev, props = pick_random_device(config)
     props["properties"][name] = value
     calls = configure(config, orig_config)
@@ -113,6 +125,75 @@ def test_add_device_property():
     expected = ("put_device_property", (dev, {name: value}), {})
     assert calls[0] == expected
 
+
+# === Class properties ===
+
+def test_modify_class_property_line():
+
+    """Check that a property is updated when a line is changed"""
+
+    config = fake.tango_database(classes=(3, 5))
+    orig_config = deepcopy(config)
+
+    clss, name, value = pick_random_class_property(config)
+    value[randint(0, len(value)-1)] = fake.word()
+    calls = configure(config, orig_config)
+
+    assert len(calls) == 1
+    expected = ("put_class_property", (clss, {name: value}), {})
+    assert calls[0] == expected
+
+
+def test_remove_class_property_line():
+
+    """Check that the property is overwritten with the new value when
+    removing a line from a property"""
+
+    config = fake.tango_database(classes=(3, 5))
+    orig_config = deepcopy(config)
+    clss, name, value = pick_random_class_property(config)
+    del value[randint(0, len(value)-1)]
+    calls = configure(config, orig_config)
+
+    assert len(calls) == 1
+    expected = ("put_class_property", (clss, {name: value}), {})
+    assert calls[0] == expected
+
+
+def test_remove_class_property():
+
+    """Check that the property is removed"""
+
+    config = fake.tango_database(classes=(3, 5))
+    orig_config = deepcopy(config)
+    clss, name, value = pick_random_class_property(config)
+    del config["classes"][clss]["properties"][name]
+    calls = configure(config, orig_config)
+
+    assert len(calls) == 1
+    expected = ("delete_class_property", (clss, {name: value}), {})
+    assert calls[0] == expected
+
+
+def test_add_class_property():
+
+    "Check that the property is added"
+
+    config = fake.tango_database(classes=(3, 5))
+    orig_config = deepcopy(config)
+
+    name, value = fake.tango_property()
+    clss = choice(config["classes"].keys())
+    props = config["classes"][clss]
+    props["properties"][name] = value
+    calls = configure(config, orig_config)
+
+    assert len(calls) == 1
+    expected = ("put_class_property", (clss, {name: value}), {})
+    assert calls[0] == expected
+
+
+# === Device attribute properties ===
 
 def test_add_attribute_property():
 
@@ -175,6 +256,75 @@ def test_cant_remove_protected_attribute_property():
 
     assert len(calls) == 0
 
+
+# === Class attribute properties ===
+
+def test_add_class_attribute_property():
+
+    "Check that the attribute property is added"
+
+    config = fake.tango_database(classes=(3, 5))
+    orig_config = deepcopy(config)
+
+    clss = choice(config["classes"].keys())
+    props = config["classes"][clss]
+    attr = "test_attribute"
+    propname, value = fake.tango_attribute_property()
+    if "attribute_properties" not in props:
+        props["attribute_properties"] = {}
+    props["attribute_properties"][attr] = {propname: value}
+    calls = configure(config, orig_config)
+
+    assert len(calls) == 1
+    expected = ("put_class_attribute_property",
+                (clss, {attr: {propname: value}}), {})
+    assert calls[0] == expected
+
+
+def test_modify_class_attribute_property():
+
+    "Check that the attribute property is changed"
+
+    config = fake.tango_database()
+
+    clss = choice(config["classes"].keys())
+    props = config["classes"][clss]
+    attr = "test_attribute"
+    propname, value = fake.tango_attribute_property()
+    if "attribute_properties" not in props:
+        props["attribute_properties"] = {}
+    props["attribute_properties"][attr] = {propname: value}
+    orig_config = deepcopy(config)
+    props["attribute_properties"][attr][propname] = "abc"
+    calls = configure(config, orig_config)
+
+    assert len(calls) == 1
+    expected = ("put_class_attribute_property",
+                (clss, {attr: {propname: "abc"}}), {})
+    assert calls[0] == expected
+
+
+def test_cant_remove_protected_class_attribute_property():
+
+    "Check that the attribute property is *not* removed"
+
+    config = fake.tango_database()
+
+    clss = choice(config["classes"].keys())
+    props = config["classes"][clss]
+    attr = "test_attribute"
+    propname, value = fake.tango_attribute_property()
+    if "attribute_properties" not in props:
+        props["attribute_properties"] = {}
+    props["attribute_properties"][attr] = {propname: value}
+    orig_config = deepcopy(config)
+    del props["attribute_properties"][attr][propname]
+    calls = configure(config, orig_config)
+
+    assert len(calls) == 0
+
+
+# === Device operations ===
 
 def test_add_device_to_existing_class():
 
@@ -245,11 +395,12 @@ def test_remove_device():
     device = choice(devices.keys())
     del devices[device]
     calls = configure(config, orig_config)
-    print calls
 
     assert len(calls) == 1
     assert calls[0] == ("delete_device", (device,), {})
 
+
+# === Server operations ===
 
 def test_add_server():
 

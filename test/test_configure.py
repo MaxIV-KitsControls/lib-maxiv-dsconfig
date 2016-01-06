@@ -231,7 +231,6 @@ class ConfigureTestCase(TestCase):
             self.db.calls,
             [('put_device_property', ('sys/tg_test/2', {'bepa': ['573']}), {})])
 
-
     def test_update_properties_add_attribute_property(self):
         devname = "sys/tg_test/2"
         label = "This is a test"
