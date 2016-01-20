@@ -1,4 +1,5 @@
 unittest2
+pytest
 nose >= 1.0
 mock
 coverage
