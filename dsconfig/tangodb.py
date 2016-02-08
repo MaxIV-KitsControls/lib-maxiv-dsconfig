@@ -197,19 +197,18 @@ def get_dict_from_db(db, data, narrow=False):
             pass
 
     # Servers
-    for server_name, srvr in data.get("servers", {}).items():
-        for instance_name, inst in srvr.items():
-            for class_name, cls in inst.items():
+    for srvr, insts in data.get("servers", {}).items():
+        for inst, classes in insts.items():
+            for clss, devs in classes.items():
                 if narrow:
-                    devices = cls.keys()
+                    devices = devs.keys()
                 else:
-                    srv_full_name = "%s/%s" % (server_name, instance_name)
-                    devices = db.get_device_name(srv_full_name, class_name)
-                for device_name in devices:
-                    dev = get_device_properties(db, device_name,
-                                                cls.get(device_name, {}))
-                    dbdict.servers[server_name][instance_name][class_name]\
-                        [device_name] = dev
+                    srv_full_name = "%s/%s" % (srvr, inst)
+                    devices = db.get_device_name(srv_full_name, clss)
+                for device in devices:
+                    new_props = devs.get(device, {})
+                    db_props = get_device_properties(db, device, new_props)
+                    dbdict.servers[srvr][inst][clss][device] = db_props
 
     # Classes
     for class_name, cls in data.get("classes", {}).items():

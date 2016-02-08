@@ -38,7 +38,7 @@ def find_device(definitions, devname):
         for instname, inst in srv.items():
             for classname, cls in inst.items():
                 if devname in cls:
-                    return cls[devname], (instname, classname, devname)
+                    return cls[devname], (srvname, instname, classname, devname)
     raise ValueError("device '%s' not defined" % devname)
 
 

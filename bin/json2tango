@@ -60,6 +60,11 @@ def main():
                       action="append",
                       help=("Exclusive filter on class configuration"))
 
+    parser.add_option(
+        "-D", "--dbdata",
+        help="Read the given file as DB data instead of using the actual DB",
+        dest="dbdata")
+
     options, args = parser.parse_args()
 
     if len(args) == 0:
@@ -102,7 +107,12 @@ def main():
 
     # check if there is anything in the DB that will be changed or removed
     db = PyTango.Database()
-    original, collisions = get_dict_from_db(db, data)
+    if options.dbdata:
+        with open(options.dbdata) as f:
+            original = json.loads(f.read())
+        collisions = {}
+    else:
+        original, collisions = get_dict_from_db(db, data)
 
     # Print out a nice diff
     if options.verbose:

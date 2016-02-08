@@ -72,3 +72,5 @@ def print_diff(dbdict, data, removes=True):
     except ImportError:
         print >>sys.stderr, ("'jsonpatch' module not available - "
                              "no diff printouts for you! (Try -d instead.)")
+
+
