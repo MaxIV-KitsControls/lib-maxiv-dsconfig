@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name = "python-dsconfig",
-      version = "0.3.1",
+      version = "1.0.0",
       description = "Library and utilities for Tango device configuration.",
       packages = ['dsconfig', 'dsconfig.appending_dict'],
       test_suite = "nose.collector",
