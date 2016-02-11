@@ -29,24 +29,29 @@ def update_properties(db, parent, db_props, new_props,
         # For attribute properties we need to go one step deeper into
         # the dict, since each attribute can have several properties.
         # A little messy, but at least it's consistent.
-        added_props = dict((prop, value)
-                           for prop, value in new_props.items()
-                           for attr_prop, value2 in value.items()
-                           if (db_props.get(prop, {}).get(attr_prop) != value2 and
-                               check_attribute_property(attr_prop)))
-        removed_props = dict((prop, value)
-                             for prop, value in db_props.items()
-                             for attr_prop in value
-                             if attr_prop not in new_props.get(prop, {}) and
-                             not is_protected(attr_prop, True))
+        added_props = {}
+        for attr, props in new_props.items():
+            for prop, value in props.items():
+                orig = db_props.get(attr, {}).get(prop)
+                if value and value != orig and check_attribute_property(prop):
+                    added_props[attr] = props
+        removed_props = {}
+        for attr, props in db_props.items():
+            for prop in props:
+                new = new_props.get(attr, {}).get(prop)
+                if not new and not is_protected(prop, True):
+                    removed_props[prop] = value
     else:
-        added_props = dict((prop, value)
-                           for prop, value in new_props.items()
-                           if db_props.get(prop) != value)
-        removed_props = dict((prop, value)
-                             for prop, value in db_props.items()
-                             if prop not in new_props and
-                             not is_protected(prop))
+        added_props = {}
+        for prop, value in new_props.items():
+            old_value = db_props.get(prop, [])
+            if value and value != old_value:
+                added_props[prop] = value
+        removed_props = {}
+        for prop, value in db_props.items():
+            new_value = new_props.get(prop)
+            if not new_value and not is_protected(prop):
+                removed_props[prop] = value
 
     # Find the appropriate DB method to call. Thankfully the API is
     # consistent here.

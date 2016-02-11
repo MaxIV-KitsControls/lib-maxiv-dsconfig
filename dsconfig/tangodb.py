@@ -212,9 +212,8 @@ def get_dict_from_db(db, data, narrow=False):
 
     # Classes
     for class_name, cls in data.get("classes", {}).items():
-
-        db_props = cls.get("properties", ())
-        for prop, value in db.get_class_property(class_name, db_props).items():
+        props = cls.get("properties", {}).keys()
+        for prop, value in db.get_class_property(class_name, props).items():
             if value:
                 value = [str(v) for v in value]
                 dbdict.classes[class_name].properties[prop] = value

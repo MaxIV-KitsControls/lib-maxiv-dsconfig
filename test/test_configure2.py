@@ -86,11 +86,15 @@ def test_remove_device_property_line():
     config = fake.tango_database()
     orig_config = deepcopy(config)
     _, _, _, dev, name, value = pick_random_property(config)
+    old_value = deepcopy(value)
     del value[randint(0, len(value)-1)]
     calls = configure(config, orig_config)
 
     assert len(calls) == 1
-    expected = ("put_device_property", (dev, {name: value}), {})
+    if len(value):
+        expected = ("put_device_property", (dev, {name: value}), {})
+    else:
+        expected = ("delete_device_property", (dev, {name: old_value}), {})
     assert calls[0] == expected
 
 
@@ -152,11 +156,15 @@ def test_remove_class_property_line():
     config = fake.tango_database(classes=(3, 5))
     orig_config = deepcopy(config)
     clss, name, value = pick_random_class_property(config)
+    old_value = deepcopy(value)
     del value[randint(0, len(value)-1)]
     calls = configure(config, orig_config)
 
     assert len(calls) == 1
-    expected = ("put_class_property", (clss, {name: value}), {})
+    if value:
+        expected = ("put_class_property", (clss, {name: value}), {})
+    else:
+        expected = ("delete_class_property", (clss, {name: old_value}), {})
     assert calls[0] == expected
 
 
@@ -287,21 +295,22 @@ def test_modify_class_attribute_property():
 
     config = fake.tango_database()
 
-    clss = choice(config["classes"].keys())
-    props = config["classes"][clss]
-    attr = "test_attribute"
-    propname, value = fake.tango_attribute_property()
-    if "attribute_properties" not in props:
-        props["attribute_properties"] = {}
-    props["attribute_properties"][attr] = {propname: value}
-    orig_config = deepcopy(config)
-    props["attribute_properties"][attr][propname] = "abc"
-    calls = configure(config, orig_config)
+    if "classes" in config:
+        clss = choice(config["classes"].keys())
+        props = config["classes"][clss]
+        attr = "test_attribute"
+        propname, value = fake.tango_attribute_property()
+        if "attribute_properties" not in props:
+            props["attribute_properties"] = {}
+        props["attribute_properties"][attr] = {propname: value}
+        orig_config = deepcopy(config)
+        props["attribute_properties"][attr][propname] = "abc"
+        calls = configure(config, orig_config)
 
-    assert len(calls) == 1
-    expected = ("put_class_attribute_property",
-                (clss, {attr: {propname: "abc"}}), {})
-    assert calls[0] == expected
+        assert len(calls) == 1
+        expected = ("put_class_attribute_property",
+                    (clss, {attr: {propname: "abc"}}), {})
+        assert calls[0] == expected
 
 
 def test_cant_remove_protected_class_attribute_property():

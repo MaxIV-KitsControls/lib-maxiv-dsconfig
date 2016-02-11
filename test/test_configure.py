@@ -38,6 +38,10 @@ TEST_DATA = {
                 "boolean_scalar": {
                     "flipperspel": ["fiskotek"]
                 }
+            },
+            "properties": {
+                "banana": ["yellow"],
+                "apple": ["red"]
             }
         }
     },
