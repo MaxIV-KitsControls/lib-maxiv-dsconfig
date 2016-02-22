@@ -2,10 +2,14 @@
 
 # Imports
 
-import csv, json, sys, os
+import os
+import sys
+import csv
+import json
 from collections import Mapping
 from importlib import import_module
 from optparse import OptionParser
+
 
 # Utils
 
@@ -17,22 +21,27 @@ def special_update(d, u):
         d[k] = special_update(d.get(k), v)
     return d
 
+
 def max_or_none(*args):
     """Maximum function considering None as a maximum value."""
     return None if None in args else max(*args)
+
 
 def cast_list(lst):
     """Convert a list of a string to the corresponding value."""
     result = []
     for value in lst:
         # Integer conversion
-        try: value = int(value)
+        try:
+            value = int(value)
         except (ValueError, TypeError):
             # Float conversion
-            try: value = float(value)
+            try:
+                value = float(value)
             except (ValueError, TypeError):
                 # Hexa conversion
-                try: value = int(value, 16)
+                try:
+                    value = int(value, 16)
                 except (ValueError, TypeError):
                     # Ignore
                     pass
@@ -45,18 +54,21 @@ def cast_list(lst):
         return result[0]
     return tuple(result)
 
+
 # Csv functions
 
 def get_column(matrix, col, start=None, stop=None, step=None):
     """Get the column of a matrix, with optional range arguments."""
     return [row[col] for row in matrix][slice(start, stop, step)]
 
+
 def get_markup_index(matrix, col, markup):
     """Find a markup in a given column and return the following index."""
-    for i,key in enumerate(get_column(matrix, col)):
+    for i, key in enumerate(get_column(matrix, col)):
             if key == markup:
                 return i+1
     return None
+
 
 def get_range_lst(matrix, col, start=0, stop=None, markup=None):
     """Get a value->range dictionnary from a given column."""
@@ -66,7 +78,7 @@ def get_range_lst(matrix, col, start=0, stop=None, markup=None):
         return {}
     result = []
     previous_key, previous_start = None, None
-    for i,key in enumerate(get_column(matrix, col, start, stop), start):
+    for i, key in enumerate(get_column(matrix, col, start, stop), start):
         if key != "":
             if previous_key is not None:
                 result.append((previous_key, previous_start, i))
@@ -74,6 +86,7 @@ def get_range_lst(matrix, col, start=0, stop=None, markup=None):
     if previous_key is not None:
         result.append((previous_key, previous_start, i+1))
     return result
+
 
 # Callable csv functions
 
@@ -86,6 +99,7 @@ def get_kwargs(matrix, start, stop):
         values = [key for key, _, _ in lst]
         kwargs[str(keyword)] = cast_list(values)
     return kwargs
+
 
 def get_call_list(filename):
     """Get the call list from a callable cls file."""
@@ -102,6 +116,7 @@ def get_call_list(filename):
             kwargs = get_kwargs(matrix, start, stop)
             result.append((package, func, kwargs))
     return result
+
 
 # Data functions
 
@@ -127,12 +142,15 @@ def process_call_list(lst, skip=False, verbose=True):
             value = func(**kwargs)
         # Fail
         except errors as exc:
-            if not skip: raise exc
-            else: print(exc)
+            if not skip:
+                raise exc
+            else:
+                print(exc)
         # Success
         else:
             result.append(value)
     return result
+
 
 def join_data(lst, source=None):
     """Join a list of json strings or dictionnaries into a single dict."""
@@ -144,6 +162,7 @@ def join_data(lst, source=None):
     if source:
         data['_source'] = source
     return data
+
 
 # CSV to Dict function
 
@@ -157,6 +176,7 @@ def callable_csv_to_dict(filename, skip=False, verbose=True, to_json=False):
     if to_json:
         return json.dumps(data, indent=4, sort_keys=True)
     return data
+
 
 # Command lines arguments for configuration script
 
@@ -174,10 +194,12 @@ def parse_command_line_args(desc):
                       type='str', help=msg, default='')
 
     msg = "Display informations"
-    parser.add_option('-v', '--verbose', action="store_true", help=msg, default=False)
+    parser.add_option('-v', '--verbose',
+                      action="store_true", help=msg, default=False)
 
     msg = "Write the Tango Database"
-    parser.add_option('-w', '--write', action="store_true", help=msg, default=False)
+    parser.add_option('-w', '--write',
+                      action="store_true", help=msg, default=False)
 
     options, args = parser.parse_args()
 
@@ -188,12 +210,14 @@ def parse_command_line_args(desc):
 
     return options.input, options.output, options.write, options.verbose
 
+
 # Main function for configuration scripts
 
-def main(desc, module_name=None, function=None):
+def main(desc=None, module_name=None, function=None):
     """Run the script."""
     kwargs = {}
     remove = False
+    desc = desc or "Generate a Tango json file for a given callable csv file."
     # Parse command line args
     input_file, output_file, write, verbose = parse_command_line_args(desc)
     # Process input file
@@ -207,7 +231,8 @@ def main(desc, module_name=None, function=None):
                     print("kwargs = " + str(kwargs))
                 break
         else:
-            print "'{0}' not found in {1}".format(prototype, get_call_list(input_file))
+            msg = "'{0}' not found in {1}"
+            print msg.format(prototype, get_call_list(input_file))
             return
     # Generate json file
     if module_name and function:
@@ -257,10 +282,8 @@ def main(desc, module_name=None, function=None):
             print('Removed: ' + output_file)
     print('OK!')
 
+
 # Main execution
 
 if __name__ == "__main__":
-    main("Generate a Tango json file for a given callable csv file.")
-
-
-
+    main()
