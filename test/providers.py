@@ -115,7 +115,7 @@ class TangoProvider(BaseProvider):
 
         return name, value
 
-    def tango_database(self, servers=(5, 20), classes=(0, 5)):
+    def tango_database(self, servers=(5, 20), classes=(1, 5)):
         n_servers = randint(*servers)
         servers = dict(_fake.tango_server() for i in xrange(n_servers))
         n_classes = randint(*classes)

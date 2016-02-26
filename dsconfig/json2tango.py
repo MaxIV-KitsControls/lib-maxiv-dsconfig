@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 Reads a JSON file in the right format, compares it with the current
 state of the Tango DB, and generates the set of DB API commands needed
