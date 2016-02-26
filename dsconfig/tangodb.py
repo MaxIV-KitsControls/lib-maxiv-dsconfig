@@ -143,18 +143,17 @@ def summarise_calls(dbcalls, dbdata):
 
 def get_device_properties(db, devname, data):
     dev = AppendingDict()
-    db_props = db.get_device_property_list(devname, "*")
-    if not db_props:
-        return dev
 
     # Properties
-    props = db.get_device_property(devname, list(db_props))
-    for prop, value in props.items():
-        # We'll ignore "protected" properties unless they are present
-        # in the input data (in that case we want to show that they are changed)
-        if not is_protected(prop) or prop in data.get("properties", {}):
-            value = [str(v) for v in value]  # is this safe?
-            dev.properties[prop] = value
+    db_props = db.get_device_property_list(devname, "*")
+    if db_props:
+        props = db.get_device_property(devname, list(db_props))
+        for prop, value in props.items():
+            # We'll ignore "protected" properties unless they are present
+            # in the input data (in that case we want to show that they are changed)
+            if not is_protected(prop) or prop in data.get("properties", {}):
+                value = [str(v) for v in value]  # is this safe?
+                dev.properties[prop] = value
 
     # Attribute properties
     # Seems impossible to get the full list of defined attribute
@@ -167,7 +166,8 @@ def get_device_properties(db, devname, data):
         for attr, props in dbprops.items():
             props = dict((prop, [str(v) for v in values])
                          for prop, values in props.items())  # whew!
-            dev.attribute_properties[attr] = props
+            if props:
+                dev.attribute_properties[attr] = props
     return dev
 
 
