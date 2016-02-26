@@ -1,4 +1,7 @@
-import unittest
+try:
+    import unittest2 as unittest
+except:
+    import unittest
 
 from . import SetterDict, AppendingDict, merge
 
