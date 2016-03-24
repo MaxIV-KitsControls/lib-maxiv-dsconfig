@@ -30,6 +30,11 @@ def get_properties(row):
     prop_dict = AppendingDict()
 
     # "Properties" column
+    # The cell value is expected to be on the form
+    #   "property1=value1;property2=value2" etc
+    # Note: In this case we cannot know the type of the value so we will
+    # use the string as it is. This should be safe for e.g. numbers,
+    # as long as the format of the string is correct
     if "properties" in row:
         properties = row["properties"]
         try:
@@ -42,15 +47,19 @@ def get_properties(row):
             raise ValueError("could not parse Properties")
 
     # "Property:xyz" and "Property(type):xyz columns
+    # The main issue here is that spreadsheet programs treat numeric cells
+    # as floats. If the number must be inserterd as an int, use the "(INT)"
+    # modifier. There does not seem to be a way to force a numeric cell to
+    # be interpreted as a string.
     for col_name, value in row.items():
         match = re.match("property(?:\((.*)\))?:(.*)", col_name, re.IGNORECASE)
-        if match and value:
+        if match and (value is not None):  # protect against zero, false...
             type_, name = match.groups()
             if type_:
                 convert = TYPE_MAPPING[type_]
                 values = [convert(value)]
             else:
-                values = [v.strip() for v in str(value).split("\n")]            
+                values = [v.strip() for v in str(value).split("\n")]
             prop_dict[name] = values
 
     return prop_dict
