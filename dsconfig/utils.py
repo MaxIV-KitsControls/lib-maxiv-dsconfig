@@ -23,12 +23,15 @@ def yellow(text):
 
 
 def progressbar(i, n, width):
-    percent = float(i) / (n - 1)
-    hashes = '#' * int(round(percent * width))
+    if n == 1:
+        progress = 1.0  # done!
+    else:
+        progress = float(i) / (n - 1)
+    hashes = '#' * int(round(progress * width))
     spaces = ' ' * (width - len(hashes))
     sys.stdout.write(
         "\rProgress: [{0}] {1}%".format(hashes + spaces,
-                                        int(round(percent * 100))))
+                                        int(round(progress * 100))))
     sys.stdout.flush()
 
 

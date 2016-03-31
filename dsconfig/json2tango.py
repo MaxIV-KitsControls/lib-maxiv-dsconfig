@@ -127,6 +127,7 @@ def main():
             if options.verbose:
                 progressbar(i, len(dbcalls), 20)
             getattr(db, method)(*args, **kwargs)
+        print
 
     # optionally dump some information to stdout
     if options.output:
