@@ -1,4 +1,5 @@
 from collections import defaultdict
+from itertools import izip
 
 import PyTango
 
@@ -16,7 +17,8 @@ SPECIAL_ATTRIBUTE_PROPERTIES = [
     "label", "format", "unit", "min_value", "min_alarm", "min_warning",
     "max_value", "min_alarm", "min_warning", "abs_change", "rel_change",
     "event_period", "archive_abs_change", "archive_rel_change",
-    "archive_period", "description", "mode"
+    "archive_period", "description", "mode",
+    "__value", "__value_ts"  # memorized attribute values go here
 ]
 
 
@@ -238,3 +240,27 @@ def find_empty_servers(db, data):
     return [server for server in servers
             if all(d.lower().startswith('dserver')
                    for d in db.get_device_class_list(server))]
+
+
+def get_device_property_values(dbproxy, device, name="*",
+                               include_subdevices=False):
+    query = ("SELECT name, value FROM property_device "
+             "WHERE device = '%s' AND name LIKE '%s'")
+    _, result = dbproxy.DbMySqlSelect(
+        query % (device, name.replace("*", "%")))
+    data = defaultdict(list)
+    for prop, row in izip(result[::2], result[1::2]):
+        if prop != "__SubDevices" or include_subdevices:
+            data[prop].append(row)
+    return data
+
+
+def get_device_attribute_property_values(dbproxy, device, name="*"):
+    query = ("SELECT attribute, name, value FROM property_attribute_device "
+             "WHERE device = '%s' AND name LIKE '%s'")
+    _, result = dbproxy.DbMySqlSelect(
+        query % (device, name.replace("*", "%")))
+    data = AppendingDict()
+    for attr, prop, row in izip(result[::3], result[1::3], result[2::3]):
+        data[attr][prop] = row
+    return data

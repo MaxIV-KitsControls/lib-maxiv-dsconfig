@@ -6,10 +6,11 @@ Note that using device or class will only return devices that are
 currently exported. Perhaps there is a way to do it without?
 """
 
-from itertools import izip
+from itertools import izip, islice
 import json
 
-from tangodb import get_dict_from_db
+from tangodb import (get_device_property_values,
+                     get_device_attribute_property_values)
 from appending_dict import AppendingDict
 import PyTango
 
@@ -19,50 +20,74 @@ def pairwise(t):
     return izip(it, it)
 
 
-def get_empty_data(db, patterns=None):
+def nwise(t, n):
+    # (s_0, s_1, ...) -> ((s_0, s_1, ... , s_n-1), (s_n, ..., s_2n-1), ...)
+    # Note: b0rken!
+    it = iter(t)
+    return izip(*islice(it, n))
+
+
+def get_db_data(db, patterns=None, include_dserver=False):
+    # dump TANGO database into JSON. Optionally filter which things to include
+    # (currently only "positive" filters are possible; you can say which
+    # servers/classes/devices to include, but you can't exclude selectively)
+    # By default, dserver devices aren't included!
     data = AppendingDict()
+    all_devices = {}
     if not patterns:
+        # the user did not specify a pattern, so we will dump *everything*
         servers = db.get_server_list("*")
         for server in servers:
             srv, inst = server.split("/")
             devs_clss = db.get_device_class_list(server)
             for dev, clss in pairwise(devs_clss):
-                if clss != "DServer":
-                    data.servers[srv][inst][clss][dev] = {}
-        return data
-    for pattern in patterns:
-        prefix, pattern = pattern.split(":")
-        if prefix == "server":
-            servers = db.get_server_list(pattern)
-            for server in servers:
-                srv, inst = server.split("/")
-                devs_clss = db.get_device_class_list(server)
-                for dev, clss in pairwise(devs_clss):
-                    if clss != "DServer":
-                        data.servers[srv][inst][clss][dev] = {}
-        elif prefix == "class":
-            classes = db.get_class_list(pattern)
-            for clss in classes:
-                devs = db.get_device_exported_for_class(clss)
+                if clss != "DServer" or include_dserver:
+                    all_devices[dev] = data.servers[srv][inst][clss][dev]
+    else:
+        # go through all patterns and fill the data
+        for pattern in patterns:
+            prefix, pattern = pattern.split(":")
+            if prefix == "server":
+                servers = db.get_server_list(pattern)
+                for server in servers:
+                    srv, inst = server.split("/")
+                    devs_clss = db.get_device_class_list(server)
+                    for dev, clss in pairwise(devs_clss):
+                        if clss != "DServer" or include_dserver:
+                            all_devices[dev] = data.servers[srv][inst][clss][dev]
+            elif prefix == "class":
+                classes = db.get_class_list(pattern)
+                for clss in classes:
+                    devs = db.get_device_exported_for_class(clss)
+                    for dev in devs:
+                        info = db.get_device_info(dev)
+                        server = info.ds_full_name
+                        srv, inst = server.split("/")
+                        if clss != "DServer" or include_dserver:
+                            all_devices[dev] = data.servers[srv][inst][clss][dev]
+            elif prefix == "device":
+                devs = db.get_device_exported(pattern)
                 for dev in devs:
                     info = db.get_device_info(dev)
                     server = info.ds_full_name
+                    clss = info.class_name
                     srv, inst = server.split("/")
-                    data.servers[srv][inst][clss][dev] = {}
-        elif prefix == "device":
-            devices = db.get_device_exported(pattern)
-            for device in devices:
-                info = db.get_device_info(device)
-                server = info.ds_full_name
-                clss = info.class_name
-                srv, inst = server.split("/")
-                data.servers[srv][inst][clss][device] = {}
+                    if clss != "DServer" or include_dserver:
+                        all_devices[dev] = data.servers[srv][inst][clss][dev]
+
+    # go through all found devices and get properties
+    dbproxy = PyTango.DeviceProxy(db.dev_name())
+    for device, devdata in all_devices.items():
+        # device properties
+        props = get_device_property_values(dbproxy, device, "*")
+        if props:
+            devdata["properties"] = props
+        # attribute properties (e.g. configuration, memorized values...)
+        attr_props = get_device_attribute_property_values(dbproxy, device)
+        if attr_props:
+            devdata["attribute_properties"] = attr_props
 
     return data.to_dict()
-
-
-def get_db_data(db, empty_data):
-    return get_dict_from_db(db, empty_data, narrow=True)[0]
 
 
 def main():
@@ -75,10 +100,7 @@ def main():
     _, args = parser.parse_args()
 
     db = PyTango.Database()
-    data = get_empty_data(db, args)
-    if not data:
-        sys.exit("No matches in the Tango DB; are the devices exported?")
-    dbdata = get_db_data(db, data)
+    dbdata = get_db_data(db, args)
     print json.dumps(dbdata, indent=4)
 
 
