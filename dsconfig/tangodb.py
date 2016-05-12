@@ -264,3 +264,17 @@ def get_device_attribute_property_values(dbproxy, device, name="*"):
     for attr, prop, row in izip(result[::3], result[1::3], result[2::3]):
         data[attr][prop] = row
     return data
+
+
+def get_devices_for_class(dbproxy, clss):
+    query = ("SELECT name FROM device WHERE class LIKE '%s'")
+    _, result = dbproxy.DbMySqlSelect(query % clss.replace("*", "%"))
+    return result
+
+
+def get_devices_by_name_and_class(dbproxy, name, clss="*"):
+    query = ("SELECT name FROM device WHERE name LIKE '%s' "
+             "AND class LIKE '%s'")
+    _, result = dbproxy.DbMySqlSelect(
+        query % (name.replace("*", "%"), clss.replace("*", "%")))
+    return result

@@ -9,7 +9,9 @@ currently exported. Perhaps there is a way to do it without?
 from itertools import izip, islice
 import json
 
-from tangodb import (get_device_property_values,
+from tangodb import (get_devices_for_class,
+                     get_devices_by_name_and_class,
+                     get_device_property_values,
                      get_device_attribute_property_values)
 from appending_dict import AppendingDict
 import PyTango
@@ -32,8 +34,11 @@ def get_db_data(db, patterns=None, include_dserver=False):
     # (currently only "positive" filters are possible; you can say which
     # servers/classes/devices to include, but you can't exclude selectively)
     # By default, dserver devices aren't included!
+
     data = AppendingDict()
     all_devices = {}
+    dbproxy = PyTango.DeviceProxy(db.dev_name())
+
     if not patterns:
         # the user did not specify a pattern, so we will dump *everything*
         servers = db.get_server_list("*")
@@ -58,7 +63,7 @@ def get_db_data(db, patterns=None, include_dserver=False):
             elif prefix == "class":
                 classes = db.get_class_list(pattern)
                 for clss in classes:
-                    devs = db.get_device_exported_for_class(clss)
+                    devs = get_devices_for_class(dbproxy, clss)
                     for dev in devs:
                         info = db.get_device_info(dev)
                         server = info.ds_full_name
@@ -66,7 +71,7 @@ def get_db_data(db, patterns=None, include_dserver=False):
                         if clss != "DServer" or include_dserver:
                             all_devices[dev] = data.servers[srv][inst][clss][dev]
             elif prefix == "device":
-                devs = db.get_device_exported(pattern)
+                devs = get_devices_by_name_and_class(dbproxy, pattern)
                 for dev in devs:
                     info = db.get_device_info(dev)
                     server = info.ds_full_name
@@ -76,7 +81,6 @@ def get_db_data(db, patterns=None, include_dserver=False):
                         all_devices[dev] = data.servers[srv][inst][clss][dev]
 
     # go through all found devices and get properties
-    dbproxy = PyTango.DeviceProxy(db.dev_name())
     for device, devdata in all_devices.items():
         # device properties
         props = get_device_property_values(dbproxy, device, "*")
