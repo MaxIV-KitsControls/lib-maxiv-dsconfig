@@ -86,6 +86,28 @@ class ConfigureTestCase(TestCase):
         self.assertEqual(args[0]._class, "TangoTest")
         self.assertEqual(args[0].server, "TangoTest/1")
 
+    def test_update_server_add_device_with_alias(self):
+
+        new_data = {
+            "TangoTest": {
+                "sys/tg_test/apa": {"alias": "my_alias"}
+            }
+        }
+
+        update_server(self.db, Mock, "TangoTest/1", new_data, AppendingDict())
+
+        self.assertEqual(len(self.db.calls), 2)
+        dbcall, args, kwargs = self.db.calls[0]
+        self.assertEqual(dbcall, 'add_device')
+        self.assertEqual(args[0].name, 'sys/tg_test/apa')
+        self.assertEqual(args[0]._class, "TangoTest")
+        self.assertEqual(args[0].server, "TangoTest/1")
+
+        dbcall, args, kwargs = self.db.calls[1]
+        self.assertEqual(dbcall, 'put_device_alias')
+        self.assertEqual(args[0], 'sys/tg_test/apa')
+        self.assertEqual(args[1], 'my_alias')
+
     def test_update_server_add_property(self):
 
         dev = find_device(self.data, "sys/tg_test/2")[0]
