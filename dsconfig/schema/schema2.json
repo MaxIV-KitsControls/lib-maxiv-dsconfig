@@ -73,6 +73,9 @@
                 },
                 "attribute_properties": {
                     "$ref": "#definitions/attribute_properties"
+                },
+                "alias": {
+                    "type": "string"
                 }
             }
         },

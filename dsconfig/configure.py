@@ -111,11 +111,19 @@ def update_device_or_class(db, name, db_dict, new_dict,
         new_props = new_dict["properties"]
         update_properties(db, name, db_props, new_props, cls=cls,
                           delete=not update)
+
     if "attribute_properties" in new_dict:
         db_attr_props = db_dict.get("attribute_properties", {})
         new_attr_props = new_dict["attribute_properties"]
         update_properties(db, name, db_attr_props, new_attr_props,
                           attr=True, cls=cls, delete=not update)
+
+    # device aliases
+    if not cls:
+        if "alias" in new_dict and new_dict["alias"] != db_dict.get("alias"):
+            db.put_device_alias(name, new_dict["alias"])
+        elif not update and ("alias" not in new_dict and "alias" in db_dict):
+            db.delete_device_alias(db_dict["alias"])
 
 
 # nicer aliases

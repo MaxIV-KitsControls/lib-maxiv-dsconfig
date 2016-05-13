@@ -3,7 +3,7 @@ from itertools import izip
 
 import PyTango
 
-from appending_dict import AppendingDict
+from appending_dict import AppendingDict, SetterDict
 from dsconfig.utils import green, red, yellow
 
 
@@ -80,7 +80,9 @@ def summarise_calls(dbcalls, dbdata):
         "put_class_property",
         "delete_class_property",
         "put_class_attribute_property",
-        "delete_class_attribute_property"
+        "delete_class_attribute_property",
+        "put_device_alias",
+        "delete_device_alias"
     ]
 
     old_servers = get_servers_from_dict(dbdata)
@@ -130,6 +132,8 @@ def summarise_calls(dbcalls, dbdata):
             yellow, "Add/change %d class attribute properties"),
         "delete_class_attribute_property": (
             red, "Delete %d class attribute properties."),
+        "put_device_alias": (green, "Add/change %d device aliases"),
+        "delete_device_alias": (red, "Delete %d device aliases")
     }
 
     summary = []
@@ -143,10 +147,21 @@ def summarise_calls(dbcalls, dbdata):
     return summary
 
 
-def get_device_properties(db, devname, data):
-    dev = AppendingDict()
+def get_device(db, devname, data):
+
+    """Returns all relevant DB information about a given device:
+    alias (if any), properties, attribute properties"""
+
+    dev = {}
+
+    try:
+        alias = db.get_alias_from_device(devname)
+        dev["alias"] = alias
+    except PyTango.DevFailed:
+        pass
 
     # Properties
+    properties = {}
     db_props = db.get_device_property_list(devname, "*")
     if db_props:
         props = db.get_device_property(devname, list(db_props))
@@ -155,12 +170,19 @@ def get_device_properties(db, devname, data):
             # in the input data (in that case we want to show that they are changed)
             if not is_protected(prop) or prop in data.get("properties", {}):
                 value = [str(v) for v in value]  # is this safe?
-                dev.properties[prop] = value
+                properties[prop] = value
+        dev["properties"] = properties
 
     # Attribute properties
-    # Seems impossible to get the full list of defined attribute
+    # Seems impossible* to get the full list of defined attribute
     # properties through the API so we'll have to make do with
     # the attributes we know about.
+    # OTOH, usually if the attribute config changes, it's because
+    # a user has set e.g. the format, and then we should not just
+    # remove it, right?
+    # (* It is possible, just not through the DB API. See the
+    #    "DbMySqlSelect" command on the db device.)
+    attribute_properties = {}
     attr_props = data.get("attribute_properties")
     if attr_props:
         dbprops = db.get_device_attribute_property(devname,
@@ -169,7 +191,9 @@ def get_device_properties(db, devname, data):
             props = dict((prop, [str(v) for v in values])
                          for prop, values in props.items())  # whew!
             if props:
-                dev.attribute_properties[attr] = props
+                attribute_properties[attr] = props
+        dev["attribute_properties"] = attribute_properties
+
     return dev
 
 
@@ -183,7 +207,7 @@ def get_dict_from_db(db, data, narrow=False):
     """
 
     # This is where we'll collect all the relevant data
-    dbdict = AppendingDict()
+    dbdict = SetterDict()
     moved_devices = defaultdict(list)
 
     # Devices that are already defined somewhere else
@@ -209,7 +233,7 @@ def get_dict_from_db(db, data, narrow=False):
                     devices = db.get_device_name(srv_full_name, clss)
                 for device in devices:
                     new_props = devs.get(device, {})
-                    db_props = get_device_properties(db, device, new_props)
+                    db_props = get_device(db, device, new_props)
                     dbdict.servers[srvr][inst][clss][device] = db_props
 
     # Classes

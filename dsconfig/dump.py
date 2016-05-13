@@ -13,7 +13,7 @@ from tangodb import (get_devices_for_class,
                      get_devices_by_name_and_class,
                      get_device_property_values,
                      get_device_attribute_property_values)
-from appending_dict import AppendingDict
+from appending_dict import SetterDict
 import PyTango
 
 
@@ -35,7 +35,7 @@ def get_db_data(db, patterns=None, include_dserver=False):
     # servers/classes/devices to include, but you can't exclude selectively)
     # By default, dserver devices aren't included!
 
-    data = AppendingDict()
+    data = SetterDict()
     all_devices = {}
     dbproxy = PyTango.DeviceProxy(db.dev_name())
 
@@ -90,6 +90,11 @@ def get_db_data(db, patterns=None, include_dserver=False):
         attr_props = get_device_attribute_property_values(dbproxy, device)
         if attr_props:
             devdata["attribute_properties"] = attr_props
+        try:
+            alias = db.get_alias_from_device(device)
+            devdata["alias"] = alias
+        except PyTango.DevFailed:  # no alias for the device
+            pass
 
     return data.to_dict()
 
