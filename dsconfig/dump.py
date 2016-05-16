@@ -1,115 +1,72 @@
 """
 Takes a list of server/class/devices (optionally with wildcards)
-and returns the current configuration for those in JSON dsconfig format.
+and prints the current configuration for those in JSON dsconfig format.
 
-Note that using device or class will only return devices that are
-currently exported. Perhaps there is a way to do it without?
+$ python -m dsconfig.dump server:TangoTest/1 > result.json
+$ python -m dsconfig.dump device:sys/tg_test/1 device:sys/tg_test/2
+...
+
 """
 
-from itertools import izip, islice
-import json
-
-from tangodb import (get_devices_for_class,
-                     get_devices_by_name_and_class,
-                     get_device_property_values,
-                     get_device_attribute_property_values)
+from tangodb import get_servers_with_filters
 from appending_dict import SetterDict
 import PyTango
 
 
-def pairwise(t):
-    it = iter(t)
-    return izip(it, it)
+def get_db_data(db, patterns=None, **options):
 
-
-def nwise(t, n):
-    # (s_0, s_1, ...) -> ((s_0, s_1, ... , s_n-1), (s_n, ..., s_2n-1), ...)
-    # Note: b0rken!
-    it = iter(t)
-    return izip(*islice(it, n))
-
-
-def get_db_data(db, patterns=None, include_dserver=False):
     # dump TANGO database into JSON. Optionally filter which things to include
     # (currently only "positive" filters are possible; you can say which
     # servers/classes/devices to include, but you can't exclude selectively)
     # By default, dserver devices aren't included!
 
-    data = SetterDict()
-    all_devices = {}
     dbproxy = PyTango.DeviceProxy(db.dev_name())
+    data = SetterDict()
 
     if not patterns:
         # the user did not specify a pattern, so we will dump *everything*
-        servers = db.get_server_list("*")
-        for server in servers:
-            srv, inst = server.split("/")
-            devs_clss = db.get_device_class_list(server)
-            for dev, clss in pairwise(devs_clss):
-                if clss != "DServer" or include_dserver:
-                    all_devices[dev] = data.servers[srv][inst][clss][dev]
+        servers = get_servers_with_filters(
+            dbproxy, **options)
+        data.servers.update(servers)
     else:
-        # go through all patterns and fill the data
+        # go through all patterns and fill in the data
         for pattern in patterns:
             prefix, pattern = pattern.split(":")
-            if prefix == "server":
-                servers = db.get_server_list(pattern)
-                for server in servers:
-                    srv, inst = server.split("/")
-                    devs_clss = db.get_device_class_list(server)
-                    for dev, clss in pairwise(devs_clss):
-                        if clss != "DServer" or include_dserver:
-                            all_devices[dev] = data.servers[srv][inst][clss][dev]
-            elif prefix == "class":
-                classes = db.get_class_list(pattern)
-                for clss in classes:
-                    devs = get_devices_for_class(dbproxy, clss)
-                    for dev in devs:
-                        info = db.get_device_info(dev)
-                        server = info.ds_full_name
-                        srv, inst = server.split("/")
-                        if clss != "DServer" or include_dserver:
-                            all_devices[dev] = data.servers[srv][inst][clss][dev]
-            elif prefix == "device":
-                devs = get_devices_by_name_and_class(dbproxy, pattern)
-                for dev in devs:
-                    info = db.get_device_info(dev)
-                    server = info.ds_full_name
-                    clss = info.class_name
-                    srv, inst = server.split("/")
-                    if clss != "DServer" or include_dserver:
-                        all_devices[dev] = data.servers[srv][inst][clss][dev]
-
-    # go through all found devices and get properties
-    for device, devdata in all_devices.items():
-        # device properties
-        props = get_device_property_values(dbproxy, device, "*")
-        if props:
-            devdata["properties"] = props
-        # attribute properties (e.g. configuration, memorized values...)
-        attr_props = get_device_attribute_property_values(dbproxy, device)
-        if attr_props:
-            devdata["attribute_properties"] = attr_props
-        try:
-            alias = db.get_alias_from_device(device)
-            devdata["alias"] = alias
-        except PyTango.DevFailed:  # no alias for the device
-            pass
+            kwargs = {prefix: pattern}
+            kwargs.update(options)
+            servers = get_servers_with_filters(dbproxy, **kwargs)
+            data.servers.update(servers)
 
     return data.to_dict()
 
 
 def main():
+
+    import json
     from optparse import OptionParser
-    import sys
 
     usage = "Usage: %prog [term:pattern term2:pattern2...]"
     parser = OptionParser(usage=usage)
+    parser.add_option("-p", "--no-properties", dest="properties",
+                      action="store_false", default=True,
+                      help="Exclude device properties")
+    parser.add_option("-a", "--no-attribute-properties",
+                      dest="attribute_properties",
+                      action="store_false", default=True,
+                      help="Exclude attribute properties")
+    parser.add_option("-l", "--no-aliases", dest="aliases",
+                      action="store_false", default=True,
+                      help="Exclude device aliases")
+    parser.add_option("-d", "--dservers", dest="dservers",
+                      action="store_true", help="Include DServer devices")
 
-    _, args = parser.parse_args()
+    options, args = parser.parse_args()
 
     db = PyTango.Database()
-    dbdata = get_db_data(db, args)
+    dbdata = get_db_data(db, args,
+                         properties=options.properties,
+                         attribute_properties=options.attribute_properties,
+                         aliases=options.aliases, dservers=options.dservers)
     print json.dumps(dbdata, indent=4)
 
 
