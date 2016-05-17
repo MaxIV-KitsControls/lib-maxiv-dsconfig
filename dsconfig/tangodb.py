@@ -1,3 +1,5 @@
+"Various functionality for dealing with the TANGO database"
+
 from collections import defaultdict
 from itertools import izip, islice
 
@@ -14,8 +16,11 @@ PROTECTED_PROPERTIES = [
 
 
 SPECIAL_ATTRIBUTE_PROPERTIES = [
-    "label", "format", "unit", "min_value", "min_alarm", "min_warning",
-    "max_value", "min_alarm", "min_warning", "abs_change", "rel_change",
+    "label", "format", "unit", "standard_unit", "display_unit",
+    "min_value", "min_alarm", "min_warning",
+    "max_value", "max_alarm", "max_warning",
+    "delta_t", "delta_val",
+    "abs_change", "rel_change",
     "event_period", "archive_abs_change", "archive_rel_change",
     "archive_period", "description", "mode",
     "__value", "__value_ts"  # memorized attribute values go here
@@ -262,7 +267,7 @@ def find_empty_servers(db, data):
                for srv, insts in data["servers"].items()
                for inst in insts.keys()]
     return [server for server in servers
-            if all(d.lower().startswith('dserver')
+            if all(d.lower().startswith('dserver/')
                    for d in db.get_device_class_list(server))]
 
 
@@ -313,13 +318,16 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
                              properties=True, attribute_properties=True,
                              aliases=True, dservers=False):
     """
-    A performant way to get servers and devices from the DB
+    A performant way to get servers and devices in bulk from the DB
     by direct SQL statements and joins, instead of e.g. using one
     query to get the properties of each device.
 
     TODO: are there any length restrictions on the query results? In
     that case, use limit and offset to get page by page.
     """
+
+    import sys
+    from time import time
 
     server = server.replace("*", "%")  # mysql wildcards
     clss = clss.replace("*", "%")
@@ -337,7 +345,7 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
             query += " AND class != 'DServer'"
         _, result = dbproxy.DbMySqlSelect(query % (server, clss, device))
         for d, p, v in nwise(result, 3):
-            devices[d].properties[p] = v
+            devices[d.upper()].properties[p] = v
 
     if attribute_properties:
         # Get all relevant attribute properties
@@ -349,7 +357,7 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
             query += " AND class != 'DServer'"
         _, result = dbproxy.DbMySqlSelect(query % (server, clss, device))
         for d, a, p, v in nwise(result, 4):
-            devices[d].attribute_properties[a][p] = v
+            devices[d.upper()].attribute_properties[a][p] = v
 
     devices = devices.to_dict()
 
@@ -357,9 +365,7 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
     query = (
         "SELECT server, class, name, alias FROM device" +
         (" WHERE server LIKE '%s' AND class LIKE '%s' AND name LIKE '%s'"
-         % (server.replace("*", "%"),
-            clss.replace("*", "%"),
-            device.replace("*", "%"))))
+         % (server, clss, device)))
     if not dservers:
         query += " AND class != 'DServer'"
     _, result = dbproxy.DbMySqlSelect(query)
@@ -368,8 +374,9 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
     servers = SetterDict()
     for s, c, d, a in nwise(result, 4):
         srv, inst = s.split("/")
-        device = servers[srv][inst][c][d] = devices.get(d, {})
+        device = devices.get(d.upper(), {})
         if a and aliases:
             device["alias"] = a
+        servers[srv][inst][c][d.upper()] = device
 
     return servers
