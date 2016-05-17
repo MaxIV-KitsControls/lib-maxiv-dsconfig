@@ -5,7 +5,7 @@ import json
 from copy import deepcopy, copy
 from os import path
 
-from appending_dict import AppendingDict
+from appending_dict import AppendingDict, SetterDict
 
 import PyTango
 
@@ -111,7 +111,7 @@ def normalize_config(config):
 
     """
     old_config = expand_config(config)
-    new_config = AppendingDict()
+    new_config = SetterDict()
     if "servers" in old_config:
         new_config.servers = old_config["servers"]
     if "classes" in old_config:
