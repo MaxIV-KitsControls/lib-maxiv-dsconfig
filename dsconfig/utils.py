@@ -38,10 +38,9 @@ def progressbar(i, n, width):
 def find_device(definitions, devname):
     "Find a given device in a server dict"
     for srvname, srv in definitions["servers"].items():
-        for instname, inst in srv.items():
-            for classname, cls in inst.items():
-                if devname in cls:
-                    return cls[devname], (srvname, instname, classname, devname)
+        for classname, cls in srv.items():
+            if devname in cls:
+                return cls[devname], (srvname, classname, devname)
     raise ValueError("device '%s' not defined" % devname)
 
 
