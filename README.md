@@ -101,7 +101,7 @@ This tool reads a JSON file (or from stdout if no filename is given), validates 
 
 Inspect the output of this command carefully. Lines in red means removal, green additions and yellow changes. Also the old and new values are printed. Note that properties are stored as lists of strings in the DB, so don't be confused by the fact that your numeric properties turn up as strings.
 
-[Pro-tip: if you're unsure of what's going on, it's a good idea to inspect the output of the "-d" argument (see below) before doing any non-trivial changes. It's less readable than the normal diff output but garanteed to be accurate.]
+[Pro-tip: if you're unsure of what's going on, it's a good idea to inspect the output of the `-d` argument (see below) before doing any non-trivial changes. It's usually less readable than the normal diff output, but garanteed to be accurate.]
 
 A summary of the numbers of different database operations is printed. This should be useful to double check, usually you should have a good idea of e.g. how many devices should be added, etc.
 
@@ -113,19 +113,21 @@ Note that the tool in principle only concerns itself with the server instances d
 
 Some useful flags (see --help for a complete list):
 
- * --write (-w) is needed in order to actually do anything to the database. This means that the command will perform the actions needed to bring the DB into the described state. If the state is already correct, nothing is done.
+ * `--write (-w)` is needed in order to actually do anything to the database. This means that the command will perform the actions needed to bring the DB into the described state. If the state is already correct, nothing is done.
 
- * --update (-u) means that "nothing" (be careful, see caveats below) will be removed, only changed or added. Again the exception is any existing duplicates of your devices. Also, this only applies to whole properties, not individual lines. So if your JSON has lines removed from a property, the lines will be removed from the DB as the whole property is overwritten, regardless of the --update flag.
+ * `--update (-u)` means that "nothing" (be careful, see caveats below) will be removed, only changed or added. Again the exception is any existing duplicates of your devices. Also, this only applies to whole properties, not individual lines. So if your JSON has lines removed from a property, the lines will be removed from the DB as the whole property is overwritten, regardless of the --update flag.
 
- * --include (-i) [Experimental] lets you filter the configuration before applying it. You give a filter consisting of a "term" (server/class/device/property) and a regular expression, separated by colon. E.g. "--include=device:VAC/IP.*01". This will cause the command to only apply configuration that concerns those devices matching the regex. It is possible to add several includes, just tack more "--include=..." statements on.
+ * `--include (-i)` [Experimental] lets you filter the configuration before applying it. You give a filter consisting of a "term" (server/class/device/property) and a regular expression, separated by colon. E.g. "--include=device:VAC/IP.*01". This will cause the command to only apply configuration that concerns those devices matching the regex. It is possible to add several includes, just tack more "--include=..." statements on.
 
- * --exclude (-x) [Experimental] works like --include except it removes the matching parts from the config instead.
+ * `--exclude (-x)` [Experimental] works like --include except it removes the matching parts from the config instead.
 
 
 Some less useful flags:
 
- * --no-validation (-v) skips the JSON validation step. If you know what you're doing, this may be useful as the validation is very strict, while the tool itself is more forgiving. Watch out for unexpected behavior though; you're on your own! It's probably a better idea to fix your JSON.
+ * `--no-validation (-v)` skips the JSON validation step. If you know what you're doing, this may be useful as the validation is very strict, while the tool itself is more forgiving. Watch out for unexpected behavior though; you're on your own! It's probably a better idea to fix your JSON.
 
- * --dbcalls (-d) prints out all the Tango database API calls that were, or would have been, made to perform the changes. This is mostly handy for debugging problems.
+ * `--dbcalls (-d)` prints out all the Tango database API calls that were, or would have been, made to perform the changes. This is mostly handy for debugging problems. Since this is the real list of commands that are performed, it is guaranteed to correspond to reality.
 
- * --sleep (-s) tweaks the time to wait between db calls. The default is 0.01 s. This is intended to lighten the load on the Tango DB service a bit, but it can be set to 0 if you just want the config to be done as fast as possible.
+ * `--sleep (-s)` tweaks the time to wait between db calls. The default is 0.01 s. This is intended to lighten the load on the Tango DB service a bit, but it can be set to 0 if you just want the config to be done as fast as possible.
+
+ * `--input (-p)` tells the command to simply print the configuration file, but after any filters have been applied. It can be useful in order to check the result of filtering. If no filters are used, it will just (pretty) print whatever file you gave as input. This flag skips all database operations so it can be used "offline".
