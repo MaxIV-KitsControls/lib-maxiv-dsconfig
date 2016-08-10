@@ -10,8 +10,8 @@ def filter_nested_dict(node, pattern, depth, level=0, invert=False):
     """
     if level == depth:
         return dict((key, value) for key, value in node.iteritems()
-                    if (not invert and pattern.search(key)) or
-                    (invert and not pattern.search(key)))
+                    if (not invert and pattern.match(key)) or
+                    (invert and not pattern.match(key)))
     else:
         dupe_node = {}
         for key, val in node.iteritems():
@@ -35,6 +35,17 @@ def filter_config(data, filters, levels, invert=False):
     for fltr in filters:
         try:
             what, regex = fltr.split(":")
+            if what == "server" and "/" in regex:
+                # special case the "server/instance" syntax to return
+                # only the specific instance in the server
+                srv, inst = [re.compile(r, flags=re.IGNORECASE)
+                             for r in regex.split("/")]
+                servers = filter_nested_dict(data, srv, 0)
+                for k, v in servers.items():
+                    tmp = filter_nested_dict(v, inst, 0)
+                    if tmp:
+                        filtered[k] = tmp
+                continue
             depth = levels[what]
             pattern = re.compile(regex, flags=re.IGNORECASE)
         except (ValueError, IndexError):
