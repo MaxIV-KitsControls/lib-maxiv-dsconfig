@@ -86,22 +86,26 @@ def main():
     try:
         if options.include:
             data["servers"] = filter_config(
-                data["servers"], options.include, SERVERS_LEVELS)
+                data.get("servers", {}), options.include, SERVERS_LEVELS)
         if options.exclude:
             data["servers"] = filter_config(
-                data["servers"], options.exclude, SERVERS_LEVELS, invert=True)
+                data.get("servers", {}), options.exclude, SERVERS_LEVELS, invert=True)
         if options.include_classes:
             data["classes"] = filter_config(
-                data["classes"], options.include_classes, CLASSES_LEVELS)
+                data.get("classes", {}), options.include_classes, CLASSES_LEVELS)
         if options.exclude_classes:
             data["classes"] = filter_config(
-                data["classes"], options.exclude_classes, CLASSES_LEVELS,
+                data.get("classes", {}), options.exclude_classes, CLASSES_LEVELS,
                 invert=True)
     except ValueError as e:
         sys.exit("Filter error:\n%s" % e)
 
     if not any(k in data for k in ("devices", "servers", "classes")):
         sys.exit("No config data; exiting!")
+
+    if options.input:
+        print json.dumps(data, indent=4)
+        return
 
     # check if there is anything in the DB that will be changed or removed
     db = PyTango.Database()
@@ -132,8 +136,6 @@ def main():
     # optionally dump some information to stdout
     if options.output:
         print json.dumps(original, indent=4)
-    elif options.input:
-        print json.dumps(data, indent=4)
     if options.dbcalls:
         print >>sys.stderr, "Tango database calls:"
         for method, args, kwargs in dbcalls:
