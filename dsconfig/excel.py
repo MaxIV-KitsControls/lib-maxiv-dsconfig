@@ -40,7 +40,10 @@ def get_properties(row):
         try:
             for prop in properties.split(";"):
                 name, value = prop.split("=")
+                # need to decode the string, otherwise any linebreaks
+                # will be escaped.
                 value = value.decode("string-escape")
+                # Support inline multiline properties using "\n"
                 prop_dict[name.strip()] = [v.strip()
                                            for v in value.split("\n")]
         except ValueError:
@@ -59,7 +62,8 @@ def get_properties(row):
                 convert = TYPE_MAPPING[type_]
                 values = [convert(value)]
             else:
-                values = [v.strip() for v in str(value).split("\n")]
+                value = str(value).decode("string-escape")
+                values = [v.strip() for v in value.split("\n")]
             prop_dict[name] = values
 
     return prop_dict
@@ -93,7 +97,8 @@ def get_attribute_properties(row):
                 if name not in SPECIAL_ATTRIBUTE_PROPERTIES:
                     raise ValueError("'%s' it not a valid attribute property"
                                      % name)
-                values = [v.strip() for v in str(value).split("\n")]
+                value = str(value).decode("string-escape")
+                values = [v.strip() for v in value.split("\n")]
                 prop_dict[name] = values
 
         return {attribute: prop_dict}
