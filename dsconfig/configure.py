@@ -10,7 +10,8 @@ from tangodb import SPECIAL_ATTRIBUTE_PROPERTIES, is_protected
 
 def check_attribute_property(propname):
     # Is this too strict? Do we ever need non-standard attr props?
-    if propname not in SPECIAL_ATTRIBUTE_PROPERTIES:
+    if (not propname.startswith("_")
+        and propname not in SPECIAL_ATTRIBUTE_PROPERTIES):
         raise KeyError("Bad attribute property name: %s" % propname)
     return True
 
