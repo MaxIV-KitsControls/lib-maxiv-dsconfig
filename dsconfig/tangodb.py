@@ -152,7 +152,7 @@ def summarise_calls(dbcalls, dbdata):
     return summary
 
 
-def get_device(db, devname, data):
+def get_device(db, devname, data, skip_protected=True):
 
     """Returns all relevant DB information about a given device:
     alias (if any), properties, attribute properties"""
@@ -172,8 +172,10 @@ def get_device(db, devname, data):
         props = db.get_device_property(devname, list(db_props))
         for prop, value in props.items():
             # We'll ignore "protected" properties unless they are present
-            # in the input data (in that case we want to show that they are changed)
-            if not is_protected(prop) or prop in data.get("properties", {}):
+            # in the input data (in that case we want to show that
+            # they are changed)
+            if (not (skip_protected and is_protected(prop))
+                    or prop in data.get("properties", {})):
                 value = [str(v) for v in value]  # is this safe?
                 properties[prop] = value
         dev["properties"] = properties
@@ -192,17 +194,23 @@ def get_device(db, devname, data):
     if attr_props:
         dbprops = db.get_device_attribute_property(devname,
                                                    attr_props.keys())
+        new_attr_props = data.get("attribute_properties", {})
         for attr, props in dbprops.items():
-            props = dict((prop, [str(v) for v in values])
-                         for prop, values in props.items())  # whew!
-            if props:
-                attribute_properties[attr] = props
-        dev["attribute_properties"] = attribute_properties
+            attr_props = dict(
+                (prop, [str(v) for v in values])
+                for prop, values in props.items()
+                if (not (skip_protected and is_protected(prop, True))
+                    or prop in new_attr_props[attr])
+            )  # whew!
+            if attr_props:
+                attribute_properties[attr] = attr_props
+        if attribute_properties:
+            dev["attribute_properties"] = attribute_properties
 
     return dev
 
 
-def get_dict_from_db(db, data, narrow=False):
+def get_dict_from_db(db, data, narrow=False, skip_protected=True):
 
     """Takes a data dict, checks if any if the definitions are already
     in the DB and returns a dict describing them.
@@ -238,7 +246,7 @@ def get_dict_from_db(db, data, narrow=False):
                     devices = db.get_device_name(srv_full_name, clss)
                 for device in devices:
                     new_props = devs.get(device, {})
-                    db_props = get_device(db, device, new_props)
+                    db_props = get_device(db, device, new_props, skip_protected)
                     dbdict.servers[srvr][inst][clss][device] = db_props
 
     # Classes
