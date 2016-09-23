@@ -67,7 +67,7 @@ def main():
                          properties=options.properties,
                          attribute_properties=options.attribute_properties,
                          aliases=options.aliases, dservers=options.dservers)
-    print json.dumps(dbdata, indent=4)
+    print json.dumps(dbdata, indent=4, sort_keys=True)
 
 
 if __name__ == "__main__":
