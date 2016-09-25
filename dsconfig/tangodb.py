@@ -322,9 +322,16 @@ def nwise(it, n):
     return izip(*[islice(it, i, None, n) for i in xrange(n)])
 
 
+def maybe_upper(s, upper=False):
+    if upper:
+        return s.upper()
+    return s
+
+
 def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
                              properties=True, attribute_properties=True,
-                             aliases=True, dservers=False):
+                             aliases=True, dservers=False,
+                             uppercase_devices=False):
     """
     A performant way to get servers and devices in bulk from the DB
     by direct SQL statements and joins, instead of e.g. using one
@@ -333,9 +340,6 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
     TODO: are there any length restrictions on the query results? In
     that case, use limit and offset to get page by page.
     """
-
-    import sys
-    from time import time
 
     server = server.replace("*", "%")  # mysql wildcards
     clss = clss.replace("*", "%")
@@ -346,45 +350,51 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
     if properties:
         # Get all relevant device properties
         query = (
-            "SELECT device, property_device.name, property_device.value" +
-            " FROM property_device INNER JOIN device ON property_device.device = device.name" +
+            "SELECT device, property_device.name, property_device.value"
+            " FROM property_device"
+            " INNER JOIN device ON property_device.device = device.name"
             " WHERE server LIKE '%s' AND class LIKE '%s' AND device LIKE '%s'")
         if not dservers:
             query += " AND class != 'DServer'"
         _, result = dbproxy.DbMySqlSelect(query % (server, clss, device))
         for d, p, v in nwise(result, 3):
-            devices[d.upper()].properties[p] = v
+            devices[maybe_upper(d, uppercase_devices)].properties[p] = v
 
     if attribute_properties:
         # Get all relevant attribute properties
         query = (
-            "SELECT device, attribute, property_attribute_device.name, property_attribute_device.value" +
-            " FROM property_attribute_device INNER JOIN device ON property_attribute_device.device = device.name" +
+            "SELECT device, attribute, property_attribute_device.name,"
+            " property_attribute_device.value"
+            " FROM property_attribute_device"
+            " INNER JOIN device ON property_attribute_device.device ="
+            " device.name"
             " WHERE server LIKE '%s' AND class LIKE '%s' AND device LIKE '%s'")
         if not dservers:
             query += " AND class != 'DServer'"
         _, result = dbproxy.DbMySqlSelect(query % (server, clss, device))
         for d, a, p, v in nwise(result, 4):
-            devices[d.upper()].attribute_properties[a][p] = v
+            dev = devices[maybe_upper(d, uppercase_devices)]
+            dev.attribute_properties[a][p] = v
 
     devices = devices.to_dict()
 
     # dump relevant servers
     query = (
-        "SELECT server, class, name, alias FROM device" +
-        (" WHERE server LIKE '%s' AND class LIKE '%s' AND name LIKE '%s'"
-         % (server, clss, device)))
+        "SELECT server, class, name, alias FROM device"
+        " WHERE server LIKE '%s' AND class LIKE '%s' AND name LIKE '%s'")
+
     if not dservers:
         query += " AND class != 'DServer'"
-    _, result = dbproxy.DbMySqlSelect(query)
+    _, result = dbproxy.DbMySqlSelect(query % (server, clss, device))
 
     # combine all the information we have
     servers = SetterDict()
     for s, c, d, a in nwise(result, 4):
         srv, inst = s.split("/")
-        device = devices.get(d.upper(), {})
+        devname = maybe_upper(d, uppercase_devices)
+        device = devices.get(devname, {})
         if a and aliases:
             device["alias"] = a
-        servers[srv][inst][c][d.upper()] = device
+        servers[srv][inst][c][devname] = device
 
     return servers
