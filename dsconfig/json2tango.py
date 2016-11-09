@@ -32,6 +32,10 @@ def main():
     parser.add_option("-u", "--update", dest="update", action="store_true",
                       help="don't remove things, only add/update",
                       metavar="UPDATE")
+    parser.add_option("-c", "--ignore-case", dest="ignore_case",
+                      action="store_true",
+                      help="Ignore the case of server, device and property names",
+                      metavar="IGNORECASE")
     parser.add_option("-q", "--quiet",
                       action="store_false", dest="verbose", default=True,
                       help="don't print actions to stderr")
@@ -121,7 +125,9 @@ def main():
         print_diff(original, data, removes=not options.update)
 
     # get the list of DB calls needed
-    dbcalls = configure(data, original, options.update)
+    dbcalls = configure(data, original,
+                        update=options.update,
+                        ignore_case=options.ignore_case)
 
     # perform the db operations (if we're supposed to)
     if options.write and dbcalls:

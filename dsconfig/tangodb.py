@@ -27,12 +27,13 @@ SPECIAL_ATTRIBUTE_PROPERTIES = [
 ]
 
 
-def get_devices_from_dict(dbdict):
+def get_devices_from_dict(dbdict, name=None):
     return [(server_name, instance_name, class_name, device_name)
             for server_name, server in dbdict.items()
             for instance_name, instance in server.items()
             for class_name, clss in instance.items()
-            for device_name in clss]
+            for device_name in clss
+            if name is None or device_name.lower() == name.lower()]
 
 
 def get_servers_from_dict(dbdict):
