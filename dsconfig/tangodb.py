@@ -1,9 +1,11 @@
 "Various functionality for dealing with the TANGO database"
 
 from collections import defaultdict
+from difflib import unified_diff
 from itertools import izip, islice
 
 import PyTango
+from PyTango.utils import CaselessDict
 
 from appending_dict import AppendingDict, SetterDict
 from dsconfig.utils import green, red, yellow
@@ -190,18 +192,19 @@ def get_device(db, devname, data, skip_protected=True):
     # remove it, right?
     # (* It is possible, just not through the DB API. See the
     #    "DbMySqlSelect" command on the db device.)
-    attribute_properties = {}
-    attr_props = data.get("attribute_properties")
+    attr_props = CaselessDict(data.get("attribute_properties", {}))
     if attr_props:
+        attribute_properties = {}
         dbprops = db.get_device_attribute_property(devname,
                                                    attr_props.keys())
-        new_attr_props = data.get("attribute_properties", {})
         for attr, props in dbprops.items():
             attr_props = dict(
                 (prop, [str(v) for v in values])
                 for prop, values in props.items()
+                # Again, ignore attr_props that are not present in the
+                # input data, as we most likely don't want to remove those
                 if (not (skip_protected and is_protected(prop, True))
-                    or prop in new_attr_props[attr])
+                    or prop in CaselessDict(attr_props.get(attr)))
             )  # whew!
             if attr_props:
                 attribute_properties[attr] = attr_props
@@ -240,6 +243,7 @@ def get_dict_from_db(db, data, narrow=False, skip_protected=True):
     for srvr, insts in data.get("servers", {}).items():
         for inst, classes in insts.items():
             for clss, devs in classes.items():
+                devs = CaselessDict(devs)
                 if narrow:
                     devices = devs.keys()
                 else:
@@ -357,7 +361,8 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
             " WHERE server LIKE '%s' AND class LIKE '%s' AND device LIKE '%s'")
         if not dservers:
             query += " AND class != 'DServer'"
-        _, result = dbproxy.DbMySqlSelect(query % (server, clss, device))
+        _, result = dbproxy.command_inout("DbMySqlSelect",
+                                          query % (server, clss, device))
         for d, p, v in nwise(result, 3):
             devices[maybe_upper(d, uppercase_devices)].properties[p] = v
 
