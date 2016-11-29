@@ -1,8 +1,8 @@
 from collections import defaultdict, Mapping
-import json
+from .caseless import CaselessDictionary
 
 
-class SetterDict(defaultdict):
+class SetterDict(CaselessDictionary, defaultdict):
     """
     A recursive defaultdict with extra bells & whistles
 
@@ -17,30 +17,46 @@ class SetterDict(defaultdict):
       d.a["b"].c == d.a.b.c == d["a"]["b"]["c"]
 
     Note: only allows string keys for now.
+
+    Keys are caseless, meaning that the key "MyKey" is the same as
+    "mykey", "MYKEY", etc. The case
+
+    Note: this thing is dangerous! Accessing a non-existing key will
+    result in creating it, which means that confusing behavior is
+    likely. Please use it carefully and convert to an ordinary dict
+    (using to_dict()) when you're done creating it.
     """
 
-    def __init__(self, value={}, factory=None, leaf_conv=None):
+    def __init__(self, value={}, factory=None):
         factory = factory or SetterDict
+        self.__dict__["_factory"] = factory
+        CaselessDictionary.__init__(self)
         defaultdict.__init__(self, factory)
         for k, v in value.items():
-            if isinstance(v, Mapping):
-                SetterDict.__setitem__(self, k, factory(v))
-            else:
-                if leaf_conv:
-                    v = leaf_conv(v)
-                SetterDict.__setitem__(self, k, v)
+            self[k] = v
 
-    def __setattr__(self, attr, value):
-        self[attr] = value
+    def __getitem__(self, key):
+        try:
+            return CaselessDictionary.__getitem__(self, key)
+        except KeyError:
+            return self.__missing__(key)
 
-    def __getattr__(self, attr):
-        return self[attr]
+    def __setitem__(self, key, value):
+        if isinstance(value, SetterDict):
+            CaselessDictionary.__setitem__(self, key, value)
+        elif isinstance(value, Mapping):
+            CaselessDictionary.__setitem__(self, key, self._factory(value))
+        else:
+            CaselessDictionary.__setitem__(self, key, value)
 
-    def __repr__(self):
-        return json.dumps(self)
+    def __getattr__(self, name):
+        return self.__getitem__(name)
+
+    def __setattr__(self, key, value):
+        return self.__setitem__(key, value)
 
     def to_dict(self):
-        "Returns a normal dict version of itself"
+        """Returns a ordinary dict version of itself"""
         result = {}
         for key, value in self.items():
             if isinstance(value, SetterDict):
@@ -103,7 +119,7 @@ class AppendingDict(SetterDict):
     """
 
     def __init__(self, value={}):
-        SetterDict.__init__(self, value, AppendingDict, list_of_strings)
+        SetterDict.__init__(self, value, AppendingDict)
 
     def _set(self, attr, value):
         SetterDict.__setitem__(self, attr, value)

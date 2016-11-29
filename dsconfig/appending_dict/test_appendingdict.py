@@ -84,20 +84,34 @@ class SetterDictTestCase(unittest.TestCase):
         d = sd.to_dict()
         self.assertDictEqual(orig, d)
 
+    def test_keys_case_insensitive(self):
+        sd = SetterDict()
+        sd.a.B.c = 1
+        self.assertEqual(sd.A.b.C, sd.a.b.c, 1)
+
+    def test_keeps_original_key_case(self):
+        sd = SetterDict()
+        sd.FoO = 1
+        sd.foo = 2
+        sd.baR = 3
+        sd.BAR = 4
+        self.assertListEqual(sd.keys(), ["FoO", "baR"])
+
 
 class AppendingDictTestCase(unittest.TestCase):
 
     def test_basic_appending(self):
         ad = AppendingDict()
-        ad.a = 1
+        ad["a"] = 1
         self.assertDictEqual(ad, {"a": ['1']})
-        ad.a = 2
+        ad["a"] = 2
         self.assertDictEqual(ad, {"a": ['1', '2']})
 
     def test_deep_appending(self):
         ad = AppendingDict()
-        ad.a.b.c = 1
-        ad.a.b.c = 2
+        ad["a"]["b"]["c"] = 1
+        ad["a"]["b"]["c"] = 2
+        print type(ad["a"]["b"])
         self.assertDictEqual(ad, {"a": {"b": {"c": ['1', '2']}}})
 
     def test_initial_setting_with_dict(self):
