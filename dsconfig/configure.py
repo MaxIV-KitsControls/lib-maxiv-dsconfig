@@ -91,6 +91,9 @@ def update_server(db, server_name, server_dict, db_dict,
     """Creates/removes devices for a given server. Optionally
     ignores removed devices, only adding new and updating old ones."""
 
+    if ignore_case:
+        db_dict = CaselessDict(db_dict)
+
     for class_name, cls in server_dict.items():  # classes
         if ignore_case:
             cls = CaselessDict(cls)
