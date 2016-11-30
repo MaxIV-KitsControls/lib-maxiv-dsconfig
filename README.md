@@ -11,9 +11,18 @@ The main idea is that the input files are parsed and turned into an intermediate
 The JSON format is easy to create and supported by many tools and languages, so generating them from various sources should be straightforward. Once you have such a file, it should be a simple thing to configure the Tango database.
 
 
+### Caveats
+
+There are a few things to be aware of before using this tool.
+
+- The basic idea of dsconfig is *idempotence*. This means that applying the same dsconfig file a second time should result in no changes at all. The intention is that it should be useful not only to update the configuration but also to be able to check if anything has changed since the last application. Therefore, the tool tries to figure out the smallest set of database operations needed to get to the intended state.
+
+- TANGO is *case insensitive* for names, for example of devices and properties. But there are some cases where this causes confusing results. For example, TANGO keeps the case that was used when last written, which means that the same name may exist in different places with different cases. dsconfig tries to handle this gracefully, but it is complex (for example, all relevant string comparisons need to be done in a case insensitive way) and there are bound to be corner cases where the behavior is unexpected. Please report such cases if you run into them.
+
+
 ### JSON format
 
-This is an example of the format, with comments (not actually supported by JSON so don't copy-paste this!):
+This is an example of the format, with comments (comments are not actually supported by JSON so don't copy-paste this!):
 
     {
         // these lines are meta information and are ignored so far
@@ -69,7 +78,9 @@ Note: Leaving out "properties" in a device will mean that the tool just ignores 
 
 ### xls2json
 
-The format supported is almost identical to the dsgenerator format, with a few changes:
+This tool converts a excel file (of proper format) into a dsconfig JSON file.
+
+The XLS format supported is almost identical to the dsgenerator format, with a few changes:
  - It is now possible to spread server definitions over any number of pages, and to selectively use only a subset of these by giving their names to the xls2json tool.
  - The column names (the first line of each column) are now significant, so that their order can be relaxed. There are a few differences to the "standard" sheet though; "ServerName" should be "Server", "Devices" should be "Device" and, in the "ParamConfig" tab, "Parameter" should now be "Attribute". These changes were made for consistency.
  - A few features have been added for flexibility; see the example Excel file in "test/files/test.xls".
@@ -95,19 +106,19 @@ Useful flags (see --help):
 
 ### json2tango
 
-This tool reads a JSON file (or from stdout if no filename is given), validates it and (optionally) configures a Tango database accordingly. By default, it will only check the current DB state and print out what actions would be performed, without changing anything. This should always be the first step, in order to catch errors before they are permanently written to the DB.
+This tool reads a JSON file (or from stdout if no filename is given), validates it and, optionally, configures a Tango database accordingly. By default, it will only check the current DB state, compare, and print out what actions would be performed, without changing anything. This should always be the first step, in order to catch errors before they are permanently written to the DB.
 
     $ json2tango config.json
 
-Inspect the output of this command carefully. Lines in red means removal, green additions and yellow changes. Also the old and new values are printed. Note that properties are stored as lists of strings in the DB, so don't be confused by the fact that your numeric properties turn up as strings.
+Inspect the output of this command carefully. Things in red means removal, green additions and yellow changes. Note that properties are stored as lists of strings in the DB, so don't be confused by the fact that your numeric properties turn up as strings.
 
 [Pro-tip: if you're unsure of what's going on, it's a good idea to inspect the output of the `-d` argument (see below) before doing any non-trivial changes. It's usually less readable than the normal diff output, but garanteed to be accurate.]
 
-A summary of the numbers of different database operations is printed. This should be useful to double check, usually you should have a good idea of e.g. how many devices should be added, etc.
+A summary of the numbers of different database operations is printed at the end. This should be useful to double check, usually you have a good idea of e.g. how many devices should be added, etc.
 
 Once you're convinced that the actions are correct, add the "-w" flag to the command line (this can be at the end or anywhere). Now the command will actually perform the actions in the Tango DB.
 
-For safety and convenience, the program also writes the previous DB state that was changed into a temp JSON file (this is the same as the output of the -d flag). It should be possible to undo the changes made by swapping your input JSON file with the temp file (this is a new feature that is not tested for many cases so don't rely on it.)
+For safety and convenience, the program also writes the previous DB state that was changed into a temp JSON file (this is the same as the output of the -d flag). It should, in principle, be possible to undo the changes made by swapping your input JSON file with the temp file. This is a new feature that is not tested for many cases so don't rely on it.
 
 Note that the tool in principle only concerns itself with the server instances defined in your JSON file. All other servers in the DB are left untouched. The exception is if your JSON contains devices that already exist in the DB, but in different servers. The devices will be moved to the new servers, and if any of the original servers become empty of devices, they will be removed. There is currently no other way to remove a server with dsconfig.
 
