@@ -20,6 +20,7 @@ from dsconfig.formatting import (CLASSES_LEVELS, SERVERS_LEVELS, load_json,
                                  clean_metadata)
 from dsconfig.tangodb import get_dict_from_db, summarise_calls
 from dsconfig.utils import green, red, yellow, progressbar
+from dsconfig.output import show_actions
 
 
 def main():
@@ -32,10 +33,11 @@ def main():
     parser.add_option("-u", "--update", dest="update", action="store_true",
                       help="don't remove things, only add/update",
                       metavar="UPDATE")
-    parser.add_option("-c", "--ignore-case", dest="ignore_case",
+    parser.add_option("-c", "--case-sensitive", dest="case_sensitive",
                       action="store_true",
-                      help="Ignore the case of server, device and property names",
-                      metavar="IGNORECASE")
+                      help=("Don't ignore the case of server, device, "
+                            "attribute and property names"),
+                      metavar="CASESENSITIVE")
     parser.add_option("-q", "--quiet",
                       action="store_false", dest="verbose", default=True,
                       help="don't print actions to stderr")
@@ -120,15 +122,16 @@ def main():
     else:
         original, collisions = get_dict_from_db(db, data)
 
-    # Print out a nice diff
-    if options.verbose:
-        print_diff(original, data, removes=not options.update)
 
     # get the list of DB calls needed
     dbcalls = configure(data, original,
                         update=options.update,
-                        ignore_case=options.ignore_case)
+                        ignore_case=not options.case_sensitive)
 
+    # Print out a nice diff
+    if options.verbose:
+        show_actions(original, dbcalls)
+    
     # perform the db operations (if we're supposed to)
     if options.write and dbcalls:
         for i, (method, args, kwargs) in enumerate(dbcalls):
@@ -145,7 +148,7 @@ def main():
     if options.dbcalls:
         print >>sys.stderr, "Tango database calls:"
         for method, args, kwargs in dbcalls:
-            print method, args
+            print >>sys.stderr, method, args
 
     # Check for moved devices and remove empty servers
     empty = set()
@@ -164,7 +167,8 @@ def main():
     # finally print out a brief summary of what was done
     if dbcalls:
         print
-        print "\n".join(summarise_calls(dbcalls, original))
+        print >>sys.stderr, "Summary:"
+        print >>sys.stderr, "\n".join(summarise_calls(dbcalls, original))
         if collisions:
             servers = len(collisions)
             devices = sum(len(devs) for devs in collisions.values())
