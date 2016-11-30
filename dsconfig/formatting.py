@@ -55,10 +55,10 @@ def validate_json(data):
             schema = json.load(schema_json)
         validate(data, schema)
     except ImportError:
-        print >>sys.stderr, ("'jsonschema' not installed, could not "
+        print >>sys.stderr, ("WARNING: 'jsonschema' not installed, could not "
                              "validate json file. You're on your own.")
     except exceptions.ValidationError as e:
-        print >>sys.stderr, "JSON data does not match schema: %s" % e
+        print >>sys.stderr, "ERROR: JSON data does not match schema: %s" % e
         sys.exit(1)
 
 
