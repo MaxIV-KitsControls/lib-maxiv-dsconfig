@@ -13,12 +13,12 @@ from tempfile import NamedTemporaryFile
 
 import PyTango
 from dsconfig.configure import configure
-from dsconfig.diff import print_diff
 from dsconfig.filtering import filter_config
 from dsconfig.formatting import (CLASSES_LEVELS, SERVERS_LEVELS, load_json,
                                  normalize_config, validate_json,
                                  clean_metadata)
-from dsconfig.tangodb import get_dict_from_db, summarise_calls
+from dsconfig.tangodb import summarise_calls, get_devices_from_dict
+from dsconfig.dump import get_db_data
 from dsconfig.utils import green, red, yellow, progressbar
 from dsconfig.output import show_actions
 
@@ -120,8 +120,24 @@ def main():
             original = json.loads(f.read())
         collisions = {}
     else:
-        original, collisions = get_dict_from_db(db, data)
-
+        original = get_db_data(db, dservers=True)
+        devices = {
+            dev: (srv, inst, cls)
+            for srv, inst, cls, dev
+            in get_devices_from_dict(data["servers"])
+        }
+        orig_devices = {
+            dev: (srv, inst, cls)
+            for srv, inst, cls, dev
+            in get_devices_from_dict(original["servers"])
+        }
+        collisions = {}
+        for dev, (srv, inst, cls) in devices.items():
+            server = "{}/{}".format(srv, inst)
+            osrv, oinst, ocls = orig_devices[dev]
+            origserver = "{}/{}".format(osrv, oinst)
+            if server.lower() != origserver.lower():
+                collisions.setdefault(origserver, []).append((ocls, dev))
 
     # get the list of DB calls needed
     dbcalls = configure(data, original,
@@ -156,9 +172,9 @@ def main():
         if options.verbose:
             srv, inst = srvname.split("/")
             for cls, dev in devs:
-                print >>sys.stderr, red("MOVED (because of collision):")
-                print >>sys.stderr, red(" > servers > %s > %s > %s > %s"
-                                        % (srv, inst, cls, dev))
+                print >>sys.stderr, red("MOVED (because of collision):"), dev
+                print >>sys.stderr, "    Server: ", "{}/{}".format(srv, inst)
+                print >>sys.stderr, "    Class: ", cls
         if len(db.get_device_class_list(srvname)) == 2:  # just dserver
             empty.add(srvname)
             if options.write:
