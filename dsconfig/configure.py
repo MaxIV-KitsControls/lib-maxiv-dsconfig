@@ -4,7 +4,7 @@ from collections import defaultdict
 from functools import partial
 
 import PyTango
-from PyTango.utils import CaselessDict
+from appending_dict.caseless import CaselessDictionary
 
 from utils import ObjectWrapper
 from tangodb import SPECIAL_ATTRIBUTE_PROPERTIES, is_protected
@@ -28,8 +28,8 @@ def update_properties(db, parent, db_props, new_props,
     'parent' is the name of the containing device or class.
     """
     if ignore_case:
-        caseless_db_props = CaselessDict(db_props)
-        caseless_new_props = CaselessDict(new_props)
+        caseless_db_props = CaselessDictionary(db_props)
+        caseless_new_props = CaselessDictionary(new_props)
     else:
         caseless_db_props = db_props
         caseless_new_props = new_props
@@ -42,7 +42,7 @@ def update_properties(db, parent, db_props, new_props,
         for attr, props in new_props.items():
             for prop, value in props.items():
                 if ignore_case:
-                    orig = CaselessDict(caseless_db_props.get(attr, {})).get(prop)
+                    orig = CaselessDictionary(caseless_db_props.get(attr, {})).get(prop)
                 else:
                     orig = caseless_db_props.get(attr, {}).get(prop)
                 if value and value != orig and check_attribute_property(prop):
@@ -51,7 +51,7 @@ def update_properties(db, parent, db_props, new_props,
         for attr, props in db_props.items():
             for prop in props:
                 if ignore_case:
-                    new = CaselessDict(new_props.get(attr, {})).get(prop)
+                    new = CaselessDictionary(new_props.get(attr, {})).get(prop)
                 else:
                     new = new_props.get(attr, {}).get(prop)
                 if not new and not is_protected(prop, True):
@@ -92,13 +92,15 @@ def update_server(db, server_name, server_dict, db_dict,
     ignores removed devices, only adding new and updating old ones."""
 
     if ignore_case:
-        db_dict = CaselessDict(db_dict)
+        db_dict = CaselessDictionary(db_dict)
 
     for class_name, cls in server_dict.items():  # classes
         if ignore_case:
-            cls = CaselessDict(cls)
+            cls = CaselessDictionary(cls)
         removed_devices = [dev for dev in db_dict.get(class_name, {})
-                           if dev not in cls]
+                           if dev not in cls
+                           # never remove dservers
+                           and not cls.lower == "dserver"]
         added_devices = cls.items()
         if not update:
             for device_name in removed_devices:
@@ -106,7 +108,7 @@ def update_server(db, server_name, server_dict, db_dict,
 
         for device_name, dev in added_devices:
             if ignore_case:
-                devs = CaselessDict(db_dict.get(class_name, {}))
+                devs = CaselessDictionary(db_dict.get(class_name, {}))
             else:
                 devs = db_dict.get(class_name, {})
             if device_name not in devs:
