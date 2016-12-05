@@ -5,6 +5,7 @@ from PyTango.utils import CaselessDict
 
 from dsconfig.utils import green, red, yellow
 from dsconfig.tangodb import get_devices_from_dict
+from appending_dict import SetterDict
 
 
 def get_device_data(device, mapping, data):
@@ -75,8 +76,8 @@ def show_actions(data, calls):
     # }
 
     changes = {
-        "devices": defaultdict(dict),
-        "classes": defaultdict(dict)
+        "devices": SetterDict(),
+        "classes": SetterDict()
     }
 
     # Go through all database calls and store the changes
@@ -99,6 +100,11 @@ def show_actions(data, calls):
             changes["devices"][info.name].update(added=True,
                                                  server=info.server,
                                                  device_class=info._class)
+            if info.name in device_mapping:
+                old_server, old_instance, old_class = device_mapping[info.name]
+                changes["devices"][info.name]["old_server"] = "{}/{}".format(
+                    old_server, old_instance)
+                changes["devices"][info.name]["old_class"] = old_class
 
         elif method == "delete_device":
             device, = args
@@ -107,7 +113,7 @@ def show_actions(data, calls):
             properties = device_data.get("properties", {})
             changes["devices"][device].update(
                 deleted=True,
-                server=server,
+                server="{}/{}".format(server, instance),
                 instance=instance,
                 device_class=clss,
                 properties=properties)
@@ -123,7 +129,8 @@ def show_actions(data, calls):
                 changes["devices"][device]["properties"].update({
                     name: {
                         "value": value,
-                        "old_value": old_value}
+                        "old_value": old_value
+                    }
                 })
 
         elif method == "delete_device_property":
@@ -210,43 +217,65 @@ def show_actions(data, calls):
 
     # Now we go through all the devices that have been touched
     # and print out a representation of the changes.
-    indent = " " * 4
+    # TODO: is there a reasonable way to sort this?
+    indent = " " * 2
     for device in sorted(changes["devices"]):
         info = changes["devices"][device]
         if info.get("added"):
-            print("{} {}".format(green("ADD"), device))
+            if info.get("old_server"):
+                print("{} Device: {}".format(yellow("="), device))
+            else:
+                print("{} Device: {}".format(green("+"), device))
         elif info.get("deleted"):
-            print("{} {}".format(red("DEL"), device))
+            print("{} Device: {}".format(red("-"), device))
         else:
-            print(device)
+            print("{} Device: {}".format(yellow("="), device))
         if info.get("server"):
-            print("{}Server: {}".format(indent, info["server"]))
+            if info.get("old_server"):
+                print("{}Server: {} -> {}".format(indent,
+                                                  red(info["old_server"]),
+                                                  green(info["server"])))
+            else:
+                print("{}Server: {}".format(indent, info["server"]))
         if info.get("device_class"):
-            print("{}Class: {}".format(indent, info["device_class"]))
+            if info["old_class"]:
+                if info["old_class"] != info["device_class"]:
+                    print("{}Class: {} -> {}".format(indent,
+                                                     info["old_class"],
+                                                     info["device_class"]))
+            else:
+                print("{}Class: {}".format(indent, info["device_class"]))
         if info.get("alias"):
-            print("{}{}".format(indent, "Alias:"))
             alias = info.get("alias").get("value")
             old_alias = info.get("alias").get("old_value")
             if old_alias:
-                print("{}-{}".format(indent*2, red(old_alias)))
-            print("{}+ {}".format(indent*2, green(alias)))
+                if old_alias != alias:
+                    print("{}Alias: {} -> {}".format(indent, red(old_alias),
+                                                     green(alias)))
+            else:
+                print("{}Alias: {}".format(indent, alias))
         if info.get("properties"):
             print("{}Properties:".format(indent*1))
             for prop, change in sorted(info.get("properties", {}).items()):
                 if change.get("value"):
-                    if change.get("old_value"):
-                        print(yellow("{}= {}".format(indent*2, prop)))
-                        print_property_diff(
-                            change["old_value"], change["value"], indent*3)
+                    value = change.get("value")
+                    old_value = change.get("old_value")
+                    if old_value is not None:
+                        if old_value != value:
+                            print(yellow("{}= {}".format(indent*2, prop)))
+                            print_property_diff(
+                                change["old_value"], change["value"], indent*3)
                     else:
                         print(green("{}+ {}".format(indent*2, prop)))
-                        print(green(format_property(change["value"], indent*3)))
+                        print(green(format_property(change["value"],
+                                                    indent*3)))
                 else:
                     print(red("{}- {}".format(indent*2, prop)))
                     print(red(format_property(change["old_value"], indent*3)))
         if info.get("attribute_properties"):
             print("{}Attribute properties:".format(indent))
-            for attr, props in sorted(info.get("attribute_properties", {}).items()):
+            for attr, props in sorted(
+                    info.get("attribute_properties", {}).items()):
                 print("{}{}".format(indent*2, attr))
                 for prop, change in sorted(props.items()):
                     if change.get("value"):
@@ -258,8 +287,11 @@ def show_actions(data, calls):
                         else:
                             # addition
                             print(green("{}+ {}".format(indent*3, prop)))
-                            print(green(format_property(change["value"], indent*4)))
+                            print(green(format_property(change["value"],
+                                                        indent*4)))
                     else:
                         # removal
                         print(red("{}- {}".format(indent*3, prop)))
-                        print(red(format_property(change["old_value"], indent*4)))
+                        print(red(format_property(change["old_value"],
+                                                  indent*4)))
+        print
