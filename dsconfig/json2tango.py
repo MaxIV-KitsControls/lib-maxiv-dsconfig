@@ -134,11 +134,12 @@ def main():
         })
         collisions = {}
         for dev, (srv, inst, cls) in devices.items():
-            server = "{}/{}".format(srv, inst)
-            osrv, oinst, ocls = orig_devices[dev]
-            origserver = "{}/{}".format(osrv, oinst)
-            if server.lower() != origserver.lower():
-                collisions.setdefault(origserver, []).append((ocls, dev))
+            if dev in orig_devices:
+                server = "{}/{}".format(srv, inst)
+                osrv, oinst, ocls = orig_devices[dev]
+                origserver = "{}/{}".format(osrv, oinst)
+                if server.lower() != origserver.lower():
+                    collisions.setdefault(origserver, []).append((ocls, dev))
 
     # get the list of DB calls needed
     dbcalls = configure(data, original,
