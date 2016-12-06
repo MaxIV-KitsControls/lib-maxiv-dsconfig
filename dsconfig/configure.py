@@ -100,7 +100,7 @@ def update_server(db, server_name, server_dict, db_dict,
         removed_devices = [dev for dev in db_dict.get(class_name, {})
                            if dev not in cls
                            # never remove dservers
-                           and not cls.lower == "dserver"]
+                           and not class_name.lower() == "dserver"]
         added_devices = cls.items()
         if not update:
             for device_name in removed_devices:
