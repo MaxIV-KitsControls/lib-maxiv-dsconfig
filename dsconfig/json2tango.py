@@ -21,6 +21,7 @@ from dsconfig.tangodb import summarise_calls, get_devices_from_dict
 from dsconfig.dump import get_db_data
 from dsconfig.utils import green, red, yellow, progressbar
 from dsconfig.output import show_actions
+from dsconfig.appending_dict.caseless import CaselessDictionary
 
 
 def main():
@@ -121,16 +122,16 @@ def main():
         collisions = {}
     else:
         original = get_db_data(db, dservers=True)
-        devices = {
+        devices = CaselessDictionary({
             dev: (srv, inst, cls)
             for srv, inst, cls, dev
             in get_devices_from_dict(data["servers"])
-        }
-        orig_devices = {
+        })
+        orig_devices = CaselessDictionary({
             dev: (srv, inst, cls)
             for srv, inst, cls, dev
             in get_devices_from_dict(original["servers"])
-        }
+        })
         collisions = {}
         for dev, (srv, inst, cls) in devices.items():
             server = "{}/{}".format(srv, inst)
