@@ -35,7 +35,7 @@ def format_property(value, indentation="", max_lines=10):
                      for line in value[:max_lines]) + ending
 
 
-def show_actions(data, calls):
+def get_changes(data, calls):
 
     """Print out a human readable list of what changes would be made
     to the database given the database state and a list of calls"""
@@ -137,16 +137,19 @@ def show_actions(data, calls):
             device, properties = args
             old_data = get_device_data(device, device_mapping, data)
             caseless_props = CaselessDict(old_data.get("properties", {}))
-            prop_changes = changes["devices"][device].setdefault("properties", {})
+            prop_changes = changes["devices"][device].setdefault(
+                "properties", {})
             for prop in properties:
                 old_value = caseless_props[prop]
                 prop_changes[prop] = {"old_value": old_value}
 
         elif method == "put_device_attribute_property":
             device, properties = args
-            attr_props = changes["devices"][device].setdefault("attribute_properties", {})
+            attr_props = changes["devices"][device].setdefault(
+                "attribute_properties", {})
             old_data = get_device_data(device, device_mapping, data)
-            caseless_attrs = CaselessDict(old_data.get("attribute_properties", {}))
+            caseless_attrs = CaselessDict(old_data.get(
+                "attribute_properties", {}))
             for attr, props in properties.items():
                 caseless_props = CaselessDict(caseless_attrs.get(attr, {}))
                 for name, value in props.items():
@@ -158,7 +161,8 @@ def show_actions(data, calls):
 
         elif method == "delete_device_attribute_property":
             device, attributes = args
-            prop_changes = attr_props = changes["devices"][device].setdefault("attribute_properties", {})
+            prop_changes = attr_props = changes["devices"][device].setdefault(
+                "attribute_properties", {})
             old_data = get_device_data(device, device_mapping, data)
             caseless_attrs = CaselessDict(old_data.get("properties", {}))
             for attr, props in attributes.items():
@@ -189,12 +193,13 @@ def show_actions(data, calls):
                 old_value = caseless_props[prop]
                 prop_changes[prop] = {"old_value": old_value}
 
-
         elif method == "put_class_attribute_property":
             clss, properties = args
-            attr_props = changes["classes"][clss].setdefault("attribute_properties", {})
+            attr_props = changes["classes"][clss].setdefault(
+                "attribute_properties", {})
             old_data = classes[clss]
-            caseless_attrs = CaselessDict(old_data.get("attribute_properties", {}))
+            caseless_attrs = CaselessDict(
+                old_data.get("attribute_properties", {}))
             for attr, props in properties.items():
                 caseless_props = CaselessDict(caseless_attrs.get(attr, {}))
                 for name, value in props.items():
@@ -206,7 +211,8 @@ def show_actions(data, calls):
 
         elif method == "delete_class_attribute_property":
             clss, attributes = args
-            attr_props = changes["classes"][clss].setdefault("attribute_properties", {})
+            attr_props = changes["classes"][clss].setdefault(
+                "attribute_properties", {})
             old_data = classes[clss]
             caseless_attrs = CaselessDict(old_data.get("properties", {}))
             for attr, props in attributes.items():
@@ -214,6 +220,16 @@ def show_actions(data, calls):
                 for prop in props:
                     old_value = caseless_props.get(prop)
                     attr_props[attr] = {prop: {"old_value": old_value}}
+
+    return {
+        "devices": changes["devices"].to_dict(),
+        "classes": changes["classes"].to_dict(),
+    }
+
+
+def show_actions(data, calls):
+
+    changes = get_changes(data, calls)
 
     # Now we go through all the devices that have been touched
     # and print out a representation of the changes.
@@ -238,7 +254,7 @@ def show_actions(data, calls):
             else:
                 print("{}Server: {}".format(indent, info["server"]))
         if info.get("device_class"):
-            if info["old_class"]:
+            if info.get("old_class"):
                 if info["old_class"] != info["device_class"]:
                     print("{}Class: {} -> {}".format(indent,
                                                      info["old_class"],
