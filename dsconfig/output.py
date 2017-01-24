@@ -164,7 +164,7 @@ def get_changes(data, calls):
             prop_changes = attr_props = changes["devices"][device].setdefault(
                 "attribute_properties", {})
             old_data = get_device_data(device, device_mapping, data)
-            caseless_attrs = CaselessDict(old_data.get("properties", {}))
+            caseless_attrs = CaselessDict(old_data.get("attribute_properties", {}))
             for attr, props in attributes.items():
                 caseless_props = CaselessDict(caseless_attrs[attr])
                 for prop in props:

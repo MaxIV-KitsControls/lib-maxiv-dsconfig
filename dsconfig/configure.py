@@ -47,15 +47,15 @@ def update_properties(db, parent, db_props, new_props,
                     orig = caseless_db_props.get(attr, {}).get(prop)
                 if value and value != orig and check_attribute_property(prop):
                     added_props[attr][prop] = value
-        removed_props = {}
+        removed_props = defaultdict(dict)
         for attr, props in db_props.items():
             for prop in props:
                 if ignore_case:
                     new = CaselessDictionary(new_props.get(attr, {})).get(prop)
                 else:
                     new = new_props.get(attr, {}).get(prop)
-                if not new and not is_protected(prop, True):
-                    removed_props[prop] = value
+                if (new is None and not is_protected(prop, True)) or new == []:
+                    removed_props[attr][prop] = value
     else:
         added_props = {}
         for prop, value in new_props.items():

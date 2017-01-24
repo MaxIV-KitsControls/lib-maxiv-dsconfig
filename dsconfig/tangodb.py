@@ -131,7 +131,7 @@ def summarise_calls(dbcalls, dbdata):
             yellow, "Add/change %%d device attribute properties in %d devices." %
             len(devices["put_device_attribute_property"])),
         "delete_device_attribute_property": (
-            red, "Delete %%d device attribute properties from %d devices.",
+            red, "Delete %%d device attribute properties from %d devices." %
             len(devices["delete_device_attribute_property"])),
         "put_class_property": (yellow, "Add/change %d class properties."),
         "delete_class_property": (red, "Delete %d class properties."),
