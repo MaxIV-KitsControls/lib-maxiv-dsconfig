@@ -335,7 +335,7 @@ def maybe_upper(s, upper=False):
 def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
                              properties=True, attribute_properties=True,
                              aliases=True, dservers=False,
-                             uppercase_devices=False):
+                             subdevices=False, uppercase_devices=False):
     """
     A performant way to get servers and devices in bulk from the DB
     by direct SQL statements and joins, instead of e.g. using one
@@ -360,6 +360,8 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
             " WHERE server LIKE '%s' AND class LIKE '%s' AND device LIKE '%s'")
         if not dservers:
             query += " AND class != 'DServer'"
+        if not subdevices:
+            query += " AND property_device.name != '__SubDevices'"
         _, result = dbproxy.command_inout("DbMySqlSelect",
                                           query % (server, clss, device))
         for d, p, v in nwise(result, 3):

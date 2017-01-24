@@ -59,6 +59,9 @@ def main():
                       help="Exclude device aliases")
     parser.add_option("-d", "--dservers", dest="dservers",
                       action="store_true", help="Include DServer devices")
+    parser.add_option("-s", "--subdevices", dest="subdevices",
+                      action="store_true", default=False,
+                      help="Include __SubDevices property")
 
     options, args = parser.parse_args()
 
@@ -66,7 +69,8 @@ def main():
     dbdata = get_db_data(db, args,
                          properties=options.properties,
                          attribute_properties=options.attribute_properties,
-                         aliases=options.aliases, dservers=options.dservers)
+                         aliases=options.aliases, dservers=options.dservers,
+                         subdevices=options.subdevices)
     print json.dumps(dbdata, indent=4, sort_keys=True)
 
 
