@@ -172,6 +172,38 @@ class ConfigureTestCase(TestCase):
         self.assertTrue(len(args[1]) == 1)
         self.assertTrue("bepa" in args[1])  # can be list or dict
 
+    def test_update_server_doesnt_remove_protected_property(self):
+
+        dev = find_device(self.dbdict, "sys/tg_test/2")[0]
+        dev["properties"]["polled_attr"] = ["SomeAttr", "1000"]
+
+        update_server(self.db, "test",
+                      self.data["servers"]["TangoTest"]["test"],
+                      self.dbdict["servers"]["TangoTest"]["test"],
+                      difactory=Mock)
+
+        self.assertEqual(len(self.db.calls), 0)
+
+    def test_update_server_removes_protected_property_if_empty(self):
+
+        dev = find_device(self.dbdict, "sys/tg_test/2")[0]
+        dev["properties"]["polled_attr"] = ["SomeAttr", "1000"]
+
+        dev = find_device(self.data, "sys/tg_test/2")[0]
+        dev["properties"]["polled_attr"] = []
+
+        update_server(self.db, "test",
+                      self.data["servers"]["TangoTest"]["test"],
+                      self.dbdict["servers"]["TangoTest"]["test"],
+                      difactory=Mock)
+
+        self.assertEqual(len(self.db.calls), 1)
+        dbcall, args, kwargs = self.db.calls[0]
+        self.assertEqual(dbcall, "delete_device_property")
+        self.assertEqual(args[0], "sys/tg_test/2")
+        self.assertTrue(len(args[1]) == 1)
+        self.assertTrue("polled_attr" in args[1])  # can be list or dict
+
     def test_update_server_remove_device(self):
         devname = "sys/tg_test/2"
         del self.data["servers"]["TangoTest"]["test"]["TangoTest"][devname]

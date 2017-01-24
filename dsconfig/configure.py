@@ -55,6 +55,7 @@ def update_properties(db, parent, db_props, new_props,
                 else:
                     new = new_props.get(attr, {}).get(prop)
                 if (new is None and not is_protected(prop, True)) or new == []:
+                    # empty list forces removal of "protected" properties
                     removed_props[attr][prop] = value
     else:
         added_props = {}
@@ -65,7 +66,8 @@ def update_properties(db, parent, db_props, new_props,
         removed_props = {}
         for prop, value in db_props.items():
             new_value = caseless_new_props.get(prop)
-            if not new_value and not is_protected(prop):
+            if (new_value is None and not is_protected(prop)) or new_value == []:
+                # empty list forces removal of "protected" properties
                 removed_props[prop] = value
 
     # Find the appropriate DB method to call. Thankfully the API is
