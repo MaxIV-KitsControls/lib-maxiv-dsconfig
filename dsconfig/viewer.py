@@ -21,7 +21,10 @@ class FocusableText(urwid.WidgetWrap):
         if isinstance(txt, int):  # we're in a list
             # TODO: support containers inside lists
             a = urwid.Text(str(txt)+":")
-            b = urwid.Text(str(child))
+            if isinstance(child, dict):
+                b = urwid.Text("<object>")
+            else:
+                b = urwid.Text(str(child))
             t = urwid.Columns([("pack", a), b], dividechars=2)
         else:
             if isinstance(child, (dict, list)):
