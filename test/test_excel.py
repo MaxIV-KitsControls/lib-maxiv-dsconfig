@@ -51,7 +51,7 @@ class TestExcel(TestCase):
                             "type": "int", "mode": "attr"})
         result = excel.get_dynamic(row)
         self.assertDictEqual(
-            result, {"DynamicAttributes": ["TestAttribute=int(a + b)"]})
+            result.to_dict(), {"DynamicAttributes": ["TestAttribute=int(a + b)"]})
 
     def test_get_dynamic_command(self):
         row = CaselessDict({"name": "TestCommand", "formula": "1 + 2",
