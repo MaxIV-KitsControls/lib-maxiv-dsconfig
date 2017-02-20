@@ -397,7 +397,11 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
     # combine all the information we have
     servers = SetterDict()
     for s, c, d, a in nwise(result, 4):
-        srv, inst = s.split("/")
+        try:
+            srv, inst = s.split("/")
+        except ValueError:
+            # Malformed server name? It can happen!
+            continue
         devname = maybe_upper(d, uppercase_devices)
         device = devices.get(devname, {})
         if a and aliases:
