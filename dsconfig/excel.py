@@ -108,7 +108,6 @@ def get_dynamic(row):
     "Find dynamic definitions on a row"
 
     prop_dict = AppendingDict()
-
     try:
         formula = row["formula"].strip()
         if "type" in row:
@@ -185,23 +184,26 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
             # Target of the properties; device or class?
             if "device" in row:
                 check_device_format(row["device"])
-                try:
+                if "server" in row:
                     # full device definition
-                    srvr = format_server_instance(row)
                     # target is "lazily" evaluated, so that we don't create
                     # an empty dict if it turns out there are no members
-                    target = lambda: definitions.servers[srvr]\
+                    target = lambda: definitions.servers[row["server"]][row["instance"]]\
                              [row["class"]][row["device"]]
-                except KeyError:
-                    # is the device already defined?
+                else:
+                    # don't know if the device is already defined
                     target = lambda: find_device(definitions, row["device"])[0]
-            else:  # Class
+            elif "class" in row:
+                # class definition
                 target = lambda: definitions.classes[row["class"]]
+            else:
+                continue
 
             if dynamic:
                 props = get_dynamic(row)
                 if props:
                     target().properties = props
+
             elif config:
                 attr_props = get_attribute_properties(row)
                 if attr_props:
@@ -275,11 +277,10 @@ def get_stats(defs):
     classes = set()
     devices = set()
 
-    for srvr_inst, clss in defs.servers.items():
-        server, instance = srvr_inst.split("/")
+    for server, instances in defs.servers.items():
         servers.add(server)
-        instances.add(instance)
-        for clsname, devs in clss.items():
+        instances.update(instances)
+        for clsname, devs in instances.items():
             classes.add(clsname)
             for devname, dev in devs.items():
                 devices.add(devname)
