@@ -1,4 +1,3 @@
-from collections import defaultdict
 from difflib import ndiff
 
 from PyTango.utils import CaselessDict
@@ -15,15 +14,17 @@ def get_device_data(device, mapping, data):
     return {}
 
 
-def print_property_diff(old, new, indentation=""):
+def property_diff(old, new, indentation=""):
     diff = ndiff(old, new)
+    lines = []
     for line in diff:
         if line.startswith("+"):
-            print(green("{}{}".format(indentation, line)))
+            lines.append(green("{}{}".format(indentation, line)))
         elif line.startswith("-"):
-            print(red("{}{}".format(indentation, line)))
+            lines.append(red("{}{}".format(indentation, line)))
         else:
-            print("{}{}".format(indentation, line))
+            lines.append("{}{}".format(indentation, line))
+    return "\n".join(lines)
 
 
 def format_property(value, indentation="", max_lines=10):
@@ -37,8 +38,8 @@ def format_property(value, indentation="", max_lines=10):
 
 def get_changes(data, calls):
 
-    """Print out a human readable list of what changes would be made
-    to the database given the database state and a list of calls"""
+    """Combine a list of database calls into "changes" that can
+    be more easily turned into a readable representation"""
 
     devices = get_devices_from_dict(data["servers"])
     device_mapping = CaselessDict(
@@ -126,12 +127,13 @@ def get_changes(data, calls):
                 changes["devices"][device]["properties"] = {}
             for name, value in properties.items():
                 old_value = caseless_props.get(name)
-                changes["devices"][device]["properties"].update({
-                    name: {
-                        "value": value,
-                        "old_value": old_value
-                    }
-                })
+                if value != old_value:
+                    changes["devices"][device]["properties"].update({
+                        name: {
+                            "value": value,
+                            "old_value": old_value
+                        }
+                    })
 
         elif method == "delete_device_property":
             device, properties = args
@@ -154,10 +156,11 @@ def get_changes(data, calls):
                 caseless_props = CaselessDict(caseless_attrs.get(attr, {}))
                 for name, value in props.items():
                     old_value = caseless_props.get(name)
-                    attr_props[attr] = {
-                        name: {"old_value": old_value,
-                               "value": value}
-                    }
+                    if value != old_value:
+                        attr_props[attr] = {
+                            name: {"old_value": old_value,
+                                   "value": value}
+                        }
 
         elif method == "delete_device_attribute_property":
             device, attributes = args
@@ -178,11 +181,12 @@ def get_changes(data, calls):
             prop_changes = changes["classes"][clss].setdefault("properties", {})
             for name, value in properties.items():
                 old_value = caseless_props.get(name)
-                prop_changes.update({
-                    name: {
-                        "value": value,
-                        "old_value": old_value}
-                })
+                if value != old_value:
+                    prop_changes.update({
+                        name: {
+                            "value": value,
+                            "old_value": old_value}
+                    })
 
         elif method == "delete_class_property":
             clss, properties = args
@@ -204,10 +208,11 @@ def get_changes(data, calls):
                 caseless_props = CaselessDict(caseless_attrs.get(attr, {}))
                 for name, value in props.items():
                     old_value = caseless_props.get(name)
-                    attr_props[attr] = {
-                        name: {"old_value": old_value,
-                               "value": value}
-                    }
+                    if value != old_value:
+                        attr_props[attr] = {
+                            name: {"old_value": old_value,
+                                   "value": value}
+                        }
 
         elif method == "delete_class_attribute_property":
             clss, attributes = args
@@ -229,11 +234,13 @@ def get_changes(data, calls):
 
 def show_actions(data, calls):
 
+    "Print out a human readable representation of changes"
+
     changes = get_changes(data, calls)
 
-    # Now we go through all the devices that have been touched
+    # Go through all the devices that have been touched
     # and print out a representation of the changes.
-    # TODO: is there a reasonable way to sort this?
+    # TODO: is there a more reasonable way to sort this?
     indent = " " * 2
     for device in sorted(changes["devices"]):
         info = changes["devices"][device]
@@ -246,6 +253,7 @@ def show_actions(data, calls):
             print("{} Device: {}".format(red("-"), device))
         else:
             print("{} Device: {}".format(yellow("="), device))
+
         if info.get("server"):
             if info.get("old_server"):
                 print("{}Server: {} -> {}".format(indent,
@@ -253,6 +261,7 @@ def show_actions(data, calls):
                                                   green(info["server"])))
             else:
                 print("{}Server: {}".format(indent, info["server"]))
+
         if info.get("device_class"):
             if info.get("old_class"):
                 if info["old_class"] != info["device_class"]:
@@ -261,6 +270,7 @@ def show_actions(data, calls):
                                                      info["device_class"]))
             else:
                 print("{}Class: {}".format(indent, info["device_class"]))
+
         if info.get("alias"):
             alias = info.get("alias").get("value")
             old_alias = info.get("alias").get("old_value")
@@ -270,44 +280,61 @@ def show_actions(data, calls):
                                                      green(alias)))
             else:
                 print("{}Alias: {}".format(indent, alias))
+
         if info.get("properties"):
-            print("{}Properties:".format(indent*1))
+            lines = []
             for prop, change in sorted(info.get("properties", {}).items()):
                 if change.get("value"):
                     value = change.get("value")
                     old_value = change.get("old_value")
                     if old_value is not None:
                         if old_value != value:
-                            print(yellow("{}= {}".format(indent*2, prop)))
-                            print_property_diff(
-                                change["old_value"], change["value"], indent*3)
+                            # change property
+                            lines.append(yellow("{}= {}".format(indent*2, prop)))
+                            lines.append(property_diff(
+                                change["old_value"], change["value"], indent*3))
                     else:
-                        print(green("{}+ {}".format(indent*2, prop)))
-                        print(green(format_property(change["value"],
-                                                    indent*3)))
+                        # new property
+                        lines.append(green("{}+ {}".format(indent*2, prop)))
+                        lines.append(green(format_property(change["value"],
+                                                           indent*3)))
                 else:
-                    print(red("{}- {}".format(indent*2, prop)))
-                    print(red(format_property(change["old_value"], indent*3)))
+                    # delete property
+                    lines.append(red("{}- {}".format(indent*2, prop)))
+                    lines.append(red(format_property(change["old_value"], indent*3)))
+            if lines:
+                print("{}Properties:".format(indent*1))
+                print("\n".join(lines))
+
         if info.get("attribute_properties"):
-            print("{}Attribute properties:".format(indent))
+            lines = []
             for attr, props in sorted(
                     info.get("attribute_properties", {}).items()):
-                print("{}{}".format(indent*2, attr))
+                attr_lines = []
                 for prop, change in sorted(props.items()):
-                    if change.get("value"):
-                        if change.get("old_value"):
+                    value = change.get("value")
+                    old_value = change.get("old_value")
+                    if value is not None:
+                        if old_value is not None:
                             # change
-                            print(yellow("{}= {}".format(indent*3, prop)))
-                            print_property_diff(
-                                change["old_value"], change["value"], indent*4)
+                            if value != old_value:
+                                attr_lines.append(yellow("{}= {}".format(indent*3, prop)))
+                                attr_lines.append(property_diff(
+                                    change["old_value"], change["value"], indent*4))
                         else:
                             # addition
-                            print(green("{}+ {}".format(indent*3, prop)))
-                            print(green(format_property(change["value"],
-                                                        indent*4)))
+                            attr_lines.append(green("{}+ {}".format(indent*3, prop)))
+                            attr_lines.append(green(format_property(change["value"],
+                                                                    indent*4)))
                     else:
                         # removal
-                        print(red("{}- {}".format(indent*3, prop)))
-                        print(red(format_property(change["old_value"],
-                                                  indent*4)))
+                        attr_lines.append(red("{}- {}".format(indent*3, prop)))
+                        attr_lines.append(red(format_property(change["old_value"],
+                                                              indent*4)))
+                if attr_lines:
+                    lines.append("{}{}".format(indent*2, attr))
+                    lines.extend(attr_lines)
+            if lines:
+                print("{}Attribute properties:".format(indent))
+                print("\n".join(lines))
         print
