@@ -24,7 +24,7 @@ class FocusableText(urwid.WidgetWrap):
             if isinstance(child, dict):
                 b = urwid.Text("<object>")
             else:
-                b = urwid.Text(str(child))
+                b = urwid.Text(child)
             t = urwid.Columns([("pack", a), b], dividechars=2)
         else:
             if isinstance(child, (dict, list)):
