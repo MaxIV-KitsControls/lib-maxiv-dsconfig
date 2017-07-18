@@ -101,7 +101,7 @@ The command is quite verbose and it will by default happily skip lines that cont
 
 Useful flags (see --help):
 
- * --fatal (-f) means that the command will treat any parsing failure as a fatal error and exit instead of skipping the line as normal. Use if you don't like the lenient default behavior.
+ * `--fatal (-f)` means that the command will treat any parsing failure as a fatal error and exit instead of skipping the line as normal. Use if you don't like the lenient default behavior.
 
 
 ### json2tango
@@ -142,3 +142,26 @@ Some less useful flags:
  * `--sleep (-s)` tweaks the time to wait between db calls. The default is 0.01 s. This is intended to lighten the load on the Tango DB service a bit, but it can be set to 0 if you just want the config to be done as fast as possible.
 
  * `--input (-p)` tells the command to simply print the configuration file, but after any filters have been applied. It can be useful in order to check the result of filtering. If no filters are used, it will just (pretty) print whatever file you gave as input. This flag skips all database operations so it can be used "offline".
+
+
+### Other features
+
+#### Dumping the database
+
+It's often useful to be able to make a "snapshot" of the current state of the configuration, e.g. for safe keeping, or for usage in scripts. There is a module in dsconfig that allows this called `dump`.
+
+    $ python -m dsconfig.dump
+    
+It outputs the contents of the current TANGO database to `stdout`. There are some filtering functionality to allow only dumping selected parts (e.g. servers), like so:
+
+    $ python -m dsconfig.dump server:LimaCCDs/* 
+    
+For more help, try the `--help` flag.
+
+#### Viewing JSON files
+
+Reading a large, nested JSON file can be painful, but dsconfig has a solution; a hierarchical, terminal based JSON viewer! If you install the python packages `urwid` and `urwidtrees`, you can interactively view any JSON file by running 
+    
+    $ python  -m dsconfig.viewer something.json
+    
+From the start, everything is "folded" but you can navigate the structure by using the arrow keys and return to fold/unfold nodes.
