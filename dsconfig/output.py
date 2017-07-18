@@ -176,7 +176,7 @@ def get_changes(data, calls):
 
         elif method == "put_class_property":
             clss, properties = args
-            old_data = classes[clss]
+            old_data = classes.get(clss, {})
             caseless_props = CaselessDict(old_data.get("properties", {}))
             prop_changes = changes["classes"][clss].setdefault("properties", {})
             for name, value in properties.items():
@@ -190,18 +190,18 @@ def get_changes(data, calls):
 
         elif method == "delete_class_property":
             clss, properties = args
-            old_data = classes[clss]
+            old_data = classes.get(clss, {})
             caseless_props = CaselessDict(old_data.get("properties", {}))
             prop_changes = changes["classes"][clss].setdefault("properties", {})
             for prop in properties:
-                old_value = caseless_props[prop]
+                old_value = caseless_props.get(prop)
                 prop_changes[prop] = {"old_value": old_value}
 
         elif method == "put_class_attribute_property":
             clss, properties = args
             attr_props = changes["classes"][clss].setdefault(
                 "attribute_properties", {})
-            old_data = classes[clss]
+            old_data = classes.get(clss, {})
             caseless_attrs = CaselessDict(
                 old_data.get("attribute_properties", {}))
             for attr, props in properties.items():
@@ -218,10 +218,10 @@ def get_changes(data, calls):
             clss, attributes = args
             attr_props = changes["classes"][clss].setdefault(
                 "attribute_properties", {})
-            old_data = classes[clss]
+            old_data = classes.get(clss, {})
             caseless_attrs = CaselessDict(old_data.get("properties", {}))
             for attr, props in attributes.items():
-                caseless_props = CaselessDict(caseless_attrs[attr])
+                caseless_props = CaselessDict(caseless_attrs.get(attr, {}))
                 for prop in props:
                     old_value = caseless_props.get(prop)
                     attr_props[attr] = {prop: {"old_value": old_value}}
