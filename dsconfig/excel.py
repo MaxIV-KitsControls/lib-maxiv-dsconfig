@@ -260,7 +260,8 @@ def xls_to_dict(xls_filename, pages=None, skip=False):
         sheet = xls.sheet_by_name(page)
         rows = [sheet.row_values(i)
                 for i in xrange(sheet.nrows)]
-
+        if not rows:
+            continue  # ignore empty pages
         errors = convert(rows, definitions, skip=skip,
                          dynamic=(page == "Dynamics"),
                          config=(page == "ParamConfig"))
