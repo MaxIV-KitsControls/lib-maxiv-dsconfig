@@ -365,7 +365,10 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
         _, result = dbproxy.command_inout("DbMySqlSelect",
                                           query % (server, clss, device))
         for d, p, v in nwise(result, 3):
-            devices[maybe_upper(d, uppercase_devices)].properties[p] = v
+            # the properties are encoded in latin-1; we want utf-8
+            decoded_value = [line.decode('iso-8859-1').encode('utf8')
+                             for line in v]
+            devices[maybe_upper(d, uppercase_devices)].properties[p] = decoded_value
 
     if attribute_properties:
         # Get all relevant attribute properties
@@ -378,10 +381,13 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
             " WHERE server LIKE '%s' AND class LIKE '%s' AND device LIKE '%s'")
         if not dservers:
             query += " AND class != 'DServer'"
-        _, result = dbproxy.DbMySqlSelect(query % (server, clss, device))
+        _, result = dbproxy.command_inout("DbMySqlSelect", query % (server, clss, device))
         for d, a, p, v in nwise(result, 4):
             dev = devices[maybe_upper(d, uppercase_devices)]
-            dev.attribute_properties[a][p] = v
+            # the properties are encoded in latin-1; we want utf-8
+            decoded_value = [line.decode('iso-8859-1').encode('utf8')
+                             for line in v]
+            dev.attribute_properties[a][p] = decoded_value
 
     devices = devices.to_dict()
 
