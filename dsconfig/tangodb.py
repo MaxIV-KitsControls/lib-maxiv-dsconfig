@@ -335,7 +335,8 @@ def maybe_upper(s, upper=False):
 def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
                              properties=True, attribute_properties=True,
                              aliases=True, dservers=False,
-                             subdevices=False, uppercase_devices=False):
+                             subdevices=False, uppercase_devices=False,
+                             timeout=10):
     """
     A performant way to get servers and devices in bulk from the DB
     by direct SQL statements and joins, instead of e.g. using one
@@ -350,6 +351,12 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
     device = device.replace("*", "%")
 
     devices = AppendingDict()
+
+    # Queries can sometimes take more than de default 3 s, so it's
+    # good to increase the timeout a bit.
+    # TODO: maybe instead use automatic retry and increase timeout
+    # each time?
+    dbproxy.set_timeout_millis(timeout*1000)
 
     if properties:
         # Get all relevant device properties
