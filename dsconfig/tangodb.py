@@ -287,8 +287,8 @@ def get_device_property_values(dbproxy, device, name="*",
                                include_subdevices=False):
     query = ("SELECT name, value FROM property_device "
              "WHERE device = '%s' AND name LIKE '%s'")
-    _, result = dbproxy.DbMySqlSelect(
-        query % (device, name.replace("*", "%")))
+    _, result = dbproxy.command_inout("DbMySqlSelect",
+                                      query % (device, name.replace("*", "%")))
     data = defaultdict(list)
     for prop, row in izip(result[::2], result[1::2]):
         if prop != "__SubDevices" or include_subdevices:
@@ -299,7 +299,7 @@ def get_device_property_values(dbproxy, device, name="*",
 def get_device_attribute_property_values(dbproxy, device, name="*"):
     query = ("SELECT attribute, name, value FROM property_attribute_device "
              "WHERE device = '%s' AND name LIKE '%s'")
-    _, result = dbproxy.DbMySqlSelect(
+    _, result = dbproxy.command_inout("DbMySqlSelect",
         query % (device, name.replace("*", "%")))
     data = AppendingDict()
     for attr, prop, row in izip(result[::3], result[1::3], result[2::3]):
@@ -309,14 +309,14 @@ def get_device_attribute_property_values(dbproxy, device, name="*"):
 
 def get_devices_for_class(dbproxy, clss):
     query = ("SELECT name FROM device WHERE class LIKE '%s'")
-    _, result = dbproxy.DbMySqlSelect(query % clss.replace("*", "%"))
+    _, result = dbproxy.command_inout("DbMySqlSelect", query % clss.replace("*", "%"))
     return result
 
 
 def get_devices_by_name_and_class(dbproxy, name, clss="*"):
     query = ("SELECT name FROM device WHERE name LIKE '%s' "
              "AND class LIKE '%s'")
-    _, result = dbproxy.DbMySqlSelect(
+    _, result = dbproxy.command_inout("DbMySqlSelect",
         query % (name.replace("*", "%"), clss.replace("*", "%")))
     return result
 
@@ -392,7 +392,7 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
 
     if not dservers:
         query += " AND class != 'DServer'"
-    _, result = dbproxy.DbMySqlSelect(query % (server, clss, device))
+    _, result = dbproxy.command_inout("DbMySqlSelect", query % (server, clss, device))
 
     # combine all the information we have
     servers = SetterDict()
