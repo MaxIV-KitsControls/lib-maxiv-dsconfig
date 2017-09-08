@@ -373,8 +373,7 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
                                           query % (server, clss, device))
         for d, p, v in nwise(result, 3):
             # the properties are encoded in latin-1; we want utf-8
-            decoded_value = [line.decode('iso-8859-1').encode('utf8')
-                             for line in v]
+            decoded_value = v.decode('iso-8859-1').encode('utf8')
             devices[maybe_upper(d, uppercase_devices)].properties[p] = decoded_value
 
     if attribute_properties:
@@ -392,8 +391,7 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
         for d, a, p, v in nwise(result, 4):
             dev = devices[maybe_upper(d, uppercase_devices)]
             # the properties are encoded in latin-1; we want utf-8
-            decoded_value = [line.decode('iso-8859-1').encode('utf8')
-                             for line in v]
+            decoded_value = v.decode('iso-8859-1').encode('utf8')
             dev.attribute_properties[a][p] = decoded_value
 
     devices = devices.to_dict()
