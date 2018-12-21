@@ -6,9 +6,6 @@ optionally be run.
 """
 
 import sys
-
-print(sys.path)
-
 import time
 import json
 from optparse import OptionParser
