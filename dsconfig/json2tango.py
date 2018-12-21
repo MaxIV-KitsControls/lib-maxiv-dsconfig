@@ -6,6 +6,9 @@ optionally be run.
 """
 
 import sys
+
+print(sys.path)
+
 import time
 import json
 from optparse import OptionParser
@@ -19,7 +22,7 @@ from dsconfig.formatting import (CLASSES_LEVELS, SERVERS_LEVELS, load_json,
                                  clean_metadata)
 from dsconfig.tangodb import summarise_calls, get_devices_from_dict
 from dsconfig.dump import get_db_data
-from dsconfig.utils import green, red, yellow, progressbar
+from dsconfig.utils import green, red, yellow, progressbar, no_colors
 from dsconfig.output import show_actions
 from dsconfig.appending_dict.caseless import CaselessDictionary
 
@@ -53,7 +56,9 @@ def main():
     parser.add_option("-s", "--sleep", dest="sleep", default=0.01,
                       type="float",
                       help=("Number of seconds to sleep between DB calls"))
-
+    parser.add_option("-n", "--no-colors",
+                      action="store_true", dest="no_colors", default=False,
+                      help="Don't print colored output")
     parser.add_option("-i", "--include", dest="include", action="append",
                       help=("Inclusive filter on server configutation"))
     parser.add_option("-x", "--exclude", dest="exclude", action="append",
@@ -71,6 +76,9 @@ def main():
         dest="dbdata")
 
     options, args = parser.parse_args()
+
+    if options.no_colors:
+        no_colors()
 
     if len(args) == 0:
         data = load_json(sys.stdin)
@@ -149,7 +157,7 @@ def main():
     # Print out a nice diff
     if options.verbose:
         show_actions(original, dbcalls)
-    
+
     # perform the db operations (if we're supposed to)
     if options.write and dbcalls:
         for i, (method, args, kwargs) in enumerate(dbcalls):
