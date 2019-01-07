@@ -46,9 +46,7 @@ def get_db_data(db, patterns=None, **options):
                     # skip classes already dump
                     if cls not in data.classes.keys():
                         # class properties
-                        print db.get_class_property_list(cls).value_string
                         for prop, value in db.get_class_property(cls, list(db.get_class_property_list(cls))).items():
-
                             if value:
                                 value = [str(v) for v in value]
                                 data.classes[cls].properties[prop] = value
