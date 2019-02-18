@@ -16,12 +16,12 @@ def make_db(dbdata):
 
     def get_device_name(server, clss):
         srv, inst = server.split("/")
-        return dbdata["servers"][srv][inst][clss].keys()
+        return list(dbdata["servers"][srv][inst][clss].keys())
     db.get_device_name.side_effect = get_device_name
 
     def get_device_property_list(dev, pattern):
         data, _ = find_device(dbdata, dev)
-        return data["properties"].keys()
+        return list(data["properties"].keys())
     db.get_device_property_list.side_effect = get_device_property_list
 
     def get_device_property(dev, props):
@@ -53,4 +53,4 @@ def test_get_dict_from_db():
                             }}}}}}}
 
     db = make_db(dbdata)
-    print get_dict_from_db(db, indata)
+    print(get_dict_from_db(db, indata))

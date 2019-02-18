@@ -116,7 +116,7 @@ def main():
         sys.exit("No config data; exiting!")
 
     if options.input:
-        print json.dumps(data, indent=4)
+        print(json.dumps(data, indent=4))
         return
 
     # check if there is anything in the DB that will be changed or removed
@@ -138,7 +138,7 @@ def main():
             in get_devices_from_dict(original["servers"])
         })
         collisions = {}
-        for dev, (srv, inst, cls) in devices.items():
+        for dev, (srv, inst, cls) in list(devices.items()):
             if dev in orig_devices:
                 server = "{}/{}".format(srv, inst)
                 osrv, oinst, ocls = orig_devices[dev]
@@ -163,25 +163,25 @@ def main():
             if options.verbose:
                 progressbar(i, len(dbcalls), 20)
             getattr(db, method)(*args, **kwargs)
-        print
+        print()
 
     # optionally dump some information to stdout
     if options.output:
-        print json.dumps(original, indent=4)
+        print(json.dumps(original, indent=4))
     if options.dbcalls:
-        print >>sys.stderr, "Tango database calls:"
+        print("Tango database calls:", file=sys.stderr)
         for method, args, kwargs in dbcalls:
-            print >>sys.stderr, method, args
+            print(method, args, file=sys.stderr)
 
     # Check for moved devices and remove empty servers
     empty = set()
-    for srvname, devs in collisions.items():
+    for srvname, devs in list(collisions.items()):
         if options.verbose:
             srv, inst = srvname.split("/")
             for cls, dev in devs:
-                print >>sys.stderr, red("MOVED (because of collision):"), dev
-                print >>sys.stderr, "    Server: ", "{}/{}".format(srv, inst)
-                print >>sys.stderr, "    Class: ", cls
+                print(red("MOVED (because of collision):"), dev, file=sys.stderr)
+                print("    Server: ", "{}/{}".format(srv, inst), file=sys.stderr)
+                print("    Class: ", cls, file=sys.stderr)
         if len(db.get_device_class_list(srvname)) == 2:  # just dserver
             empty.add(srvname)
             if options.write:
@@ -189,29 +189,29 @@ def main():
 
     # finally print out a brief summary of what was done
     if dbcalls:
-        print
-        print >>sys.stderr, "Summary:"
-        print >>sys.stderr, "\n".join(summarise_calls(dbcalls, original))
+        print()
+        print("Summary:", file=sys.stderr)
+        print("\n".join(summarise_calls(dbcalls, original)), file=sys.stderr)
         if collisions:
             servers = len(collisions)
-            devices = sum(len(devs) for devs in collisions.values())
-            print >>sys.stderr, red("Move %d devices from %d servers." %
-                                    (devices, servers))
+            devices = sum(len(devs) for devs in list(collisions.values()))
+            print(red("Move %d devices from %d servers." %
+                                    (devices, servers)), file=sys.stderr)
         if empty and options.verbose:
-            print >>sys.stderr, red("Removed %d empty servers." % len(empty))
+            print(red("Removed %d empty servers." % len(empty)), file=sys.stderr)
 
         if options.write:
-            print >>sys.stderr, red("\n*** Data was written to the Tango DB ***")
+            print(red("\n*** Data was written to the Tango DB ***"), file=sys.stderr)
             with NamedTemporaryFile(prefix="dsconfig-", suffix=".json",
                                     delete=False) as f:
                 f.write(json.dumps(original, indent=4))
-                print >>sys.stderr, ("The previous DB data was saved to %s" %
-                                     f.name)
+                print(("The previous DB data was saved to %s" %
+                                     f.name), file=sys.stderr)
         else:
-            print >>sys.stderr, yellow(
-                "\n*** Nothing was written to the Tango DB (use -w) ***")
+            print(yellow(
+                "\n*** Nothing was written to the Tango DB (use -w) ***"), file=sys.stderr)
     else:
-        print >>sys.stderr, green("\n*** No changes needed in Tango DB ***")
+        print(green("\n*** No changes needed in Tango DB ***"), file=sys.stderr)
 
 
 if __name__ == "__main__":

@@ -3,13 +3,13 @@ import sys
 
 from jsonschema import Draft4Validator, validate, exceptions
 
-from utils import decode_dict
+from .utils import decode_dict
 
 
 if __name__ == "__main__":
     data_filename, schema_filename = sys.argv[1], sys.argv[2]
 
-    print "Validating '%s' against schema '%s'..." % (data_filename, schema_filename),
+    print("Validating '%s' against schema '%s'..." % (data_filename, schema_filename), end=' ')
 
     with open(data_filename) as data_json:
         data = json.load(data_json, object_hook=decode_dict)
@@ -20,8 +20,8 @@ if __name__ == "__main__":
     try:
         validate(data, schema)
     except exceptions.ValidationError as e:
-        print "data does not match schema:"
-        print e
+        print("data does not match schema:")
+        print(e)
         sys.exit(1)
     else:
-        print "success!"
+        print("success!")

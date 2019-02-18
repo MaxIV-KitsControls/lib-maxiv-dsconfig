@@ -2,11 +2,11 @@
 
 from collections import defaultdict
 from difflib import unified_diff
-from itertools import izip, islice
+from itertools import islice
 
 import PyTango
 
-from appending_dict import AppendingDict, SetterDict, CaselessDictionary
+from .appending_dict import AppendingDict, SetterDict, CaselessDictionary
 from dsconfig.utils import green, red, yellow
 
 
@@ -30,16 +30,16 @@ SPECIAL_ATTRIBUTE_PROPERTIES = [
 
 def get_devices_from_dict(dbdict, name=None):
     return [(server_name, instance_name, class_name, device_name)
-            for server_name, server in dbdict.items()
-            for instance_name, instance in server.items()
-            for class_name, clss in instance.items()
+            for server_name, server in list(dbdict.items())
+            for instance_name, instance in list(server.items())
+            for class_name, clss in list(instance.items())
             for device_name in clss
             if name is None or device_name.lower() == name.lower()]
 
 
 def get_servers_from_dict(dbdict):
     servers = set()
-    for server, children in dbdict.get("servers", {}).items():
+    for server, children in list(dbdict.get("servers", {}).items()):
         if "/" in server:
             servers.add(server)
         else:
@@ -109,7 +109,7 @@ def summarise_calls(dbcalls, dbdata):
             n = len(args[1])
             devices[method].add(args[0].upper())
         elif "attribute_property" in method:
-            n = sum(len(ps) for attr, ps in args[1].items())
+            n = sum(len(ps) for attr, ps in list(args[1].items()))
             devices[method].add(args[0].upper())
         elif "property" in method:
             n = len(args[1])
@@ -172,7 +172,7 @@ def get_device(db, devname, data, skip_protected=True):
     db_props = db.get_device_property_list(devname, "*")
     if db_props:
         props = db.get_device_property(devname, list(db_props))
-        for prop, value in props.items():
+        for prop, value in list(props.items()):
             # We'll ignore "protected" properties unless they are present
             # in the input data (in that case we want to show that
             # they are changed)
@@ -195,11 +195,11 @@ def get_device(db, devname, data, skip_protected=True):
     if attr_props:
         attribute_properties = {}
         dbprops = db.get_device_attribute_property(devname,
-                                                   attr_props.keys())
-        for attr, props in dbprops.items():
+                                                   list(attr_props.keys()))
+        for attr, props in list(dbprops.items()):
             attr_props = dict(
                 (prop, [str(v) for v in values])
-                for prop, values in props.items()
+                for prop, values in list(props.items())
                 # Again, ignore attr_props that are not present in the
                 # input data, as we most likely don't want to remove those
                 if (not (skip_protected and is_protected(prop, True))
@@ -239,12 +239,12 @@ def get_dict_from_db(db, data, narrow=False, skip_protected=True):
             pass
 
     # Servers
-    for srvr, insts in data.get("servers", {}).items():
-        for inst, classes in insts.items():
-            for clss, devs in classes.items():
+    for srvr, insts in list(data.get("servers", {}).items()):
+        for inst, classes in list(insts.items()):
+            for clss, devs in list(classes.items()):
                 devs = CaselessDictionary(devs)
                 if narrow:
-                    devices = devs.keys()
+                    devices = list(devs.keys())
                 else:
                     srv_full_name = "%s/%s" % (srvr, inst)
                     devices = db.get_device_name(srv_full_name, clss)
@@ -254,9 +254,9 @@ def get_dict_from_db(db, data, narrow=False, skip_protected=True):
                     dbdict.servers[srvr][inst][clss][device] = db_props
 
     # Classes
-    for class_name, cls in data.get("classes", {}).items():
-        props = cls.get("properties", {}).keys()
-        for prop, value in db.get_class_property(class_name, props).items():
+    for class_name, cls in list(data.get("classes", {}).items()):
+        props = list(cls.get("properties", {}).keys())
+        for prop, value in list(db.get_class_property(class_name, props).items()):
             if value:
                 value = [str(v) for v in value]
                 dbdict.classes[class_name].properties[prop] = value
@@ -264,10 +264,10 @@ def get_dict_from_db(db, data, narrow=False, skip_protected=True):
         attr_props = cls.get("attribute_properties")
         if attr_props:
             dbprops = db.get_class_attribute_property(class_name,
-                                                      attr_props.keys())
-            for attr, props in dbprops.items():
+                                                      list(attr_props.keys()))
+            for attr, props in list(dbprops.items()):
                 props = dict((prop, [str(v) for v in values])
-                             for prop, values in props.items())
+                             for prop, values in list(props.items()))
                 dbdict.classes[class_name].attribute_properties[attr] = props
 
     return dbdict.to_dict(), moved_devices
@@ -276,8 +276,8 @@ def get_dict_from_db(db, data, narrow=False, skip_protected=True):
 def find_empty_servers(db, data):
     "Find any servers in the data that contain no devices, and remove them"
     servers = ["%s/%s" % (srv, inst)
-               for srv, insts in data["servers"].items()
-               for inst in insts.keys()]
+               for srv, insts in list(data["servers"].items())
+               for inst in list(insts.keys())]
     return [server for server in servers
             if all(d.lower().startswith('dserver/')
                    for d in db.get_device_class_list(server))]
@@ -290,7 +290,7 @@ def get_device_property_values(dbproxy, device, name="*",
     _, result = dbproxy.command_inout("DbMySqlSelect",
                                       query % (device, name.replace("*", "%")))
     data = defaultdict(list)
-    for prop, row in izip(result[::2], result[1::2]):
+    for prop, row in zip(result[::2], result[1::2]):
         if prop != "__SubDevices" or include_subdevices:
             data[prop].append(row)
     return data
@@ -302,7 +302,7 @@ def get_device_attribute_property_values(dbproxy, device, name="*"):
     _, result = dbproxy.command_inout("DbMySqlSelect",
         query % (device, name.replace("*", "%")))
     data = AppendingDict()
-    for attr, prop, row in izip(result[::3], result[1::3], result[2::3]):
+    for attr, prop, row in zip(result[::3], result[1::3], result[2::3]):
         data[attr][prop] = row
     return data
 
@@ -320,10 +320,9 @@ def get_devices_by_name_and_class(dbproxy, name, clss="*"):
         query % (name.replace("*", "%"), clss.replace("*", "%")))
     return result
 
-
 def nwise(it, n):
     "[s_0, s_1, ...] => [(s_0, ..., s_(n-1)), (s_n, ... s_(2n-1)), ...]"
-    return izip(*[islice(it, i, None, n) for i in xrange(n)])
+    return zip(*[islice(it, i, None, n) for i in range(n)])
 
 
 def maybe_upper(s, upper=False):
@@ -420,3 +419,22 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
         servers[srv][inst][c][devname] = device
 
     return servers
+
+
+
+
+def get_classes_properties(dbproxy, server='*',
+                             cls_properties=True, cls_attribute_properties=True,
+                             timeout=10):
+    # Get class properties
+    querry = "select DISTINCT  property_class.class,  property_class.name,  property_class.value  from  property_class INNER JOIN device  ON property_class.class = device.class WHERE server like '%s' AND device.class != 'DServer' AND device.class != 'TangoAccessControl'"
+    #
+    # classes = SetterDict()
+
+    _, result = dbproxy.command_inout(
+        "DbMySqlSelect", querry % (server.replace("*", "%")))
+    return result
+
+    # Get class attribute properties
+    querry = "select DISTINCT  property_class.class,  property_class.name,  property_class.value  from  property_class INNER JOIN device  ON property_class.class = device.class WHERE server like 'Tan%' AND device.class != 'DServer' AND device.class != 'TangoAccessControl'"
+

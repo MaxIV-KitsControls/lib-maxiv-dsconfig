@@ -2,7 +2,7 @@ from collections import Mapping
 import json
 import sys
 
-from utils import green, yellow, red
+from .utils import green, yellow, red
 
 
 def decode_pointer(ptr):
@@ -44,33 +44,33 @@ def print_diff(dbdict, data, removes=True):
             try:
                 ptr = " > ".join(decode_pointer(d["path"]))
                 if d["op"] == "replace":
-                    print yellow("REPLACE:")
-                    print yellow(ptr)
+                    print(yellow("REPLACE:"))
+                    print(yellow(ptr))
                     db_value = resolve_pointer(dbdict, d["path"])
-                    print red(dump_value(db_value))
-                    print green(dump_value(d["value"]))
+                    print(red(dump_value(db_value)))
+                    print(green(dump_value(d["value"])))
                     ops["replace"] += 1
                 if d["op"] == "add":
-                    print green("ADD:")
-                    print green(ptr)
+                    print(green("ADD:"))
+                    print(green(ptr))
                     if d["value"]:
-                        print green(dump_value(d["value"]))
+                        print(green(dump_value(d["value"])))
                     ops["add"] += 1
                 if removes and d["op"] == "remove":
-                    print red("REMOVE:")
-                    print red(ptr)
+                    print(red("REMOVE:"))
+                    print(red(ptr))
                     value = resolve_pointer(dbdict, d["path"])
                     if value:
-                        print red(dump_value(value))
+                        print(red(dump_value(value)))
                     ops["remove"] += 1
             except JsonPointerException as e:
-                print " - Error parsing diff - report this!: %s" % e
+                print(" - Error parsing diff - report this!: %s" % e)
         # # The following output is a bit misleading, removing for now
         # print "Total: %d operations (%d replace, %d add, %d remove)" % (
         #     sum(ops.values()), ops["replace"], ops["add"], ops["remove"])
         return diff
     except ImportError:
-        print >>sys.stderr, ("'jsonpatch' module not available - "
-                             "no diff printouts for you! (Try -d instead.)")
+        print(("'jsonpatch' module not available - "
+                             "no diff printouts for you! (Try -d instead.)"), file=sys.stderr)
 
 

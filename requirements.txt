@@ -1,3 +1,4 @@
+Faker
 unittest2
 pytest
 nose >= 1.0
@@ -7,4 +8,3 @@ jsonschema
 jsonpatch
 PyTango
 pytest
-fake-factory

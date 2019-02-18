@@ -32,7 +32,7 @@ class SetterDict(CaselessDictionary, defaultdict):
         self.__dict__["_factory"] = factory
         CaselessDictionary.__init__(self)
         defaultdict.__init__(self, factory)
-        for k, v in value.items():
+        for k, v in list(value.items()):
             self[k] = v
 
     def __getitem__(self, key):
@@ -55,10 +55,19 @@ class SetterDict(CaselessDictionary, defaultdict):
     def __setattr__(self, key, value):
         return self.__setitem__(key, value)
 
+    def __repr__(self):
+        return self.to_dict().__repr__()
+
+    def __eq__(self, other):
+        return self.to_dict() == other
+
+    def __ne__(self, other):
+        return self.to_dict() != other
+
     def to_dict(self):
         """Returns a ordinary dict version of itself"""
         result = {}
-        for key, value in self.items():
+        for key, value in list(self.items()):
             if isinstance(value, SetterDict):
                 result[key] = value.to_dict()
             else:
@@ -68,7 +77,7 @@ class SetterDict(CaselessDictionary, defaultdict):
 
 def merge(d, u):
     "Recursively 'merge' a Mapping into another"
-    for k, v in u.iteritems():
+    for k, v in u.items():
         if isinstance(v, Mapping):
             if k in d:
                 merge(d[k], v)

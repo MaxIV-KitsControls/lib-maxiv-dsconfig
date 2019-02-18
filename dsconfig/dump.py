@@ -8,8 +8,8 @@ $ python -m dsconfig.dump device:sys/tg_test/1 device:sys/tg_test/2
 
 """
 
-from tangodb import get_servers_with_filters
-from appending_dict import SetterDict
+from .tangodb import get_servers_with_filters
+from .appending_dict import SetterDict
 import PyTango
 
 
@@ -71,7 +71,7 @@ def main():
                          attribute_properties=options.attribute_properties,
                          aliases=options.aliases, dservers=options.dservers,
                          subdevices=options.subdevices)
-    print json.dumps(dbdata, ensure_ascii=False, indent=4, sort_keys=True)
+    print(json.dumps(dbdata, ensure_ascii=False, indent=4, sort_keys=True))
 
 
 if __name__ == "__main__":

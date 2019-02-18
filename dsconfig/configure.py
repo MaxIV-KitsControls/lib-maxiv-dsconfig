@@ -4,10 +4,10 @@ from collections import defaultdict
 from functools import partial
 
 import PyTango
-from appending_dict.caseless import CaselessDictionary
+from .appending_dict.caseless import CaselessDictionary
 
-from utils import ObjectWrapper
-from tangodb import SPECIAL_ATTRIBUTE_PROPERTIES, is_protected
+from .utils import ObjectWrapper
+from .tangodb import SPECIAL_ATTRIBUTE_PROPERTIES, is_protected
 
 
 def check_attribute_property(propname):
@@ -39,8 +39,8 @@ def update_properties(db, parent, db_props, new_props,
         # For attribute properties we need to go one step deeper into
         # the dict, since each attribute can have several properties.
         # A little messy, but at least it's consistent.
-        for attr, props in new_props.items():
-            for prop, value in props.items():
+        for attr, props in list(new_props.items()):
+            for prop, value in list(props.items()):
                 if ignore_case:
                     orig = CaselessDictionary(caseless_db_props.get(attr, {})).get(prop)
                 else:
@@ -48,7 +48,7 @@ def update_properties(db, parent, db_props, new_props,
                 if value and value != orig and check_attribute_property(prop):
                     added_props[attr][prop] = value
         removed_props = defaultdict(dict)
-        for attr, props in db_props.items():
+        for attr, props in list(db_props.items()):
             for prop in props:
                 if ignore_case:
                     new = CaselessDictionary(new_props.get(attr, {})).get(prop)
@@ -59,12 +59,12 @@ def update_properties(db, parent, db_props, new_props,
                     removed_props[attr][prop] = value
     else:
         added_props = {}
-        for prop, value in new_props.items():
+        for prop, value in list(new_props.items()):
             old_value = caseless_db_props.get(prop, [])
             if value and value != old_value:
                 added_props[prop] = value
         removed_props = {}
-        for prop, value in db_props.items():
+        for prop, value in list(db_props.items()):
             new_value = caseless_new_props.get(prop)
             if (new_value is None and not is_protected(prop)) or new_value == []:
                 # empty list forces removal of "protected" properties
@@ -96,14 +96,14 @@ def update_server(db, server_name, server_dict, db_dict,
     if ignore_case:
         db_dict = CaselessDictionary(db_dict)
 
-    for class_name, cls in server_dict.items():  # classes
+    for class_name, cls in list(server_dict.items()):  # classes
         if ignore_case:
             cls = CaselessDictionary(cls)
         removed_devices = [dev for dev in db_dict.get(class_name, {})
                            if dev not in cls
                            # never remove dservers
                            and not class_name.lower() == "dserver"]
-        added_devices = cls.items()
+        added_devices = list(cls.items())
         if not update:
             for device_name in removed_devices:
                 db.delete_device(device_name)
@@ -177,8 +177,8 @@ def configure(data, dbdata, update=False, ignore_case=False):
 
     db = ObjectWrapper()
 
-    for servername, serverdata in data.get("servers", {}).items():
-        for instname, instdata in serverdata.items():
+    for servername, serverdata in list(data.get("servers", {}).items()):
+        for instname, instdata in list(serverdata.items()):
             dbinstdata = (dbdata.get("servers", {})
                           .get(servername, {})
                           .get(instname, {}))
@@ -186,7 +186,7 @@ def configure(data, dbdata, update=False, ignore_case=False):
                 db, "%s/%s" % (servername, instname),
                 instdata, dbinstdata, update, ignore_case)
 
-    for classname, classdata in data.get("classes", {}).items():
+    for classname, classdata in list(data.get("classes", {}).items()):
         dbclassdata = dbdata.get("classes", {}).get(classname, {})
         update_class(db, classname, dbclassdata, classdata, update=update)
 

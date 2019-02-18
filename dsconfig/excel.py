@@ -10,10 +10,10 @@ import re
 import sys
 #from traceback import format_exc
 
-from utils import find_device
-from appending_dict import AppendingDict
-from utils import CaselessDict
-from tangodb import SPECIAL_ATTRIBUTE_PROPERTIES
+from .utils import find_device
+from .appending_dict import AppendingDict
+from .utils import CaselessDict
+from .tangodb import SPECIAL_ATTRIBUTE_PROPERTIES
 
 MODE_MAPPING = CaselessDict({"ATTR": "DynamicAttributes",
                              "CMD": "DynamicCommands",
@@ -37,12 +37,14 @@ def get_properties(row):
     # as long as the format of the string is correct
     if "properties" in row:
         properties = row["properties"]
+        print(properties)
         try:
             for prop in properties.split(";"):
                 name, value = prop.split("=")
                 # need to decode the string, otherwise any linebreaks
                 # will be escaped.
-                value = value.decode("string-escape")
+                # value = value.decode("string-escape")
+                value = str(value)
                 # Support inline multiline properties using "\n"
                 prop_dict[name.strip()] = [v.strip()
                                            for v in value.split("\n")]
@@ -54,7 +56,7 @@ def get_properties(row):
     # as floats. If the number must be inserterd as an int, use the "(INT)"
     # modifier. There does not seem to be a way to force a numeric cell to
     # be interpreted as a string.
-    for col_name, value in row.items():
+    for col_name, value in list(row.items()):
         match = re.match("property(?:\((.*)\))?:(.*)", col_name, re.IGNORECASE)
         if match and (value is not None):  # protect against zero, false...
             type_, name = match.groups()
@@ -62,7 +64,8 @@ def get_properties(row):
                 convert = TYPE_MAPPING[type_]
                 values = [convert(value)]
             else:
-                value = str(value).decode("string-escape")
+                # value = str(value).decode("string-escape")
+                value = str(value)
                 values = [v.strip() for v in value.split("\n")]
             prop_dict[name] = values
 
@@ -83,13 +86,14 @@ def get_attribute_properties(row):
                     if name not in SPECIAL_ATTRIBUTE_PROPERTIES:
                         raise ValueError(
                             "'%s' is not a valid attribute property" % name)
-                    value = value.decode("string-escape")  # for linebreaks
+                    # value = value.decode("string-escape")  # for linebreaks
+                    value = str(value)
                     prop_dict[name.strip()] = [v.strip()
                                                for v in value.split("\n")]
             except ValueError:
                 raise ValueError("could not parse AttributeProperties")
 
-        for col_name, value in row.items():
+        for col_name, value in list(row.items()):
             match = re.match("attrprop:(.*)", col_name, re.IGNORECASE)
             if match and value:
                 name, = match.groups()
@@ -97,7 +101,8 @@ def get_attribute_properties(row):
                 if name not in SPECIAL_ATTRIBUTE_PROPERTIES:
                     raise ValueError("'%s' it not a valid attribute property"
                                      % name)
-                value = str(value).decode("string-escape")
+                # value = str(value).decode("string-escape")
+                value = str(value)
                 values = [v.strip() for v in value.split("\n")]
                 prop_dict[name] = values
 
@@ -229,10 +234,10 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
 
 def print_errors(errors):
     if errors:
-        print >> sys.stderr, "%d lines skipped" % len(errors)
+        print("%d lines skipped" % len(errors), file=sys.stderr)
         for err in errors:
             line, msg = err
-            print >> sys.stderr, "%d: %s" % (line + 1, msg)
+            print("%d: %s" % (line + 1, msg), file=sys.stderr)
 
 
 def xls_to_dict(xls_filename, pages=None, skip=False):
@@ -256,10 +261,10 @@ def xls_to_dict(xls_filename, pages=None, skip=False):
 
     for page in pages:
 
-        print >>sys.stderr, "\nPage: %s" % page
+        print("\nPage: %s" % page, file=sys.stderr)
         sheet = xls.sheet_by_name(page)
         rows = [sheet.row_values(i)
-                for i in xrange(sheet.nrows)]
+                for i in range(sheet.nrows)]
         if not rows:
             continue  # ignore empty pages
         errors = convert(rows, definitions, skip=skip,
@@ -278,12 +283,12 @@ def get_stats(defs):
     classes = set()
     devices = set()
 
-    for server, instances in defs.servers.items():
+    for server, instances in list(defs.servers.items()):
         servers.add(server)
         instances.update(instances)
-        for clsname, devs in instances.items():
+        for clsname, devs in list(instances.items()):
             classes.add(clsname)
-            for devname, dev in devs.items():
+            for devname, dev in list(devs.items()):
                 devices.add(devname)
 
     return {"servers": len(servers), "instances": len(instances),
@@ -320,15 +325,15 @@ def main():
     data.update(metadata)
 
     if not options.test:
-        print json.dumps(data, indent=4)
+        print(json.dumps(data, indent=4))
         outfile = open('config.json', 'w')
         json.dump(data, outfile, indent=4)
 
     stats = get_stats(data)
 
-    print >>sys.stderr, ("\n"
+    print(("\n"
         "Total: %(servers)d servers, %(instances)d instances, "
-        "%(classes)d classes and %(devices)d devices defined.") % stats
+        "%(classes)d classes and %(devices)d devices defined.") % stats, file=sys.stderr)
 
 
 if __name__ == "__main__":
