@@ -20,6 +20,7 @@ from dsconfig.formatting import (CLASSES_LEVELS, SERVERS_LEVELS, load_json,
 from dsconfig.tangodb import summarise_calls, get_devices_from_dict
 from dsconfig.dump import get_db_data
 from dsconfig.utils import green, red, yellow, progressbar, no_colors
+from dsconfig.utils import SUCCESS, ERROR, CONFIG_APPLIED, CONFIG_NOT_APPLIED
 from dsconfig.output import show_actions
 from dsconfig.appending_dict.caseless import CaselessDictionary
 
