@@ -110,10 +110,12 @@ def main():
                 data.get("classes", {}), options.exclude_classes, CLASSES_LEVELS,
                 invert=True)
     except ValueError as e:
-        sys.exit("Filter error:\n%s" % e)
+        print >>sys.stderr, red("Filter error:\n%s" % e)
+        sys.exit(ERROR)
 
     if not any(k in data for k in ("devices", "servers", "classes")):
-        sys.exit("No config data; exiting!")
+        sys.exit(ERROR)
+
 
     if options.input:
         print json.dumps(data, indent=4)
@@ -207,11 +209,15 @@ def main():
                 f.write(json.dumps(original, indent=4))
                 print >>sys.stderr, ("The previous DB data was saved to %s" %
                                      f.name)
+            sys.exit(CONFIG_APPLIED)
         else:
             print >>sys.stderr, yellow(
                 "\n*** Nothing was written to the Tango DB (use -w) ***")
+            sys.exit(CONFIG_NOT_APPLIED)                
+            
     else:
         print >>sys.stderr, green("\n*** No changes needed in Tango DB ***")
+        sys.exit(SUCCESS)
 
 
 if __name__ == "__main__":
