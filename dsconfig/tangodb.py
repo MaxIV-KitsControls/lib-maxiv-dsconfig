@@ -334,6 +334,7 @@ def maybe_upper(s, upper=False):
 
 def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
                              properties=True, attribute_properties=True,
+                             class_properties=False,
                              aliases=True, dservers=False,
                              subdevices=False, uppercase_devices=False,
                              timeout=10):

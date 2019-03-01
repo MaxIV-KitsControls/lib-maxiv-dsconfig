@@ -37,6 +37,31 @@ def get_db_data(db, patterns=None, **options):
             servers = get_servers_with_filters(dbproxy, **kwargs)
             data.servers.update(servers)
 
+    # dump class properties upon request
+    if options.get('class_properties', False):
+        # go through all classes in servers
+        for server, instances in data.servers.to_dict().items():
+            for instance, classes in instances.items():
+                for cls, devices in classes.items():
+                    # skip classes already dump
+                    if cls not in data.classes.keys():
+                        # class properties
+                        for prop, value in db.get_class_property(cls, list(db.get_class_property_list(cls))).items():
+                            if value:
+                                value = [str(v) for v in value]
+                                data.classes[cls].properties[prop] = value
+
+                        # attribute properties
+                        if not options.get('attribute_properties', False):
+                            attr_props = db.get_class_attribute_property(
+                                cls,
+                                list(db.get_class_attribute_list(cls,'*'))
+                            )
+                            for attr, props in attr_props.items():
+                                props = dict((prop, [str(v) for v in values])
+                                             for prop, values in props.items())
+                                data.classes[cls].attribute_properties[attr] = props
+
     return data.to_dict()
 
 
@@ -62,6 +87,10 @@ def main():
     parser.add_option("-s", "--subdevices", dest="subdevices",
                       action="store_true", default=False,
                       help="Include __SubDevices property")
+    parser.add_option("-c", "--class-properties",
+                      dest="class_properties",
+                      action="store_true", default=False,
+                      help="Include class properties")
 
     options, args = parser.parse_args()
 
@@ -70,7 +99,8 @@ def main():
                          properties=options.properties,
                          attribute_properties=options.attribute_properties,
                          aliases=options.aliases, dservers=options.dservers,
-                         subdevices=options.subdevices)
+                         subdevices=options.subdevices,
+                         class_properties=options.class_properties)
     print json.dumps(dbdata, ensure_ascii=False, indent=4, sort_keys=True)
 
 
