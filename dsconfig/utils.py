@@ -5,6 +5,11 @@ import PyTango
 
 from appending_dict import AppendingDict
 
+#exit codes
+SUCCESS = 0 # NO DB CHANGES
+ERROR = 1
+CONFIG_APPLIED = 2
+CONFIG_NOT_APPLIED = 3
 
 #colors
 ADD = GREEN = '\033[92m'
