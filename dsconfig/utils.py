@@ -13,7 +13,7 @@ REPLACE = YELLOW = WARN = '\033[93m'
 ENDC = '\033[0m'
 
 def no_colors():
-    global ADD, GREEN, REMOVE, RED, FILE, REPLACE, YELLOW, WARN
+    global ADD, GREEN, REMOVE, RED, FILE, REPLACE, YELLOW, WARN, ENDC
     ADD = ''
     GREEN = ''
     REMOVE = ''
@@ -22,6 +22,7 @@ def no_colors():
     REPLACE = ''
     YELLOW = ''
     WARN = ''
+    ENDC = ''
 
 def green(text):
     return GREEN + text + ENDC
