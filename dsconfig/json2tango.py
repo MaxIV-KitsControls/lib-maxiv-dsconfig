@@ -61,6 +61,9 @@ def main():
                       help=("Inclusive filter on server configutation"))
     parser.add_option("-x", "--exclude", dest="exclude", action="append",
                       help=("Exclusive filter on server configutation"))
+    parser.add_option("-a", "--no-strict-check", dest="nostrictcheck",
+                      default=False, action="store_true",
+                      help="Disable strick attribute property checking")
     parser.add_option("-I", "--include-classes", dest="include_classes",
                       action="append",
                       help=("Inclusive filter on class configuration"))
@@ -152,7 +155,8 @@ def main():
     # get the list of DB calls needed
     dbcalls = configure(data, original,
                         update=options.update,
-                        ignore_case=not options.case_sensitive)
+                        ignore_case=not options.case_sensitive,
+                        strict_attr_props=not options.nostrictcheck)
 
     # Print out a nice diff
     if options.verbose:
@@ -214,8 +218,8 @@ def main():
         else:
             print >>sys.stderr, yellow(
                 "\n*** Nothing was written to the Tango DB (use -w) ***")
-            sys.exit(CONFIG_NOT_APPLIED)                
-            
+            sys.exit(CONFIG_NOT_APPLIED)
+
     else:
         print >>sys.stderr, green("\n*** No changes needed in Tango DB ***")
         sys.exit(SUCCESS)

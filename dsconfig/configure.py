@@ -20,7 +20,7 @@ def check_attribute_property(propname):
 
 def update_properties(db, parent, db_props, new_props,
                       attribute=False, cls=False,
-                      delete=True, ignore_case=False):
+                      delete=True, ignore_case=False, strict_attr_props=True):
     """
     Updates properties in DB. Covers both device and class
     properties/attribute properties.
@@ -45,7 +45,8 @@ def update_properties(db, parent, db_props, new_props,
                     orig = CaselessDictionary(caseless_db_props.get(attr, {})).get(prop)
                 else:
                     orig = caseless_db_props.get(attr, {}).get(prop)
-                if value and value != orig and check_attribute_property(prop):
+                if value and value != orig and (not strict_attr_props
+                                                or check_attribute_property(prop)):
                     added_props[attr][prop] = value
         removed_props = defaultdict(dict)
         for attr, props in db_props.items():
@@ -88,7 +89,7 @@ def update_properties(db, parent, db_props, new_props,
 
 def update_server(db, server_name, server_dict, db_dict,
                   update=False, ignore_case=False,
-                  difactory=PyTango.DbDevInfo):
+                  difactory=PyTango.DbDevInfo, strict_attr_props=True):
 
     """Creates/removes devices for a given server. Optionally
     ignores removed devices, only adding new and updating old ones."""
@@ -121,13 +122,15 @@ def update_server(db, server_name, server_dict, db_dict,
                 db.add_device(devinfo)
 
             update_device(db, device_name, devs.get(device_name, {}),
-                          dev, update=update, ignore_case=ignore_case)
+                          dev, update=update, ignore_case=ignore_case,
+                          strict_attr_props=strict_attr_props)
 
     return added_devices, removed_devices
 
 
 def update_device_or_class(db, name, db_dict, new_dict,
-                           cls=False, update=False, ignore_case=False):
+                           cls=False, update=False, ignore_case=False,
+                           strict_attr_props=True):
 
     "Configure a device or a class"
 
@@ -146,7 +149,8 @@ def update_device_or_class(db, name, db_dict, new_dict,
         new_attr_props = new_dict["attribute_properties"]
         update_properties(db, name, db_attr_props, new_attr_props,
                           attribute=True, cls=cls, delete=not update,
-                          ignore_case=ignore_case)
+                          ignore_case=ignore_case,
+                          strict_attr_props=strict_attr_props)
 
     # device aliases
     if not cls:
@@ -161,7 +165,8 @@ update_device = partial(update_device_or_class, cls=False)
 update_class = partial(update_device_or_class, cls=True)
 
 
-def configure(data, dbdata, update=False, ignore_case=False):
+def configure(data, dbdata, update=False, ignore_case=False,
+              strict_attr_props=True):
 
     """Takes an input data dict and the relevant current DB data.  Returns
     the DB calls needed to bring the Tango DB to the state described
@@ -184,7 +189,8 @@ def configure(data, dbdata, update=False, ignore_case=False):
                           .get(instname, {}))
             added, removed = update_server(
                 db, "%s/%s" % (servername, instname),
-                instdata, dbinstdata, update, ignore_case)
+                instdata, dbinstdata, update, ignore_case,
+                strict_attr_props=strict_attr_props)
 
     for classname, classdata in data.get("classes", {}).items():
         dbclassdata = dbdata.get("classes", {}).get(classname, {})

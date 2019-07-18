@@ -11,7 +11,7 @@ setup(
     # Requirements
     setup_requires=['setuptools', 'pytest-runner'],
     install_requires=['jsonpatch>=1.13', 'jsonschema', 'xlrd', 'PyTango'],
-    tests_require=["pytest", "pytest-cov", "fake-factory", "mock"],
+    tests_require=["pytest", "pytest-cov", "Faker", "mock"],
     # Resources
     package_data={
         'dsconfig': ['schema/dsconfig.json',
