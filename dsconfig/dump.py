@@ -8,12 +8,12 @@ $ python -m dsconfig.dump device:sys/tg_test/1 device:sys/tg_test/2
 
 """
 
-from tangodb import get_servers_with_filters
+from tangodb import get_servers_with_filters, get_classes_properties
 from appending_dict import SetterDict
 import PyTango
 
 
-def get_db_data(db, patterns=None, **options):
+def get_db_data(db, patterns=None, class_properties=False, **options):
 
     # dump TANGO database into JSON. Optionally filter which things to include
     # (currently only "positive" filters are possible; you can say which
@@ -28,6 +28,9 @@ def get_db_data(db, patterns=None, **options):
         servers = get_servers_with_filters(
             dbproxy, **options)
         data.servers.update(servers)
+        if class_properties:
+            classes = get_classes_properties(dbproxy)
+            data.classes.update(classes)
     else:
         # go through all patterns and fill in the data
         for pattern in patterns:
@@ -36,7 +39,9 @@ def get_db_data(db, patterns=None, **options):
             kwargs.update(options)
             servers = get_servers_with_filters(dbproxy, **kwargs)
             data.servers.update(servers)
-
+            if class_properties:
+                classes = get_classes_properties(dbproxy,  server=pattern)
+                data.classes.update(classes)
     return data.to_dict()
 
 
@@ -62,12 +67,17 @@ def main():
     parser.add_option("-s", "--subdevices", dest="subdevices",
                       action="store_true", default=False,
                       help="Include __SubDevices property")
+    parser.add_option("-c", "--class-properties",
+                      dest="class_properties",
+                      action="store_true", default=False,
+                      help="Include class properties")
 
     options, args = parser.parse_args()
 
     db = PyTango.Database()
     dbdata = get_db_data(db, args,
                          properties=options.properties,
+                         class_properties=options.class_properties,
                          attribute_properties=options.attribute_properties,
                          aliases=options.aliases, dservers=options.dservers,
                          subdevices=options.subdevices)
