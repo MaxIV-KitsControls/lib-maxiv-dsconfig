@@ -132,12 +132,15 @@ def main():
             original = json.loads(f.read())
         collisions = {}
     else:
-        original = get_db_data(db, dservers=True)
-        devices = CaselessDictionary({
-            dev: (srv, inst, cls)
-            for srv, inst, cls, dev
-            in get_devices_from_dict(data["servers"])
-        })
+        original = get_db_data(db, dservers=True, class_properties=True)
+        if "servers" in data:
+            devices = CaselessDictionary({
+                dev: (srv, inst, cls)
+                for srv, inst, cls, dev
+                in get_devices_from_dict(data["servers"])
+            })
+        else:
+            devices = CaselessDictionary({})
         orig_devices = CaselessDictionary({
             dev: (srv, inst, cls)
             for srv, inst, cls, dev
