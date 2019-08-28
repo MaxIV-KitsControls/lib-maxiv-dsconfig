@@ -73,14 +73,15 @@ def expand_config(config):
     split into a server and an instance level."""
 
     expanded = deepcopy(config)
-    for servername in config["servers"]:
-        if "/" in servername:
-            server, instance = servername.split("/")
-            data = expanded["servers"].pop(servername)
-            if server in expanded["servers"]:
-                expanded["servers"][server].update({instance: data})
-            else:
-                expanded["servers"][server] = {instance: data}
+    if "servers" in config:
+        for servername in config["servers"]:
+            if "/" in servername:
+                server, instance = servername.split("/")
+                data = expanded["servers"].pop(servername)
+                if server in expanded["servers"]:
+                    expanded["servers"][server].update({instance: data})
+                else:
+                    expanded["servers"][server] = {instance: data}
     return expanded
 
 
