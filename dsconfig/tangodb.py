@@ -420,3 +420,55 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
         servers[srv][inst][c][devname] = device
 
     return servers
+
+
+def get_classes_properties(dbproxy, server='*', cls_properties=True,
+                           cls_attribute_properties=True, timeout=10):
+    """
+    Get all classes properties from server wildcard
+    """
+    # Mysql wildcards
+    server = server.replace("*", "%")
+    # Change device proxy timeout
+    dbproxy.set_timeout_millis(timeout*1000)
+    # Classes output dict
+    classes = AppendingDict()
+    # Get class properties
+    if cls_properties:
+        querry = (
+            "select DISTINCT property_class.class, "
+            "property_class.name, "
+            "property_class.value "
+            "FROM property_class "
+            "INNER JOIN device "
+            "ON property_class.class = device.class "
+            "WHERE server like '%s' "
+            "AND device.class != 'DServer' "
+            "AND device.class != 'TangoAccessControl'")
+        _, result = dbproxy.command_inout("DbMySqlSelect", querry % (server))
+        # Build the output based on: class, property: value
+        for c, p, v in nwise(result, 3):
+            # the properties are encoded in latin-1; we want utf-8
+            decoded_value = v.decode('iso-8859-1').encode('utf8')
+            classes[c].properties[p] = decoded_value
+    # Get class attribute properties
+    if cls_attribute_properties:
+        querry = (
+            "select DISTINCT  property_attribute_class.class, "
+            "property_attribute_class.attribute, "
+            "property_attribute_class.name, "
+            "property_attribute_class.value "
+            "FROM property_attribute_class "
+            "INNER JOIN device "
+            "ON property_attribute_class.class = device.class "
+            "WHERE server like '%s' "
+            "AND device.class != 'DServer' "
+            "AND device.class != 'TangoAccessControl'")
+        _, result = dbproxy.command_inout("DbMySqlSelect", querry % (server))
+        # Build output: class, attribute, property: value
+        for c, a, p, v in nwise(result, 4):
+            # the properties are encoded in latin-1; we want utf-8
+            decoded_value = v.decode('iso-8859-1').encode('utf8')
+            classes[c].attribute_properties[a][p] = decoded_value
+    # Return classes collection
+    return classes
