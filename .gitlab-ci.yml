@@ -1,6 +1,8 @@
 image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig"
 
 test:
+  before_script:
+    - pip install pytest
   script:
     - python setup.py pytest
 
