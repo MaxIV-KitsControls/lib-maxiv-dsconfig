@@ -5,4 +5,7 @@ test:
     - pip install pytest
   script:
     - python setup.py pytest
+  artifacts:
+    paths:
+      - htmlcov/
 
