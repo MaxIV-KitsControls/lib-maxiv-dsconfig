@@ -9,7 +9,8 @@ test:
     - pip install pytest
   script:
     - python setup.py pytest
+  coverage: '/^TOTAL.+?(\d+\%)$/'
   artifacts:
-    paths:
-      - htmlcov/
+    reports:
+      junit: tests.xml
 
