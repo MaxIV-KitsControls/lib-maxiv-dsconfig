@@ -1,5 +1,9 @@
 image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig"
 
+default:
+  before_script:
+    - git rebase master
+
 test:
   before_script:
     - pip install pytest
