@@ -337,4 +337,32 @@ def show_actions(data, calls):
             if lines:
                 print("{}Attribute properties:".format(indent))
                 print("\n".join(lines))
+    
+    for clss in sorted(changes["classes"]):
+        info = changes["classes"][clss]
+
+        if info.get("properties"):
+            lines = []
+            for prop, change in sorted(info.get("properties", {}).items()):
+                if change.get("value"):
+                    value = change.get("value")
+                    old_value = change.get("old_value")
+                    if old_value is not None:
+                        if old_value != value:
+                            # change property
+                            lines.append(yellow("{}= {}".format(indent*2, prop)))
+                            lines.append(property_diff(
+                                change["old_value"], change["value"], indent*3))
+                    else:
+                        # new property
+                        lines.append(green("{}+ {}".format(indent*2, prop)))
+                        lines.append(green(format_property(change["value"],
+                                                           indent*3)))
+                else:
+                    # delete property
+                    lines.append(red("{}- {}".format(indent*2, prop)))
+                    lines.append(red(format_property(change["old_value"], indent*3)))
+            if lines:
+                print("{} Class Properties:".format(indent*1))
+                print("\n".join(lines))
         print
