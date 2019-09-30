@@ -25,58 +25,7 @@ from dsconfig.output import show_actions
 from dsconfig.appending_dict.caseless import CaselessDictionary
 
 
-def main():
-
-    usage = "Usage: %prog [options] JSONFILE"
-    parser = OptionParser(usage=usage)
-
-    parser.add_option("-w", "--write", dest="write", action="store_true",
-                      help="write to the Tango DB", metavar="WRITE")
-    parser.add_option("-u", "--update", dest="update", action="store_true",
-                      help="don't remove things, only add/update",
-                      metavar="UPDATE")
-    parser.add_option("-c", "--case-sensitive", dest="case_sensitive",
-                      action="store_true",
-                      help=("Don't ignore the case of server, device, "
-                            "attribute and property names"),
-                      metavar="CASESENSITIVE")
-    parser.add_option("-q", "--quiet",
-                      action="store_false", dest="verbose", default=True,
-                      help="don't print actions to stderr")
-    parser.add_option("-o", "--output", dest="output", action="store_true",
-                      help="Output the relevant DB state as JSON.")
-    parser.add_option("-p", "--input", dest="input", action="store_true",
-                      help="Output the input JSON (after filtering).")
-    parser.add_option("-d", "--dbcalls", dest="dbcalls", action="store_true",
-                      help="print out all db calls.")
-    parser.add_option("-v", "--no-validation", dest="validate", default=True,
-                      action="store_false", help=("Skip JSON validation"))
-    parser.add_option("-s", "--sleep", dest="sleep", default=0.01,
-                      type="float",
-                      help=("Number of seconds to sleep between DB calls"))
-    parser.add_option("-n", "--no-colors",
-                      action="store_true", dest="no_colors", default=False,
-                      help="Don't print colored output")
-    parser.add_option("-i", "--include", dest="include", action="append",
-                      help=("Inclusive filter on server configutation"))
-    parser.add_option("-x", "--exclude", dest="exclude", action="append",
-                      help=("Exclusive filter on server configutation"))
-    parser.add_option("-a", "--no-strict-check", dest="nostrictcheck",
-                      default=False, action="store_true",
-                      help="Disable strick attribute property checking")
-    parser.add_option("-I", "--include-classes", dest="include_classes",
-                      action="append",
-                      help=("Inclusive filter on class configuration"))
-    parser.add_option("-X", "--exclude-classes", dest="exclude_classes",
-                      action="append",
-                      help=("Exclusive filter on class configuration"))
-
-    parser.add_option(
-        "-D", "--dbdata",
-        help="Read the given file as DB data instead of using the actual DB",
-        dest="dbdata")
-
-    options, args = parser.parse_args()
+def json_to_tango(options, args):
 
     if options.no_colors:
         no_colors()
@@ -226,6 +175,62 @@ def main():
     else:
         print >>sys.stderr, green("\n*** No changes needed in Tango DB ***")
         sys.exit(SUCCESS)
+
+
+def main():
+
+    usage = "Usage: %prog [options] JSONFILE"
+    parser = OptionParser(usage=usage)
+
+    parser.add_option("-w", "--write", dest="write", action="store_true",
+                      help="write to the Tango DB", metavar="WRITE")
+    parser.add_option("-u", "--update", dest="update", action="store_true",
+                      help="don't remove things, only add/update",
+                      metavar="UPDATE")
+    parser.add_option("-c", "--case-sensitive", dest="case_sensitive",
+                      action="store_true",
+                      help=("Don't ignore the case of server, device, "
+                            "attribute and property names"),
+                      metavar="CASESENSITIVE")
+    parser.add_option("-q", "--quiet",
+                      action="store_false", dest="verbose", default=True,
+                      help="don't print actions to stderr")
+    parser.add_option("-o", "--output", dest="output", action="store_true",
+                      help="Output the relevant DB state as JSON.")
+    parser.add_option("-p", "--input", dest="input", action="store_true",
+                      help="Output the input JSON (after filtering).")
+    parser.add_option("-d", "--dbcalls", dest="dbcalls", action="store_true",
+                      help="print out all db calls.")
+    parser.add_option("-v", "--no-validation", dest="validate", default=True,
+                      action="store_false", help=("Skip JSON validation"))
+    parser.add_option("-s", "--sleep", dest="sleep", default=0.01,
+                      type="float",
+                      help=("Number of seconds to sleep between DB calls"))
+    parser.add_option("-n", "--no-colors",
+                      action="store_true", dest="no_colors", default=False,
+                      help="Don't print colored output")
+    parser.add_option("-i", "--include", dest="include", action="append",
+                      help=("Inclusive filter on server configutation"))
+    parser.add_option("-x", "--exclude", dest="exclude", action="append",
+                      help=("Exclusive filter on server configutation"))
+    parser.add_option("-a", "--no-strict-check", dest="nostrictcheck",
+                      default=False, action="store_true",
+                      help="Disable strick attribute property checking")
+    parser.add_option("-I", "--include-classes", dest="include_classes",
+                      action="append",
+                      help=("Inclusive filter on class configuration"))
+    parser.add_option("-X", "--exclude-classes", dest="exclude_classes",
+                      action="append",
+                      help=("Exclusive filter on class configuration"))
+
+    parser.add_option(
+        "-D", "--dbdata",
+        help="Read the given file as DB data instead of using the actual DB",
+        dest="dbdata")
+
+    options, args = parser.parse_args()
+
+    json_to_tango(options, args)
 
 
 if __name__ == "__main__":

@@ -1,3 +1,5 @@
+from os.path import dirname, abspath, join
+
 try:
     from unittest2 import TestCase
 except ImportError:
@@ -133,3 +135,9 @@ class TestExcel(TestCase):
     #     row = {"server": "TestServer", "instance": 1.0}
     #     result = excel.format_server_instance(row)
     #     self.assertEqual(result, "TestServer/1")
+
+    def test_xls_to_dict(self):
+        xls_file = join(dirname(abspath(__file__)), 'files', 'AlarmDemoV6.xls')
+        data = excel.xls_to_dict(xls_file)
+        stats = excel.get_stats(data)
+        assert stats == {'instances': 0, 'classes': 0, 'devices': 0, 'servers': 0}
