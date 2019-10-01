@@ -5,7 +5,7 @@ from dsconfig.json2tango import json_to_tango
 
 
 def test_json_to_tango(capsys):
-    json_data_file = join(dirname(abspath(__file__)), 'files', 'json_sample_db.json')
+    json_data_file = join(dirname(abspath(__file__)), 'files', 'sample_db.json')
 
     args = [json_data_file]
 

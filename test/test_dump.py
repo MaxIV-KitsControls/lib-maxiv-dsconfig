@@ -45,7 +45,7 @@ query8 = ("SELECT device, attribute, property_attribute_device.name, "
 
 
 def test_db_dump():
-    json_data_file = join(dirname(abspath(__file__)), 'files', 'json_sample_db.json')
+    json_data_file = join(dirname(abspath(__file__)), 'files', 'sample_db.json')
     with open(json_data_file, 'r') as json_file:
         db_data = json.load(json_file)
         db = make_db(db_data)
