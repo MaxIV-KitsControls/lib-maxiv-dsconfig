@@ -32,10 +32,10 @@ class TangoProvider(BaseProvider):
 
     def tango_property(self):
         n = randint(1, 5)
-        name = str("".join(_fake.word().capitalize() for i in xrange(n)))
+        name = str("".join(_fake.word().capitalize() for i in range(n)))
 
         n = int(ceil(expovariate(1)))  # usually 1, sometimes larger
-        value = [str(_fake.user_name()) for i in xrange(n)]
+        value = [str(_fake.user_name()) for i in range(n)]
 
         return name, value
 
@@ -46,10 +46,10 @@ class TangoProvider(BaseProvider):
 
     def tango_attribute_config(self):
         n = randint(1, 3)
-        attr_name = str("".join(_fake.word().capitalize() for i in xrange(n)))
+        attr_name = str("".join(_fake.word().capitalize() for i in range(n)))
         n_props = int(ceil(expovariate(1)))  # usually 1, sometimes larger
         attr_props = dict(_fake.tango_attribute_property()
-                          for i in xrange(n_props))
+                          for i in range(n_props))
         return attr_name, attr_props
 
     def tango_device(self):
@@ -58,11 +58,11 @@ class TangoProvider(BaseProvider):
 
         n_devprops = int(ceil(expovariate(1)))  # usually 1, sometimes larger
         devprops = dict(_fake.tango_property()
-                        for i in xrange(n_devprops))
+                        for i in range(n_devprops))
 
         n_attrcfg = int(ceil(expovariate(1))) - 1
         attrprops = dict(_fake.tango_attribute_config()
-                         for i in xrange(n_attrcfg))
+                         for i in range(n_attrcfg))
 
         value = {"properties": devprops}
         if attrprops:
@@ -71,23 +71,23 @@ class TangoProvider(BaseProvider):
 
     def tango_device_class(self):
         n = randint(1, 3)
-        name = str("".join(_fake.word().capitalize() for i in xrange(n)))
+        name = str("".join(_fake.word().capitalize() for i in range(n)))
 
         n_devs = int(ceil(expovariate(1)))
-        devices = dict(_fake.tango_device() for i in xrange(n_devs))
+        devices = dict(_fake.tango_device() for i in range(n_devs))
         return name, devices
 
     def tango_class(self):
         n = randint(1, 3)
-        name = str("".join(_fake.word().capitalize() for i in xrange(n)))
+        name = str("".join(_fake.word().capitalize() for i in range(n)))
 
         n_devprops = int(ceil(expovariate(1)))  # usually 1, sometimes larger
         devprops = dict(_fake.tango_property()
-                        for i in xrange(n_devprops))
+                        for i in range(n_devprops))
 
         n_attrcfg = int(ceil(expovariate(1))) - 1
         attrprops = dict(_fake.tango_attribute_config()
-                         for i in xrange(n_attrcfg))
+                         for i in range(n_attrcfg))
 
         value = {"properties": devprops}
         if attrprops:
@@ -99,27 +99,27 @@ class TangoProvider(BaseProvider):
         n = randint(1, 3)
         chars = ascii_uppercase + digits
         name = "-".join("".join(choice(chars)
-                                for i in xrange(randint(1, 5)))
-                        for j in xrange(n))
+                                for i in range(randint(1, 5)))
+                        for j in range(n))
 
         n_classes = int(ceil(expovariate(1)))
-        value = dict(_fake.tango_device_class() for i in xrange(n_classes))
+        value = dict(_fake.tango_device_class() for i in range(n_classes))
         return name, value
 
     def tango_server(self):
         n = randint(1, 3)
-        name = "".join(_fake.word().capitalize() for i in xrange(n))
+        name = "".join(_fake.word().capitalize() for i in range(n))
 
         n_instances = randint(1, 10)
-        value = dict(_fake.tango_instance() for i in xrange(n_instances))
+        value = dict(_fake.tango_instance() for i in range(n_instances))
 
         return name, value
 
     def tango_database(self, servers=(5, 20), classes=(1, 5)):
         n_servers = randint(*servers)
-        servers = dict(_fake.tango_server() for i in xrange(n_servers))
+        servers = dict(_fake.tango_server() for i in range(n_servers))
         n_classes = randint(*classes)
-        classes = dict(_fake.tango_class() for i in xrange(n_classes))
+        classes = dict(_fake.tango_class() for i in range(n_classes))
         value = {"_title": "MAX-IV Tango JSON intermediate format",
                  "_source": str(_fake.file_name(extension="xls")),
                  "_date": str(_fake.date_time()),

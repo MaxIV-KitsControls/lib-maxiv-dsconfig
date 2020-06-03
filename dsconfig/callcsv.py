@@ -17,7 +17,7 @@ def special_update(d, u):
     """Update nested dictionnaries while prioritizing the first argument."""
     if not (isinstance(d, Mapping) and isinstance(u, Mapping)):
         return d if d is not None else u
-    for k, v in u.iteritems():
+    for k, v in u.items():
         d[k] = special_update(d.get(k), v)
     return d
 
@@ -127,14 +127,14 @@ def process_call_list(lst, skip=False, verbose=True):
     for module_name, func_name, kwargs in lst:
         # Build prototype
         prototype = "{0}.{1}(".format(module_name, func_name)
-        for key, value in kwargs.items():
+        for key, value in list(kwargs.items()):
             prototype += '{0}={1}, '.format(key, value)
         if prototype.endswith(' '):
             prototype = prototype[:-2]
         prototype += ')'
         # Print prototype
         if verbose:
-            print "Executing: " + prototype
+            print("Executing: " + prototype)
         # Execute
         try:
             module = import_module(module_name)
@@ -156,7 +156,7 @@ def join_data(lst, source=None):
     """Join a list of json strings or dictionnaries into a single dict."""
     data = {}
     for mapping in lst:
-        if isinstance(mapping, basestring):
+        if isinstance(mapping, str):
             mapping = json.loads(mapping)
         special_update(data, mapping)
     if source:
@@ -227,12 +227,12 @@ def main(desc=None, module_name=None, function=None):
             if module == module_name and func == function.__name__:
                 kwargs = keywords
                 if verbose:
-                    print("'{0}' found".format(prototype))
-                    print("kwargs = " + str(kwargs))
+                    print(("'{0}' found".format(prototype)))
+                    print(("kwargs = " + str(kwargs)))
                 break
         else:
             msg = "'{0}' not found in {1}"
-            print msg.format(prototype, get_call_list(input_file))
+            print(msg.format(prototype, get_call_list(input_file)))
             return
     # Generate json file
     if module_name and function:
@@ -243,7 +243,7 @@ def main(desc=None, module_name=None, function=None):
         data = function(**kwargs)
         if isinstance(data, Mapping):
             string = json.dumps(data, indent=4, sort_keys=True)
-        elif isinstance(data, basestring):
+        elif isinstance(data, str):
             string = data
         else:
             msg = "The function didn't return a valid data format.\n"
@@ -269,7 +269,7 @@ def main(desc=None, module_name=None, function=None):
         with open(output_file, mode='w') as f:
             f.write(string)
     if verbose and output_file:
-        print('Exported to: ' + output_file)
+        print(('Exported to: ' + output_file))
     # Write tango database
     if write:
         from dsconfig import configure
@@ -279,7 +279,7 @@ def main(desc=None, module_name=None, function=None):
     if remove:
         os.remove(output_file)
         if verbose:
-            print('Removed: ' + output_file)
+            print(('Removed: ' + output_file))
     print('OK!')
 
 

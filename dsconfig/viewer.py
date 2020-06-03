@@ -68,10 +68,10 @@ class MyTree(Tree):
         node = get_path(path, self.data)
         if node:
             if isinstance(node, dict):
-                children = node.keys()
+                children = list(node.keys())
                 return [path + (child,) for child in sorted(children)]
             elif isinstance(node, list):
-                children = range(len(node))
+                children = list(range(len(node)))
                 return [path + (child,) for child in children]
         return []
 

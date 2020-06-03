@@ -5,7 +5,7 @@ import json
 from copy import deepcopy, copy
 from os import path
 
-from appending_dict import AppendingDict, SetterDict
+from .appending_dict import AppendingDict, SetterDict
 
 import PyTango
 
@@ -22,7 +22,7 @@ SCHEMA_FILENAME = path.join(module_path, "schema/schema2.json")  #rename
 def decode_list(data):
     rv = []
     for item in data:
-        if isinstance(item, unicode):
+        if isinstance(item, str):
             item = str(item.encode('utf-8'))
         elif isinstance(item, list):
             item = decode_list(item)
@@ -34,10 +34,10 @@ def decode_list(data):
 
 def decode_dict(data):
     rv = {}
-    for key, value in data.iteritems():
-        if isinstance(key, unicode):
+    for key, value in data.items():
+        if isinstance(key, str):
             key = str(key.encode('utf-8'))
-        if isinstance(value, unicode):
+        if isinstance(value, str):
             value = str(value.encode('utf-8'))
         elif isinstance(value, list):
             value = decode_list(value)
@@ -55,10 +55,10 @@ def validate_json(data):
             schema = json.load(schema_json)
         validate(data, schema)
     except ImportError:
-        print >>sys.stderr, ("WARNING: 'jsonschema' not installed, could not "
-                             "validate json file. You're on your own.")
+        print(("WARNING: 'jsonschema' not installed, could not "
+                             "validate json file. You're on your own."), file=sys.stderr)
     except exceptions.ValidationError as e:
-        print >>sys.stderr, "ERROR: JSON data does not match schema: %s" % e
+        print("ERROR: JSON data does not match schema: %s" % e, file=sys.stderr)
         sys.exit(1)
 
 
@@ -88,7 +88,7 @@ def expand_config(config):
 def clean_metadata(data):
     "Removes any keys in the data that begin with '_'"
     tmp = copy(data)
-    for key in tmp.keys():
+    for key in list(tmp.keys()):
         if key.startswith("_"):
             tmp.pop(key, None)
     return tmp
@@ -119,7 +119,7 @@ def normalize_config(config):
         new_config.classes = old_config["classes"]
     if "devices" in old_config:
         db = PyTango.Database()
-        for device, props in old_config["devices"].items():
+        for device, props in list(old_config["devices"].items()):
             try:
                 info = db.get_device_info(device)
             except PyTango.DevFailed as e:

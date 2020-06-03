@@ -4,7 +4,7 @@ from PyTango.utils import CaselessDict
 
 from dsconfig.utils import green, red, yellow
 from dsconfig.tangodb import get_devices_from_dict
-from appending_dict import SetterDict
+from .appending_dict import SetterDict
 
 
 def get_device_data(device, mapping, data):
@@ -125,7 +125,7 @@ def get_changes(data, calls):
             caseless_props = CaselessDict(old_data.get("properties", {}))
             if "properties" not in changes["devices"][device]:
                 changes["devices"][device]["properties"] = {}
-            for name, value in properties.items():
+            for name, value in list(properties.items()):
                 old_value = caseless_props.get(name)
                 if value != old_value:
                     changes["devices"][device]["properties"].update({
@@ -152,9 +152,9 @@ def get_changes(data, calls):
             old_data = get_device_data(device, device_mapping, data)
             caseless_attrs = CaselessDict(old_data.get(
                 "attribute_properties", {}))
-            for attr, props in properties.items():
+            for attr, props in list(properties.items()):
                 caseless_props = CaselessDict(caseless_attrs.get(attr, {}))
-                for name, value in props.items():
+                for name, value in list(props.items()):
                     old_value = caseless_props.get(name)
                     if value != old_value:
                         attr_props[attr] = {
@@ -168,7 +168,7 @@ def get_changes(data, calls):
                 "attribute_properties", {})
             old_data = get_device_data(device, device_mapping, data)
             caseless_attrs = CaselessDict(old_data.get("attribute_properties", {}))
-            for attr, props in attributes.items():
+            for attr, props in list(attributes.items()):
                 caseless_props = CaselessDict(caseless_attrs[attr])
                 for prop in props:
                     old_value = caseless_props.get(prop)
@@ -179,7 +179,7 @@ def get_changes(data, calls):
             old_data = classes.get(clss, {})
             caseless_props = CaselessDict(old_data.get("properties", {}))
             prop_changes = changes["classes"][clss].setdefault("properties", {})
-            for name, value in properties.items():
+            for name, value in list(properties.items()):
                 old_value = caseless_props.get(name)
                 if value != old_value:
                     prop_changes.update({
@@ -204,9 +204,9 @@ def get_changes(data, calls):
             old_data = classes.get(clss, {})
             caseless_attrs = CaselessDict(
                 old_data.get("attribute_properties", {}))
-            for attr, props in properties.items():
+            for attr, props in list(properties.items()):
                 caseless_props = CaselessDict(caseless_attrs.get(attr, {}))
-                for name, value in props.items():
+                for name, value in list(props.items()):
                     old_value = caseless_props.get(name)
                     if value != old_value:
                         attr_props[attr] = {
@@ -220,7 +220,7 @@ def get_changes(data, calls):
                 "attribute_properties", {})
             old_data = classes.get(clss, {})
             caseless_attrs = CaselessDict(old_data.get("properties", {}))
-            for attr, props in attributes.items():
+            for attr, props in list(attributes.items()):
                 caseless_props = CaselessDict(caseless_attrs.get(attr, {}))
                 for prop in props:
                     old_value = caseless_props.get(prop)
@@ -246,40 +246,40 @@ def show_actions(data, calls):
         info = changes["devices"][device]
         if info.get("added"):
             if info.get("old_server"):
-                print("{} Device: {}".format(yellow("="), device))
+                print(("{} Device: {}".format(yellow("="), device)))
             else:
-                print("{} Device: {}".format(green("+"), device))
+                print(("{} Device: {}".format(green("+"), device)))
         elif info.get("deleted"):
-            print("{} Device: {}".format(red("-"), device))
+            print(("{} Device: {}".format(red("-"), device)))
         else:
-            print("{} Device: {}".format(yellow("="), device))
+            print(("{} Device: {}".format(yellow("="), device)))
 
         if info.get("server"):
             if info.get("old_server"):
-                print("{}Server: {} -> {}".format(indent,
+                print(("{}Server: {} -> {}".format(indent,
                                                   red(info["old_server"]),
-                                                  green(info["server"])))
+                                                  green(info["server"]))))
             else:
-                print("{}Server: {}".format(indent, info["server"]))
+                print(("{}Server: {}".format(indent, info["server"])))
 
         if info.get("device_class"):
             if info.get("old_class"):
                 if info["old_class"] != info["device_class"]:
-                    print("{}Class: {} -> {}".format(indent,
+                    print(("{}Class: {} -> {}".format(indent,
                                                      info["old_class"],
-                                                     info["device_class"]))
+                                                     info["device_class"])))
             else:
-                print("{}Class: {}".format(indent, info["device_class"]))
+                print(("{}Class: {}".format(indent, info["device_class"])))
 
         if info.get("alias"):
             alias = info.get("alias").get("value")
             old_alias = info.get("alias").get("old_value")
             if old_alias:
                 if old_alias != alias:
-                    print("{}Alias: {} -> {}".format(indent, red(old_alias),
-                                                     green(alias)))
+                    print(("{}Alias: {} -> {}".format(indent, red(old_alias),
+                                                     green(alias))))
             else:
-                print("{}Alias: {}".format(indent, alias))
+                print(("{}Alias: {}".format(indent, alias)))
 
         if info.get("properties"):
             lines = []
@@ -303,8 +303,8 @@ def show_actions(data, calls):
                     lines.append(red("{}- {}".format(indent*2, prop)))
                     lines.append(red(format_property(change["old_value"], indent*3)))
             if lines:
-                print("{}Properties:".format(indent*1))
-                print("\n".join(lines))
+                print(("{}Properties:".format(indent*1)))
+                print(("\n".join(lines)))
 
         if info.get("attribute_properties"):
             lines = []
@@ -335,8 +335,8 @@ def show_actions(data, calls):
                     lines.append("{}{}".format(indent*2, attr))
                     lines.extend(attr_lines)
             if lines:
-                print("{}Attribute properties:".format(indent))
-                print("\n".join(lines))
+                print(("{}Attribute properties:".format(indent)))
+                print(("\n".join(lines)))
     
     for clss in sorted(changes["classes"]):
         info = changes["classes"][clss]
@@ -363,6 +363,6 @@ def show_actions(data, calls):
                     lines.append(red("{}- {}".format(indent*2, prop)))
                     lines.append(red(format_property(change["old_value"], indent*3)))
             if lines:
-                print("{} Class Properties:".format(indent*1))
-                print("\n".join(lines))
-        print
+                print(("{} Class Properties:".format(indent*1)))
+                print(("\n".join(lines)))
+        print()

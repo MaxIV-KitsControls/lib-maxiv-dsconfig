@@ -13,7 +13,7 @@ from faker import Faker
 import PyTango
 
 from dsconfig.configure import configure
-from providers import TangoProvider
+from .providers import TangoProvider
 
 
 fake = Faker()
@@ -23,39 +23,39 @@ fake.add_provider(TangoProvider)
 # # # #  HELPERS  # # # #
 
 def pick_random_server(config):
-    server = choice(config["servers"].keys())
+    server = choice(list(config["servers"].keys()))
     return server, config["servers"][server]
 
 
 def pick_random_instance(config):
     servername, instances = pick_random_server(config)
-    instance = choice(instances.keys())
+    instance = choice(list(instances.keys()))
     return servername, instance, instances[instance]
 
 
 def pick_random_class(config):
     servername, instname, classes = pick_random_instance(config)
-    classname = choice(classes.keys())
+    classname = choice(list(classes.keys()))
     return servername, instname, classname, classes[classname]
 
 
 def pick_random_device(config):
     srv, inst, clss, devices = pick_random_class(config)
-    devname = choice(devices.keys())
+    devname = choice(list(devices.keys()))
     return srv, inst, clss, devname, devices[devname]
 
 
 def pick_random_property(config):
     srv, inst, clss, dev, properties = pick_random_device(config)
-    propname = choice(properties["properties"].keys())
+    propname = choice(list(properties["properties"].keys()))
     return srv, inst, clss, dev, propname, properties["properties"][propname]
 
 
 def pick_random_class_property(config):
     classes = config["classes"]
-    classname = choice(classes.keys())
+    classname = choice(list(classes.keys()))
     properties = classes[classname]
-    propname = choice(properties["properties"].keys())
+    propname = choice(list(properties["properties"].keys()))
     return classname, propname, properties["properties"][propname]
 
 
@@ -191,7 +191,7 @@ def test_add_class_property():
     orig_config = deepcopy(config)
 
     name, value = fake.tango_property()
-    clss = choice(config["classes"].keys())
+    clss = choice(list(config["classes"].keys()))
     props = config["classes"][clss]
     props["properties"][name] = value
     calls = configure(config, orig_config)
@@ -274,7 +274,7 @@ def test_add_class_attribute_property():
     config = fake.tango_database(classes=(3, 5))
     orig_config = deepcopy(config)
 
-    clss = choice(config["classes"].keys())
+    clss = choice(list(config["classes"].keys()))
     props = config["classes"][clss]
     attr = "test_attribute"
     propname, value = fake.tango_attribute_property()
@@ -296,7 +296,7 @@ def test_modify_class_attribute_property():
     config = fake.tango_database()
 
     if "classes" in config:
-        clss = choice(config["classes"].keys())
+        clss = choice(list(config["classes"].keys()))
         props = config["classes"][clss]
         attr = "test_attribute"
         propname, value = fake.tango_attribute_property()
@@ -319,7 +319,7 @@ def test_cant_remove_protected_class_attribute_property():
 
     config = fake.tango_database()
 
-    clss = choice(config["classes"].keys())
+    clss = choice(list(config["classes"].keys()))
     props = config["classes"][clss]
     attr = "test_attribute"
     propname, value = fake.tango_attribute_property()
@@ -401,7 +401,7 @@ def test_remove_device():
     orig_config = deepcopy(config)
 
     _, _, classname, devices = pick_random_class(config)
-    device = choice(devices.keys())
+    device = choice(list(devices.keys()))
     del devices[device]
     calls = configure(config, orig_config)
 

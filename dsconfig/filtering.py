@@ -1,6 +1,6 @@
 import re
 
-from appending_dict import merge
+from .appending_dict import merge
 
 
 def filter_nested_dict(node, pattern, depth, level=0, invert=False):
@@ -9,12 +9,12 @@ def filter_nested_dict(node, pattern, depth, level=0, invert=False):
     at the given depth.
     """
     if level == depth:
-        return dict((key, value) for key, value in node.iteritems()
+        return dict((key, value) for key, value in node.items()
                     if (not invert and pattern.match(key)) or
                     (invert and not pattern.match(key)))
     else:
         dupe_node = {}
-        for key, val in node.iteritems():
+        for key, val in node.items():
             cur_node = filter_nested_dict(val, pattern, depth, level+1,
                                           invert)
             if cur_node:
@@ -41,7 +41,7 @@ def filter_config(data, filters, levels, invert=False):
                 srv, inst = [re.compile(r, flags=re.IGNORECASE)
                              for r in regex.split("/")]
                 servers = filter_nested_dict(data, srv, 0)
-                for k, v in servers.items():
+                for k, v in list(servers.items()):
                     tmp = filter_nested_dict(v, inst, 0)
                     if tmp:
                         filtered[k] = tmp
@@ -53,7 +53,7 @@ def filter_config(data, filters, levels, invert=False):
                 "Bad filter '%s'; should be '<term>:<regex>'" % fltr)
         except KeyError:
             raise ValueError("Bad filter '%s'; term should be one of: %s"
-                             % (fltr, ", ".join(levels.keys())))
+                             % (fltr, ", ".join(list(levels.keys()))))
         except re.error as e:
             raise ValueError("Bad regular expression '%s': %s" % (fltr, e))
         if invert:

@@ -3,7 +3,7 @@ import sys
 
 import PyTango
 
-from appending_dict import AppendingDict
+from .appending_dict import AppendingDict
 
 #exit codes
 SUCCESS = 0 # NO DB CHANGES
@@ -54,13 +54,13 @@ def progressbar(i, n, width):
 
 def find_device(definitions, devname, caseless=False):
     "Find a given device in a server dict"
-    for srvname, srv in definitions["servers"].items():
+    for srvname, srv in list(definitions["servers"].items()):
         if caseless:
             srv = CaselessDict(srv)
-        for instname, inst in srv.items():
+        for instname, inst in list(srv.items()):
             if caseless:
                 inst = CaselessDict(inst)
-            for classname, cls in inst.items():
+            for classname, cls in list(inst.items()):
                 if caseless:
                     cls = CaselessDict(cls)
                 if devname in cls:
@@ -70,7 +70,7 @@ def find_device(definitions, devname, caseless=False):
 
 def find_class(definitions, clsname):
     "Find a given device in a server dict"
-    for instname, inst in definitions["servers"].items():
+    for instname, inst in list(definitions["servers"].items()):
         if clsname in inst:
             return inst[clsname]
     raise ValueError("class '%s' not defined" % clsname)
@@ -78,9 +78,9 @@ def find_class(definitions, clsname):
 
 def get_devices_from_dict(dbdict):
     return [(server_name, inst_name, class_name, device_name)
-            for server_name, server in dbdict.items()
-            for inst_name, inst in server.items()
-            for class_name, clss in inst.items()
+            for server_name, server in list(dbdict.items())
+            for inst_name, inst in list(server.items())
+            for class_name, clss in list(inst.items())
             for device_name in clss]
 
 
@@ -163,7 +163,7 @@ class CaselessDict(dict):
 
     def lowerkeys(self):
         """Returns a lowercase list of all member keywords."""
-        return self._keydict.keys()
+        return list(self._keydict.keys())
 
     def __setitem__(self, item, value):             # setting a keyword
         """To implement lowercase keys."""
@@ -205,12 +205,12 @@ class CaselessDict(dict):
     def has_key(self, item):
         """A case insensitive test for keys."""
         if not isinstance(item, str): return False               # should never have a non-string key
-        return self._keydict.has_key(item.lower())           # does the key exist
+        return item.lower() in self._keydict           # does the key exist
 
     def __contains__(self, item):
         """A case insensitive __contains__."""
         if not isinstance(item, str): return False               # should never have a non-string key
-        return self._keydict.has_key(item.lower())           # does the key exist
+        return item.lower() in self._keydict           # does the key exist
 
     def setdefault(self, item, default=None):
         """A case insensitive setdefault.
