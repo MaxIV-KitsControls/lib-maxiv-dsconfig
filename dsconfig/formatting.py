@@ -63,7 +63,7 @@ def validate_json(data):
 
 
 def load_json(f):
-    return json.load(f, object_hook=decode_dict)
+    return json.load(f)
 
 
 def expand_config(config):
@@ -111,13 +111,18 @@ def normalize_config(config):
       information can be gotten from the DB.)
 
     """
+    print("config")
     old_config = expand_config(config)
+    print("old_config")
     new_config = SetterDict()
     if "servers" in old_config:
+        print("servers")
         new_config.servers = old_config["servers"]
     if "classes" in old_config:
+        print("classes")
         new_config.classes = old_config["classes"]
     if "devices" in old_config:
+        print("devices")
         db = PyTango.Database()
         for device, props in list(old_config["devices"].items()):
             try:

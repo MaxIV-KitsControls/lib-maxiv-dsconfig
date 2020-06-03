@@ -372,9 +372,7 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
         _, result = dbproxy.command_inout("DbMySqlSelect",
                                           query % (server, clss, device))
         for d, p, v in nwise(result, 3):
-            # the properties are encoded in latin-1; we want utf-8
-            decoded_value = v.decode('iso-8859-1').encode('utf8')
-            devices[maybe_upper(d, uppercase_devices)].properties[p] = decoded_value
+            devices[maybe_upper(d, uppercase_devices)].properties[p] = v
 
     if attribute_properties:
         # Get all relevant attribute properties
@@ -390,9 +388,7 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
         _, result = dbproxy.command_inout("DbMySqlSelect", query % (server, clss, device))
         for d, a, p, v in nwise(result, 4):
             dev = devices[maybe_upper(d, uppercase_devices)]
-            # the properties are encoded in latin-1; we want utf-8
-            decoded_value = v.decode('iso-8859-1').encode('utf8')
-            dev.attribute_properties[a][p] = decoded_value
+            dev.attribute_properties[a][p] = v
 
     devices = devices.to_dict()
 
@@ -448,9 +444,7 @@ def get_classes_properties(dbproxy, server='*', cls_properties=True,
         _, result = dbproxy.command_inout("DbMySqlSelect", querry % (server))
         # Build the output based on: class, property: value
         for c, p, v in nwise(result, 3):
-            # the properties are encoded in latin-1; we want utf-8
-            decoded_value = v.decode('iso-8859-1').encode('utf8')
-            classes[c].properties[p] = decoded_value
+            classes[c].properties[p] = v
     # Get class attribute properties
     if cls_attribute_properties:
         querry = (

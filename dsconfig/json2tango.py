@@ -120,7 +120,6 @@ def main():
     if not any(k in data for k in ("devices", "servers", "classes")):
         sys.exit(ERROR)
 
-
     if options.input:
         print(json.dumps(data, indent=4))
         return
