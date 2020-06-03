@@ -1,10 +1,9 @@
 import json
 import sys
 
-from jsonschema import Draft4Validator, validate, exceptions
+from jsonschema import validate, exceptions
 
 from .utils import decode_dict
-
 
 if __name__ == "__main__":
     data_filename, schema_filename = sys.argv[1], sys.argv[2]

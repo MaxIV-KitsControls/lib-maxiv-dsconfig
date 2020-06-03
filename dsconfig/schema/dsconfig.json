@@ -1,112 +1,113 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "Tango device generator JSON canonical format",
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-        "_title": {
-            "type": "string"
-        },
-        "_date": {
-            "type": "string"
-        },
-        "_source": {
-            "type": "string"
-        },
-        "_version": {
-            "enum": [2]
-        },
-        "servers": {
-            "type": "object",
-            "additionalProperties": false,
-            "patternProperties": {
-                "^[\\-\\w]+$": {
-                    "$ref": "#definitions/server"
-                }
-            }
-        },
-        "classes": {
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#definitions/device"
-            },
-
-            "properties": {
-                "properties": {
-                    "$ref": "#definitions/property"
-                }
-            }
-        }
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Tango device generator JSON canonical format",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "_title": {
+      "type": "string"
     },
-    "definitions": {
-        "server": {
-            "type": "object",
-            "patternProperties": {
-                "^[\\-\\w]+$": {
-                    "$ref": "#definitions/instance"
-                }
-            }
-        },
-        "instance": {
-            "type": "object",
-            "patternProperties": {
-                "^[\\-\\w]+$": {
-                    "$ref": "#definitions/class"
-                }
-            }
-        },
-        "class": {
-            "type": "object",
-            "additionalProperties": false,
-            "patternProperties": {
-                "^[\\-\\w]+/[\\-\\w]+/[\\-\\w]+$": {
-                    "$ref": "#definitions/device"
-                }
-            }
-        },
-        "device": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "properties": {
-                    "$ref": "#definitions/properties"
-                },
-                "attribute_properties": {
-                    "$ref": "#definitions/attribute_properties"
-                }
-            }
-        },
+    "_date": {
+      "type": "string"
+    },
+    "_source": {
+      "type": "string"
+    },
+    "_version": {
+      "enum": [
+        2
+      ]
+    },
+    "servers": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[\\-\\w]+$": {
+          "$ref": "#definitions/server"
+        }
+      }
+    },
+    "classes": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#definitions/device"
+      },
+      "properties": {
         "properties": {
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#definitions/property"
-            }
-        },
-        "property": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-                "type": "string"
-            }
+          "$ref": "#definitions/property"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "server": {
+      "type": "object",
+      "patternProperties": {
+        "^[\\-\\w]+$": {
+          "$ref": "#definitions/instance"
+        }
+      }
+    },
+    "instance": {
+      "type": "object",
+      "patternProperties": {
+        "^[\\-\\w]+$": {
+          "$ref": "#definitions/class"
+        }
+      }
+    },
+    "class": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[\\-\\w]+/[\\-\\w]+/[\\-\\w]+$": {
+          "$ref": "#definitions/device"
+        }
+      }
+    },
+    "device": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "properties": {
+          "$ref": "#definitions/properties"
         },
         "attribute_properties": {
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#definitions/attribute_property"
-            }
-        },
-        "attribute_property": {
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#/definitions/property"
-            }
-        },
-        "class_property": {
-            "type": "object",
-            "additionalProperties": {
-                "type": "object",
-                "$ref": "#definitions/property"
-            }
+          "$ref": "#definitions/attribute_properties"
         }
+      }
+    },
+    "properties": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#definitions/property"
+      }
+    },
+    "property": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "attribute_properties": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#definitions/attribute_property"
+      }
+    },
+    "attribute_property": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/property"
+      }
+    },
+    "class_property": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "$ref": "#definitions/property"
+      }
     }
+  }
 }

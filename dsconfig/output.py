@@ -1,9 +1,9 @@
 from difflib import ndiff
 
-from PyTango.utils import CaselessDict
-
-from dsconfig.utils import green, red, yellow
+from tango.utils import CaselessDict
 from dsconfig.tangodb import get_devices_from_dict
+from dsconfig.utils import green, red, yellow
+
 from .appending_dict import SetterDict
 
 
@@ -37,9 +37,10 @@ def format_property(value, indentation="", max_lines=10):
 
 
 def get_changes(data, calls):
-
-    """Combine a list of database calls into "changes" that can
-    be more easily turned into a readable representation"""
+    """
+    Combine a list of database calls into "changes" that can
+    be more easily turned into a readable representation
+    """
 
     devices = get_devices_from_dict(data["servers"])
     device_mapping = CaselessDict(
@@ -233,8 +234,9 @@ def get_changes(data, calls):
 
 
 def show_actions(data, calls):
-
-    "Print out a human readable representation of changes"
+    """
+    Print out a human readable representation of changes
+    """
 
     changes = get_changes(data, calls)
 
@@ -257,8 +259,8 @@ def show_actions(data, calls):
         if info.get("server"):
             if info.get("old_server"):
                 print(("{}Server: {} -> {}".format(indent,
-                                                  red(info["old_server"]),
-                                                  green(info["server"]))))
+                                                   red(info["old_server"]),
+                                                   green(info["server"]))))
             else:
                 print(("{}Server: {}".format(indent, info["server"])))
 
@@ -266,8 +268,8 @@ def show_actions(data, calls):
             if info.get("old_class"):
                 if info["old_class"] != info["device_class"]:
                     print(("{}Class: {} -> {}".format(indent,
-                                                     info["old_class"],
-                                                     info["device_class"])))
+                                                      info["old_class"],
+                                                      info["device_class"])))
             else:
                 print(("{}Class: {}".format(indent, info["device_class"])))
 
@@ -277,7 +279,7 @@ def show_actions(data, calls):
             if old_alias:
                 if old_alias != alias:
                     print(("{}Alias: {} -> {}".format(indent, red(old_alias),
-                                                     green(alias))))
+                                                      green(alias))))
             else:
                 print(("{}Alias: {}".format(indent, alias)))
 
@@ -290,20 +292,20 @@ def show_actions(data, calls):
                     if old_value is not None:
                         if old_value != value:
                             # change property
-                            lines.append(yellow("{}= {}".format(indent*2, prop)))
+                            lines.append(yellow("{}= {}".format(indent * 2, prop)))
                             lines.append(property_diff(
-                                change["old_value"], change["value"], indent*3))
+                                change["old_value"], change["value"], indent * 3))
                     else:
                         # new property
-                        lines.append(green("{}+ {}".format(indent*2, prop)))
+                        lines.append(green("{}+ {}".format(indent * 2, prop)))
                         lines.append(green(format_property(change["value"],
-                                                           indent*3)))
+                                                           indent * 3)))
                 else:
                     # delete property
-                    lines.append(red("{}- {}".format(indent*2, prop)))
-                    lines.append(red(format_property(change["old_value"], indent*3)))
+                    lines.append(red("{}- {}".format(indent * 2, prop)))
+                    lines.append(red(format_property(change["old_value"], indent * 3)))
             if lines:
-                print(("{}Properties:".format(indent*1)))
+                print(("{}Properties:".format(indent * 1)))
                 print(("\n".join(lines)))
 
         if info.get("attribute_properties"):
@@ -318,26 +320,26 @@ def show_actions(data, calls):
                         if old_value is not None:
                             # change
                             if value != old_value:
-                                attr_lines.append(yellow("{}= {}".format(indent*3, prop)))
+                                attr_lines.append(yellow("{}= {}".format(indent * 3, prop)))
                                 attr_lines.append(property_diff(
-                                    change["old_value"], change["value"], indent*4))
+                                    change["old_value"], change["value"], indent * 4))
                         else:
                             # addition
-                            attr_lines.append(green("{}+ {}".format(indent*3, prop)))
+                            attr_lines.append(green("{}+ {}".format(indent * 3, prop)))
                             attr_lines.append(green(format_property(change["value"],
-                                                                    indent*4)))
+                                                                    indent * 4)))
                     else:
                         # removal
-                        attr_lines.append(red("{}- {}".format(indent*3, prop)))
+                        attr_lines.append(red("{}- {}".format(indent * 3, prop)))
                         attr_lines.append(red(format_property(change["old_value"],
-                                                              indent*4)))
+                                                              indent * 4)))
                 if attr_lines:
-                    lines.append("{}{}".format(indent*2, attr))
+                    lines.append("{}{}".format(indent * 2, attr))
                     lines.extend(attr_lines)
             if lines:
                 print(("{}Attribute properties:".format(indent)))
                 print(("\n".join(lines)))
-    
+
     for clss in sorted(changes["classes"]):
         info = changes["classes"][clss]
 
@@ -350,19 +352,19 @@ def show_actions(data, calls):
                     if old_value is not None:
                         if old_value != value:
                             # change property
-                            lines.append(yellow("{}= {}".format(indent*2, prop)))
+                            lines.append(yellow("{}= {}".format(indent * 2, prop)))
                             lines.append(property_diff(
-                                change["old_value"], change["value"], indent*3))
+                                change["old_value"], change["value"], indent * 3))
                     else:
                         # new property
-                        lines.append(green("{}+ {}".format(indent*2, prop)))
+                        lines.append(green("{}+ {}".format(indent * 2, prop)))
                         lines.append(green(format_property(change["value"],
-                                                           indent*3)))
+                                                           indent * 3)))
                 else:
                     # delete property
-                    lines.append(red("{}- {}".format(indent*2, prop)))
-                    lines.append(red(format_property(change["old_value"], indent*3)))
+                    lines.append(red("{}- {}".format(indent * 2, prop)))
+                    lines.append(red(format_property(change["old_value"], indent * 3)))
             if lines:
-                print(("{} Class Properties:".format(indent*1)))
+                print(("{} Class Properties:".format(indent * 1)))
                 print(("\n".join(lines)))
         print()

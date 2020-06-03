@@ -1,10 +1,11 @@
-"""A caseless dictionary implementation."""
+"""
+A caseless dictionary implementation.
+"""
 
 from collections import MutableMapping
 
 
 class CaselessDictionary(MutableMapping):
-
     """
     A dictionary-like object which ignores but preserves the case of strings.
 
@@ -76,8 +77,9 @@ class CaselessDictionary(MutableMapping):
 
 
 class CaselessString(object):
-
-    """A mixin to make a string subclass case-insensitive in dict lookups."""
+    """
+    A mixin to make a string subclass case-insensitive in dict lookups.
+    """
 
     def __hash__(self):
         return hash(self.lower())

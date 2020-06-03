@@ -1,19 +1,23 @@
-from collections import Mapping
 import json
 import sys
+from collections import Mapping
 
 from .utils import green, yellow, red
 
 
 def decode_pointer(ptr):
-    """Take a string representing a JSON pointer and return a
-    sequence of parts, decoded."""
+    """
+    Take a string representing a JSON pointer and return a
+    sequence of parts, decoded.
+    """
     return [p.replace("~1", "/").replace("~0", "~")
             for p in ptr.split("/")]
 
 
 def dump_value(value):
-    "Make a string out of a value, for printing"
+    """
+    Make a string out of a value, for printing
+    """
     if value is not None:
         if isinstance(value, Mapping):
             dump = json.dumps(value, indent=4)
@@ -24,8 +28,9 @@ def dump_value(value):
 
 
 def print_diff(dbdict, data, removes=True):
-
-    "Print a (hopefully) human readable list of changes."
+    """
+    Print a (hopefully) human readable list of changes.
+    """
 
     # TODO: needs work, especially on multiline properties,
     # empty properties (should probably never be allowed but still)
@@ -71,6 +76,4 @@ def print_diff(dbdict, data, removes=True):
         return diff
     except ImportError:
         print(("'jsonpatch' module not available - "
-                             "no diff printouts for you! (Try -d instead.)"), file=sys.stderr)
-
-
+               "no diff printouts for you! (Try -d instead.)"), file=sys.stderr)

@@ -1,19 +1,21 @@
-"""Functionality for configuring a Tango DB from a dsconfig file"""
+"""
+Functionality for configuring a Tango DB from a dsconfig file
+"""
 
 from collections import defaultdict
 from functools import partial
 
-import PyTango
-from .appending_dict.caseless import CaselessDictionary
+import tango
 
-from .utils import ObjectWrapper
+from .appending_dict.caseless import CaselessDictionary
 from .tangodb import SPECIAL_ATTRIBUTE_PROPERTIES, is_protected
+from .utils import ObjectWrapper
 
 
 def check_attribute_property(propname):
     # Is this too strict? Do we ever need non-standard attr props?
     if (not propname.startswith("_")
-        and propname not in SPECIAL_ATTRIBUTE_PROPERTIES):
+            and propname not in SPECIAL_ATTRIBUTE_PROPERTIES):
         raise KeyError("Bad attribute property name: %s" % propname)
     return True
 
@@ -89,10 +91,11 @@ def update_properties(db, parent, db_props, new_props,
 
 def update_server(db, server_name, server_dict, db_dict,
                   update=False, ignore_case=False,
-                  difactory=PyTango.DbDevInfo, strict_attr_props=True):
-
-    """Creates/removes devices for a given server. Optionally
-    ignores removed devices, only adding new and updating old ones."""
+                  difactory=tango.DbDevInfo, strict_attr_props=True):
+    """
+    Creates/removes devices for a given server. Optionally
+    ignores removed devices, only adding new and updating old ones.
+    """
 
     if ignore_case:
         db_dict = CaselessDictionary(db_dict)
@@ -131,8 +134,9 @@ def update_server(db, server_name, server_dict, db_dict,
 def update_device_or_class(db, name, db_dict, new_dict,
                            cls=False, update=False, ignore_case=False,
                            strict_attr_props=True):
-
-    "Configure a device or a class"
+    """
+    Configure a device or a class
+    """
 
     # Note: if the "properties" key is missing, we'll just ignore any
     # existing properties in the DB. Ditto for attribute_properties.
@@ -167,8 +171,8 @@ update_class = partial(update_device_or_class, cls=True)
 
 def configure(data, dbdata, update=False, ignore_case=False,
               strict_attr_props=True):
-
-    """Takes an input data dict and the relevant current DB data.  Returns
+    """
+    Takes an input data dict and the relevant current DB data.  Returns
     the DB calls needed to bring the Tango DB to the state described
     by 'data'.  The 'update' flag means that servers/devices are not
     removed, only added or changed. If the 'ignore_case' flag is True,

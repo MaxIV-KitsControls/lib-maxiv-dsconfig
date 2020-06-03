@@ -142,6 +142,7 @@ class AppendingDictTestCase(unittest.TestCase):
 
         def set_subtree():
             ad.a = 2
+
         self.assertRaises(ValueError, set_subtree)
 
     def test_setting_with_appendingdict(self):
@@ -153,7 +154,9 @@ class AppendingDictTestCase(unittest.TestCase):
             ad, {"a": {"b": ["3"], "c": {"d": ["4"]}, "e": ["1"]}})
 
     def test_updating_does_not_work(self):
-        "Have not yet implemented this"
+        """
+        Have not yet implemented this
+        """
         ad = AppendingDict()
         d = {"a": 1, "b": {"c": 3}}
         self.assertRaises(NotImplementedError, ad.update(d))

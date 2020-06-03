@@ -21,16 +21,15 @@
 #               Krakow,PL/Lund,SE#               
 #
 
-from collections import defaultdict
-import json
-import os
-import io
-import sys
-import re
-from TangoProperties import TANGO_PROPERTIES
-from PowerSupplyMap import POWER_SUPPLY_MAP
 import copy
-import numpy as np
+import io
+import json
+import re
+import sys
+from collections import defaultdict
+
+from PowerSupplyMap import POWER_SUPPLY_MAP
+from TangoProperties import TANGO_PROPERTIES
 
 cirlist = []
 
@@ -395,8 +394,8 @@ class LatticeFileItem:
                         # compact name is like _TR1QF_ but some tags are like _TR1QF2_5_
                         # if compactnamecir in key:
                         if (key not in already_added and compactnamecir in key) or (
-                                compactnamecir[:-1] in key and key.count(
-                            "_") > 5 and key not in already_added and "F" + num + "_" in key):
+                                compactnamecir[:-1] in key and key.count("_") > 5 and key not in already_added and
+                                "F" + num + "_" in key):
 
                             print("key is", num, key)
 
@@ -489,7 +488,8 @@ class LatticeFileItem:
                             # for the magnets json file
                             if 'TemperatureInterlock' not in self.parameters:
                                 self.parameters['TemperatureInterlock'] = [
-                                    pyattname + "," + key + "," + alarm_dict[key]]
+                                    pyattname + "," + key + "," + alarm_dict[key]
+                                ]
                             else:
                                 self.parameters['TemperatureInterlock'].append(
                                     pyattname + "," + key + "," + alarm_dict[key])
@@ -690,13 +690,16 @@ class LatticeFileItem:
 
 
 class ElegantLatticeParser:
-    """ Class for parsing an elegant lattice file. """
+    """
+    Class for parsing an elegant lattice file.
+    """
     fileName = ""
     file = None
     items = []
 
     def __init__(self, _fileName):
-        """Constructs a parser object.
+        """
+        Constructs a parser object.
 
         Keyword arguments:
         _fileName -- the name of file to be parsed        

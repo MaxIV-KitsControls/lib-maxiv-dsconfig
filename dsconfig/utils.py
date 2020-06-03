@@ -1,21 +1,18 @@
-from functools import partial
 import sys
+from functools import partial
 
-import PyTango
-
-from .appending_dict import AppendingDict
-
-#exit codes
-SUCCESS = 0 # NO DB CHANGES
+# exit codes
+SUCCESS = 0  # NO DB CHANGES
 ERROR = 1
 CONFIG_APPLIED = 2
 CONFIG_NOT_APPLIED = 3
 
-#colors
+# colors
 ADD = GREEN = '\033[92m'
 REMOVE = RED = FAIL = '\033[91m'
 REPLACE = YELLOW = WARN = '\033[93m'
 ENDC = '\033[0m'
+
 
 def no_colors():
     global ADD, GREEN, REMOVE, RED, FILE, REPLACE, YELLOW, WARN, ENDC
@@ -29,11 +26,14 @@ def no_colors():
     WARN = ''
     ENDC = ''
 
+
 def green(text):
     return GREEN + text + ENDC
 
+
 def red(text):
     return RED + text + ENDC
+
 
 def yellow(text):
     return YELLOW + text + ENDC
@@ -53,7 +53,9 @@ def progressbar(i, n, width):
 
 
 def find_device(definitions, devname, caseless=False):
-    "Find a given device in a server dict"
+    """
+    Find a given device in a server dict
+    """
     for srvname, srv in list(definitions["servers"].items()):
         if caseless:
             srv = CaselessDict(srv)
@@ -69,7 +71,9 @@ def find_device(definitions, devname, caseless=False):
 
 
 def find_class(definitions, clsname):
-    "Find a given device in a server dict"
+    """
+    Find a given device in a server dict
+    """
     for instname, inst in list(definitions["servers"].items()):
         if clsname in inst:
             return inst[clsname]
@@ -85,16 +89,16 @@ def get_devices_from_dict(dbdict):
 
 
 class ObjectWrapper(object):
-
-    """An object that allows all method calls and records them,
-    then passes them on to a target object (if any)."""
+    """
+    An object that allows all method calls and records them,
+    then passes them on to a target object (if any).
+    """
 
     def __init__(self, target=None):
         self.target = target
         self.calls = []
 
     def __getattr__(self, attr):
-
         def method(attr, *args, **kwargs):
             self.calls.append((attr, args, kwargs))
             if self.target:
@@ -131,17 +135,26 @@ class ObjectWrapper(object):
 
 
 class CaselessDict(dict):
-    """A case insensitive dictionary that only permits strings as keys."""
+    """
+    A case insensitive dictionary that only permits strings as keys.
+    """
+
     def __init__(self, indict={}):
         dict.__init__(self)
-        self._keydict = {}                      # not self.__keydict because I want it to be easily accessible by subclasses
+        # not self.__keydict because I want it to be easily accessible by subclasses
+        self._keydict = {}
         for entry in indict:
-            self[entry] = indict[entry]         # not dict.__setitem__(self, entry, indict[entry]) becasue this causes errors (phantom entries) where indict has overlapping keys...
+            # not dict.__setitem__(self, entry, indict[entry]) becasue this causes errors
+            # (phantom entries) where indict has overlapping keys...
+            self[entry] = indict[entry]
 
     def findkey(self, item):
-        """A caseless way of checking if a key exists or not.
-        It returns None or the correct key."""
-        if not isinstance(item, str): raise TypeError('Keywords for this object must be strings. You supplied %s' % type(item))
+        """
+        A caseless way of checking if a key exists or not.
+        It returns None or the correct key.
+        """
+        if not isinstance(item, str): raise TypeError(
+            'Keywords for this object must be strings. You supplied %s' % type(item))
         key = item.lower()
         try:
             return self._keydict[key]
@@ -149,12 +162,14 @@ class CaselessDict(dict):
             return None
 
     def changekey(self, item):
-        """For changing the casing of a key.
-        If a key exists that is a caseless match for 'item' it will be changed to 'item'.
-        This is useful when initially setting up default keys - but later might want to preserve an alternative casing.
-        (e.g. if later read from a config file - and you might want to write back out with the user's casing preserved).
         """
-        key = self.findkey(item)           # does the key exist
+        For changing the casing of a key.
+        If a key exists that is a caseless match for 'item' it will be changed to 'item'.
+        This is useful when initially setting up default keys - but later might want to
+        preserve an alternative casing. (e.g. if later read from a config file - and you
+         might want to write back out with the user's casing preserved).
+        """
+        key = self.findkey(item)  # does the key exist
         if key == None: raise KeyError(item)
         temp = self[key]
         del self[key]
@@ -162,32 +177,40 @@ class CaselessDict(dict):
         self._keydict[item.lower()] = item
 
     def lowerkeys(self):
-        """Returns a lowercase list of all member keywords."""
+        """
+        Returns a lowercase list of all member keywords.
+        """
         return list(self._keydict.keys())
 
-    def __setitem__(self, item, value):             # setting a keyword
-        """To implement lowercase keys."""
-        key = self.findkey(item)           # if the key already exists
+    def __setitem__(self, item, value):  # setting a keyword
+        """
+        To implement lowercase keys.
+        """
+        key = self.findkey(item)  # if the key already exists
         if key != None:
-            dict.__delitem__(self,key)
+            dict.__delitem__(self, key)
         self._keydict[item.lower()] = item
         dict.__setitem__(self, item, value)
 
     def __getitem__(self, item):
-        """To implement lowercase keys."""
-        key = self.findkey(item)           # does the key exist
+        """
+        To implement lowercase keys.
+        """
+        key = self.findkey(item)  # does the key exist
         if key == None: raise KeyError(item)
         return dict.__getitem__(self, key)
 
-    def __delitem__(self, item):                # deleting a keyword
-        key = self.findkey(item)           # does the key exist
+    def __delitem__(self, item):  # deleting a keyword
+        key = self.findkey(item)  # does the key exist
         if key == None: raise KeyError(item)
         dict.__delitem__(self, key)
         del self._keydict[item.lower()]
 
     def pop(self, item, default=None):
-        """Correctly emulates the pop method."""
-        key = self.findkey(item)           # does the key exist
+        """
+        Correctly emulates the pop method.
+        """
+        key = self.findkey(item)  # does the key exist
         if key == None:
             if default == None:
                 raise KeyError(item)
@@ -197,25 +220,33 @@ class CaselessDict(dict):
         return dict.pop(self, key)
 
     def popitem(self):
-        """Correctly emulates the popitem method."""
+        """
+        Correctly emulates the popitem method.
+        """
         popped = dict.popitem(self)
         del self._keydict[popped[0].lower()]
         return popped
 
     def has_key(self, item):
-        """A case insensitive test for keys."""
-        if not isinstance(item, str): return False               # should never have a non-string key
-        return item.lower() in self._keydict           # does the key exist
+        """
+        A case insensitive test for keys.
+        """
+        if not isinstance(item, str): return False  # should never have a non-string key
+        return item.lower() in self._keydict  # does the key exist
 
     def __contains__(self, item):
-        """A case insensitive __contains__."""
-        if not isinstance(item, str): return False               # should never have a non-string key
-        return item.lower() in self._keydict           # does the key exist
+        """
+        A case insensitive __contains__.
+        """
+        if not isinstance(item, str): return False  # should never have a non-string key
+        return item.lower() in self._keydict  # does the key exist
 
     def setdefault(self, item, default=None):
-        """A case insensitive setdefault.
-        If no default is supplied it sets the item to None"""
-        key = self.findkey(item)           # does the key exist
+        """
+        A case insensitive setdefault.
+        If no default is supplied it sets the item to None
+        """
+        key = self.findkey(item)  # does the key exist
         if key != None: return self[key]
         self.__setitem__(item, default)
         self._keydict[item.lower()] = item
@@ -223,27 +254,34 @@ class CaselessDict(dict):
 
     def get(self, item, default=None):
         """A case insensitive get."""
-        key = self.findkey(item)           # does the key exist
+        key = self.findkey(item)  # does the key exist
         if key != None: return self[key]
         return default
 
     def update(self, indict):
-        """A case insensitive update.
-        If your dictionary has overlapping keys (e.g. 'FISH' and 'fish') then one will overwrite the other.
-        The one that is kept is arbitrary."""
+        """
+        A case insensitive update. If your dictionary has overlapping keys (e.g. 'FISH'
+        and 'fish') then one will overwrite the other. The one that is kept is arbitrary.
+        """
         for entry in indict:
-            self[entry] = indict[entry]         # this uses the new __setitem__ method
+            self[entry] = indict[entry]  # this uses the new __setitem__ method
 
     def copy(self):
-        """Create a new caselessDict object that is a copy of this one."""
+        """
+        Create a new caselessDict object that is a copy of this one.
+        """
         return CaselessDict(self)
 
     def dict(self):
-        """Create a dictionary version of this caselessDict."""
+        """
+        Create a dictionary version of this caselessDict.
+        """
         return dict.copy(self)
 
     def clear(self):
-        """Clear this caselessDict."""
+        """
+        Clear this caselessDict.
+        """
         self._keydict = {}
         dict.clear(self)
 
@@ -252,41 +290,43 @@ class CaselessDict(dict):
         return 'caselessDict(' + dict.__repr__(self) + ')'
 
 
-"""A tuctionary, or tuct, is the combination of a tuple with
+"""
+A tuctionary, or tuct, is the combination of a tuple with
 a dictionary. A tuct has named items, but they cannot be
 deleted or rebound, nor new can be added.
 """
 
+
 class ImmutableDict(object):
-    """The tuct class. An immutable dictionary.
+    """
+    The tuct class. An immutable dictionary.
     """
 
     def __init__(self, dict=None, **kwds):
-            self.__data = {}
-            if dict is not None:
-                    self.__data.update(dict)
-            if len(kwds):
-                    self.__data.update(kwds)
+        self.__data = {}
+        if dict is not None:
+            self.__data.update(dict)
+        if len(kwds):
+            self.__data.update(kwds)
 
-    #del __init__
+    # del __init__
 
     def __repr__(self):
-            return repr(self.__data)
+        return repr(self.__data)
 
     def __cmp__(self, dict):
-            if isinstance(dict, ImmutableDict):
-                    return cmp(self.__data, dict.__data)
-            else:
-                    return cmp(self.__data, dict)
+        if isinstance(dict, ImmutableDict):
+            return cmp(self.__data, dict.__data)
+        else:
+            return cmp(self.__data, dict)
 
     def __len__(self):
-            return len(self.__data)
+        return len(self.__data)
 
     def __getitem__(self, key):
-            return self.__data[key]
+        return self.__data[key]
 
     def copy(self):
-            if self.__class__ is ImmutableDict:
-                    return ImmutableDict(self.__data.copy())
-            import copy
-            __data = self.__data
+        if self.__class__ is ImmutableDict:
+            return ImmutableDict(self.__data.copy())
+        __data = self.__data

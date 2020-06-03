@@ -1,4 +1,5 @@
 from collections import defaultdict, Mapping
+
 from .caseless import CaselessDictionary
 
 
@@ -56,7 +57,9 @@ class SetterDict(CaselessDictionary, defaultdict):
         return self.__setitem__(key, value)
 
     def to_dict(self):
-        """Returns a ordinary dict version of itself"""
+        """
+        Returns a ordinary dict version of itself
+        """
         result = {}
         for key, value in list(self.items()):
             if isinstance(value, SetterDict):
@@ -67,7 +70,9 @@ class SetterDict(CaselessDictionary, defaultdict):
 
 
 def merge(d, u):
-    "Recursively 'merge' a Mapping into another"
+    """
+    Recursively 'merge' a Mapping into another
+    """
     for k, v in u.items():
         if isinstance(v, Mapping):
             if k in d:
@@ -86,8 +91,8 @@ def list_of_strings(value):
 
 
 class AppendingDict(SetterDict):
-
-    """An extra weird SetterDict where assignment adds items instead of
+    """
+    An extra weird SetterDict where assignment adds items instead of
     overwriting. It also allows setting nested values using dicts (or
     any Mapping). Scalar values are converted into lists of strings.
 

@@ -1,20 +1,19 @@
 "This module concerns the dsconfig JSON file format"
 
-import sys
 import json
+import sys
 from copy import deepcopy, copy
 from os import path
 
-from .appending_dict import AppendingDict, SetterDict
+import tango
 
-import PyTango
-
+from .appending_dict import SetterDict
 
 SERVERS_LEVELS = {"server": 0, "instance": 1, "class": 2, "device": 3, "property": 5}
 CLASSES_LEVELS = {"class": 1, "property": 2}
 
 module_path = path.dirname(path.realpath(__file__))
-SCHEMA_FILENAME = path.join(module_path, "schema/schema2.json")  #rename
+SCHEMA_FILENAME = path.join(module_path, "schema/schema2.json")  # rename
 
 
 # functions to decode unicode JSON (PyTango does not like unicode strings)
@@ -48,7 +47,9 @@ def decode_dict(data):
 
 
 def validate_json(data):
-    """Validate that a given dict is of the right form"""
+    """
+    Validate that a given dict is of the right form
+    """
     try:
         from jsonschema import validate, exceptions
         with open(SCHEMA_FILENAME) as schema_json:
@@ -56,7 +57,7 @@ def validate_json(data):
         validate(data, schema)
     except ImportError:
         print(("WARNING: 'jsonschema' not installed, could not "
-                             "validate json file. You're on your own."), file=sys.stderr)
+               "validate json file. You're on your own."), file=sys.stderr)
     except exceptions.ValidationError as e:
         print("ERROR: JSON data does not match schema: %s" % e, file=sys.stderr)
         sys.exit(1)
@@ -67,10 +68,11 @@ def load_json(f):
 
 
 def expand_config(config):
-
-    """Takes a configuration dict and expands it into the canonical
+    """
+    Takes a configuration dict and expands it into the canonical
     format. This currently means that the server instance level is
-    split into a server and an instance level."""
+    split into a server and an instance level.
+    """
 
     expanded = deepcopy(config)
     if "servers" in config:
@@ -86,7 +88,9 @@ def expand_config(config):
 
 
 def clean_metadata(data):
-    "Removes any keys in the data that begin with '_'"
+    """
+    Removes any keys in the data that begin with '_'
+    """
     tmp = copy(data)
     for key in list(tmp.keys()):
         if key.startswith("_"):
@@ -95,8 +99,8 @@ def clean_metadata(data):
 
 
 def normalize_config(config):
-
-    """Take a 'loose' config and return a new config that conforms to the
+    """
+    Take a 'loose' config and return a new config that conforms to the
     DSConfig format.
 
     Current transforms:
@@ -111,23 +115,18 @@ def normalize_config(config):
       information can be gotten from the DB.)
 
     """
-    print("config")
     old_config = expand_config(config)
-    print("old_config")
     new_config = SetterDict()
     if "servers" in old_config:
-        print("servers")
         new_config.servers = old_config["servers"]
     if "classes" in old_config:
-        print("classes")
         new_config.classes = old_config["classes"]
     if "devices" in old_config:
-        print("devices")
-        db = PyTango.Database()
+        db = tango.Database()
         for device, props in list(old_config["devices"].items()):
             try:
                 info = db.get_device_info(device)
-            except PyTango.DevFailed as e:
+            except tango.DevFailed as e:
                 sys.exit("Can't reconfigure device %s: %s" % (device, str(e[0].desc)))
             srv, inst = info.ds_full_name.split("/")
             new_config.servers[srv][inst][info.class_name][device] = props

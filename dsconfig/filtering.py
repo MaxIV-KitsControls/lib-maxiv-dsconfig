@@ -15,7 +15,7 @@ def filter_nested_dict(node, pattern, depth, level=0, invert=False):
     else:
         dupe_node = {}
         for key, val in node.items():
-            cur_node = filter_nested_dict(val, pattern, depth, level+1,
+            cur_node = filter_nested_dict(val, pattern, depth, level + 1,
                                           invert)
             if cur_node:
                 dupe_node[key] = cur_node
@@ -23,8 +23,8 @@ def filter_nested_dict(node, pattern, depth, level=0, invert=False):
 
 
 def filter_config(data, filters, levels, invert=False):
-
-    """Filter the given config data according to a list of filters.
+    """
+    Filter the given config data according to a list of filters.
     May be a positive filter (i.e. includes only matching things)
     or inverted (i.e. includes everything that does not match).
     The _levels_ argument is used to find at what depth in the data

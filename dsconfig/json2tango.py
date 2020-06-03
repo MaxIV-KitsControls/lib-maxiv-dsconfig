@@ -5,28 +5,27 @@ to get to the state described by the file. These commands can also
 optionally be run.
 """
 
+import json
 import sys
 import time
-import json
 from optparse import OptionParser
 from tempfile import NamedTemporaryFile
 
-import PyTango
+import tango
+from dsconfig.appending_dict.caseless import CaselessDictionary
 from dsconfig.configure import configure
+from dsconfig.dump import get_db_data
 from dsconfig.filtering import filter_config
 from dsconfig.formatting import (CLASSES_LEVELS, SERVERS_LEVELS, load_json,
                                  normalize_config, validate_json,
                                  clean_metadata)
-from dsconfig.tangodb import summarise_calls, get_devices_from_dict
-from dsconfig.dump import get_db_data
-from dsconfig.utils import green, red, yellow, progressbar, no_colors
-from dsconfig.utils import SUCCESS, ERROR, CONFIG_APPLIED, CONFIG_NOT_APPLIED
 from dsconfig.output import show_actions
-from dsconfig.appending_dict.caseless import CaselessDictionary
+from dsconfig.tangodb import summarise_calls, get_devices_from_dict
+from dsconfig.utils import SUCCESS, ERROR, CONFIG_APPLIED, CONFIG_NOT_APPLIED
+from dsconfig.utils import green, red, yellow, progressbar, no_colors
 
 
 def main():
-
     usage = "Usage: %prog [options] JSONFILE"
     parser = OptionParser(usage=usage)
 
@@ -125,7 +124,7 @@ def main():
         return
 
     # check if there is anything in the DB that will be changed or removed
-    db = PyTango.Database()
+    db = tango.Database()
     if options.dbdata:
         with open(options.dbdata) as f:
             original = json.loads(f.read())
@@ -205,7 +204,7 @@ def main():
             servers = len(collisions)
             devices = sum(len(devs) for devs in list(collisions.values()))
             print(red("Move %d devices from %d servers." %
-                                    (devices, servers)), file=sys.stderr)
+                      (devices, servers)), file=sys.stderr)
         if empty and options.verbose:
             print(red("Removed %d empty servers." % len(empty)), file=sys.stderr)
 
@@ -213,9 +212,9 @@ def main():
             print(red("\n*** Data was written to the Tango DB ***"), file=sys.stderr)
             with NamedTemporaryFile(prefix="dsconfig-", suffix=".json",
                                     delete=False) as f:
-                f.write(json.dumps(original, indent=4))
+                f.write(json.dumps(original, indent=4).encode())
                 print(("The previous DB data was saved to %s" %
-                                     f.name), file=sys.stderr)
+                       f.name), file=sys.stderr)
             sys.exit(CONFIG_APPLIED)
         else:
             print(yellow(

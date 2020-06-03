@@ -3,17 +3,18 @@ Routines for reading an Excel file containing server, class and device definitio
 producing a file in the TangoDB JSON format.
 """
 
-from datetime import datetime
 import json
 import os
 import re
 import sys
-#from traceback import format_exc
+from datetime import datetime
 
-from .utils import find_device
 from .appending_dict import AppendingDict
-from .utils import CaselessDict
 from .tangodb import SPECIAL_ATTRIBUTE_PROPERTIES
+from .utils import CaselessDict
+from .utils import find_device
+
+# from traceback import format_exc
 
 MODE_MAPPING = CaselessDict({"ATTR": "DynamicAttributes",
                              "CMD": "DynamicCommands",
@@ -23,9 +24,11 @@ MODE_MAPPING = CaselessDict({"ATTR": "DynamicAttributes",
 TYPE_MAPPING = CaselessDict({"INT": int,
                              "FLOAT": float})
 
-def get_properties(row):
 
-    "Find property definitions on a row"
+def get_properties(row):
+    """
+    Find property definitions on a row
+    """
 
     prop_dict = AppendingDict()
 
@@ -70,7 +73,6 @@ def get_properties(row):
 
 
 def get_attribute_properties(row):
-
     if "attribute" in row:
         attribute = row["attribute"]
         prop_dict = AppendingDict()
@@ -105,7 +107,9 @@ def get_attribute_properties(row):
 
 
 def get_dynamic(row):
-    "Find dynamic definitions on a row"
+    """
+    Find dynamic definitions on a row
+    """
 
     prop_dict = AppendingDict()
     try:
@@ -127,17 +131,22 @@ def get_dynamic(row):
 
 
 def make_db_name(name):
-    "convert a Space Separated Name into a lowercase, underscore_separated_name"
+    """
+    Convert a Space Separated Name into a lowercase, underscore_separated_name
+    """
     return name.strip().lower().replace(" ", "_")
 
 
 def check_formula(formula):
-    "Syntax check a dynamic formula."
+    """
+    Syntax check a dynamic formula.
+    """
     compile(formula, "<stdin>", "single")
 
 
 def check_device_format(devname):
-    """Verify that a device name is of the correct form (three parts
+    """
+    Verify that a device name is of the correct form (three parts
     separated by slashes, only letters, numbers, dashes and
     underscores allowed.)  Note: We could put more logic here to make
     device names conform to a standard.
@@ -148,14 +157,17 @@ def check_device_format(devname):
 
 
 def format_server_instance(row):
-    "Format a server/instance string"
+    """
+    Format a server/instance string
+    """
     # TODO: handle numeric instance names? They tend to turn up as floats...
     return "%s/%s" % (row["server"], row["instance"])
 
 
 def convert(rows, definitions, skip=True, dynamic=False, config=False):
-
-    "Update a dict of definitions from data"
+    """
+    Update a dict of definitions from data
+    """
 
     errors = []
     column_names = rows[0]
@@ -188,8 +200,8 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
                     # full device definition
                     # target is "lazily" evaluated, so that we don't create
                     # an empty dict if it turns out there are no members
-                    target = lambda: definitions.servers[row["server"]][row["instance"]]\
-                             [row["class"]][row["device"]]
+                    target = lambda: definitions.servers[row["server"]][row["instance"]] \
+                        [row["class"]][row["device"]]
                 else:
                     # don't know if the device is already defined
                     target = lambda: find_device(definitions, row["device"])[0]
@@ -214,7 +226,7 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
                     target().properties = props
 
         except KeyError as ke:
-            #handle_error(i, "insufficient data (%s)" % ke)
+            # handle_error(i, "insufficient data (%s)" % ke)
             pass
         except ValueError as ve:
             handle_error(i, "Error: %s" % ve)
@@ -236,8 +248,9 @@ def print_errors(errors):
 
 
 def xls_to_dict(xls_filename, pages=None, skip=False):
-
-    """Make JSON out of an XLS sheet of device definitions."""
+    """
+    Make JSON out of an XLS sheet of device definitions.
+    """
 
     import xlrd
 
@@ -271,7 +284,9 @@ def xls_to_dict(xls_filename, pages=None, skip=False):
 
 
 def get_stats(defs):
-    "Calculate some numbers"
+    """
+    Calculate some numbers
+    """
 
     servers = set()
     instances = set()
@@ -327,8 +342,8 @@ def main():
     stats = get_stats(data)
 
     print(("\n"
-        "Total: %(servers)d servers, %(instances)d instances, "
-        "%(classes)d classes and %(devices)d devices defined.") % stats, file=sys.stderr)
+           "Total: %(servers)d servers, %(instances)d instances, "
+           "%(classes)d classes and %(devices)d devices defined.") % stats, file=sys.stderr)
 
 
 if __name__ == "__main__":

@@ -1,11 +1,13 @@
-"""Provide functions to parse a callable csv file."""
+"""
+Provide functions to parse a callable csv file.
+"""
 
 # Imports
 
-import os
-import sys
 import csv
 import json
+import os
+import sys
 from collections import Mapping
 from importlib import import_module
 from optparse import OptionParser
@@ -14,7 +16,9 @@ from optparse import OptionParser
 # Utils
 
 def special_update(d, u):
-    """Update nested dictionnaries while prioritizing the first argument."""
+    """
+    Update nested dictionnaries while prioritizing the first argument.
+    """
     if not (isinstance(d, Mapping) and isinstance(u, Mapping)):
         return d if d is not None else u
     for k, v in u.items():
@@ -23,12 +27,16 @@ def special_update(d, u):
 
 
 def max_or_none(*args):
-    """Maximum function considering None as a maximum value."""
+    """
+    Maximum function considering None as a maximum value.
+    """
     return None if None in args else max(*args)
 
 
 def cast_list(lst):
-    """Convert a list of a string to the corresponding value."""
+    """
+    Convert a list of a string to the corresponding value.
+    """
     result = []
     for value in lst:
         # Integer conversion
@@ -58,20 +66,26 @@ def cast_list(lst):
 # Csv functions
 
 def get_column(matrix, col, start=None, stop=None, step=None):
-    """Get the column of a matrix, with optional range arguments."""
+    """
+    Get the column of a matrix, with optional range arguments.
+    """
     return [row[col] for row in matrix][slice(start, stop, step)]
 
 
 def get_markup_index(matrix, col, markup):
-    """Find a markup in a given column and return the following index."""
+    """
+    Find a markup in a given column and return the following index.
+    """
     for i, key in enumerate(get_column(matrix, col)):
-            if key == markup:
-                return i+1
+        if key == markup:
+            return i + 1
     return None
 
 
 def get_range_lst(matrix, col, start=0, stop=None, markup=None):
-    """Get a value->range dictionnary from a given column."""
+    """
+    Get a value->range dictionnary from a given column.
+    """
     if markup:
         start = max_or_none(start, get_markup_index(matrix, col, markup))
     if start is None:
@@ -84,14 +98,16 @@ def get_range_lst(matrix, col, start=0, stop=None, markup=None):
                 result.append((previous_key, previous_start, i))
             previous_key, previous_start = key, i
     if previous_key is not None:
-        result.append((previous_key, previous_start, i+1))
+        result.append((previous_key, previous_start, i + 1))
     return result
 
 
 # Callable csv functions
 
 def get_kwargs(matrix, start, stop):
-    """Get the keywords arguments between two indexes."""
+    """
+    Get the keywords arguments between two indexes.
+    """
     kwargs = {}
     keyword_lst = get_range_lst(matrix, 2, start, stop)
     for keyword, start, stop in keyword_lst:
@@ -102,7 +118,9 @@ def get_kwargs(matrix, start, stop):
 
 
 def get_call_list(filename):
-    """Get the call list from a callable cls file."""
+    """
+    Get the call list from a callable cls file.
+    """
     result = []
     with open(filename) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
@@ -121,7 +139,9 @@ def get_call_list(filename):
 # Data functions
 
 def process_call_list(lst, skip=False, verbose=True):
-    """Process a given call list and return the results."""
+    """
+    Process a given call list and return the results.
+    """
     result = []
     errors = ImportError, ValueError, TypeError, AttributeError
     for module_name, func_name, kwargs in lst:
@@ -153,7 +173,9 @@ def process_call_list(lst, skip=False, verbose=True):
 
 
 def join_data(lst, source=None):
-    """Join a list of json strings or dictionnaries into a single dict."""
+    """
+    Join a list of json strings or dictionnaries into a single dict.
+    """
     data = {}
     for mapping in lst:
         if isinstance(mapping, str):
@@ -167,7 +189,9 @@ def join_data(lst, source=None):
 # CSV to Dict function
 
 def callable_csv_to_dict(filename, skip=False, verbose=True, to_json=False):
-    """Convert a callable csv file to a data dictionnary."""
+    """
+    Convert a callable csv file to a data dictionnary.
+    """
     calls = get_call_list(filename)
     if not calls:
         return
@@ -181,7 +205,9 @@ def callable_csv_to_dict(filename, skip=False, verbose=True, to_json=False):
 # Command lines arguments for configuration script
 
 def parse_command_line_args(desc):
-    """Parse arguments given in command line"""
+    """
+    Parse arguments given in command line
+    """
     usage = "%prog [-i INPUT] [-o OUTPUT] [-v] [-w]"
     parser = OptionParser(usage=usage, description=desc, version='%prog v1.0')
 
@@ -214,7 +240,9 @@ def parse_command_line_args(desc):
 # Main function for configuration scripts
 
 def main(desc=None, module_name=None, function=None):
-    """Run the script."""
+    """
+    Run the script.
+    """
     kwargs = {}
     remove = False
     desc = desc or "Generate a Tango json file for a given callable csv file."

@@ -1,10 +1,10 @@
 import json
 import sys
 
-import PyTango
+import tango
 
 from .utils import (ObjectWrapper, decode_dict, get_dict_from_db,
-                   RED, GREEN, YELLOW)
+                    RED, GREEN, YELLOW)
 
 
 def delete_devices(db, dbdict, server, cls, devices):
@@ -21,7 +21,7 @@ def delete_server(db, dbdict, servername, serverdata):
     try:
         db.delete_server_info(servername)  # what does this do?
         db.delete_server(servername)
-    except PyTango.DevFailed:
+    except tango.DevFailed:
         # I'm not sure about this; sometimes deleting servers works
         # and sometimes not; should they be running? What's going on?
         # Anyway, the worst case scenario is that the servers are
@@ -39,14 +39,14 @@ def delete_class(db, dbdict, classname):
 
 
 def main(json_file, write=False, db_calls=False):
-
-    """Remove the devices and servers defined in the given file
-    from the DB."""
+    """
+    Remove the devices and servers defined in the given file from the DB.
+    """
 
     with open(json_file) as f:
         data = json.load(f, object_hook=decode_dict)
 
-    db = PyTango.Database()
+    db = tango.Database()
     dbdict = get_dict_from_db(db, data)  # check the current DB state
 
     # wrap the database (and fake it if we're not going to write)
@@ -70,16 +70,15 @@ def main(json_file, write=False, db_calls=False):
     if db.calls:
         if write:
             print((
-                RED + "\n*** Data was written to the Tango DB ***"), file=sys.stderr)
+                    RED + "\n*** Data was written to the Tango DB ***"), file=sys.stderr)
         else:
-            print(YELLOW +\
-                "\n*** Nothing was written to the Tango DB (use -w) ***", file=sys.stderr)
+            print(YELLOW + \
+                  "\n*** Nothing was written to the Tango DB (use -w) ***", file=sys.stderr)
     else:
         print(GREEN + "\n*** No changes needed in Tango DB ***", file=sys.stderr)
 
 
 if __name__ == "__main__":
-
     from optparse import OptionParser
 
     usage = "Usage: %prog [options] JSONFILE"
