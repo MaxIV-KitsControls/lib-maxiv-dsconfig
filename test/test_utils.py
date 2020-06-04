@@ -58,8 +58,10 @@ class TestImmutableDict(unittest.TestCase):
 
 
 def test_print_diff(capsys):
-    test_str = ('[{"path": "/a", "op": "remove"}, {"path": "/c", "value": 4, "op": "add"}'
-                ', {"path": "/b", "value": 3, "op": "replace"}]')
+    test_str = ('[{"op": "remove", "path": "/a"}, {"op": "add", "path": "/c", "value": 4}'
+                ', {"op": "replace", "path": "/b", "value": 3}]')
+    print(test_str)
+    print(str(print_diff({'a': 1, 'b': 2}, {'b': 3, 'c': 4})))
     assert test_str == str(print_diff({'a': 1, 'b': 2}, {'b': 3, 'c': 4}))
     captured = capsys.readouterr()
     assert "REMOVE:\n > a" in captured.out
