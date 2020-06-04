@@ -5,7 +5,7 @@ from setuptools import setup
 setup(
     # Package
     name="python-dsconfig",
-    version="1.4.0",
+    version="1.5.0",
     packages=["dsconfig", "dsconfig.appending_dict"],
     description="Library and utilities for Tango device configuration.",
     # Requirements
