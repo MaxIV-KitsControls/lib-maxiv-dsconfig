@@ -20,7 +20,7 @@ class SuperDict(defaultdict):
 
 
 def add_device(sdict, inst, dev, al_name, al_cond, al_desc, al_sev):
-    print(inst, dev, al_name, al_cond, al_desc, al_sev)
+    print((inst, dev, al_name, al_cond, al_desc, al_sev))
     # devdict = sdict.servers["PyAlarm"]["PyAlarm/"+inst]["PyAlarm"][dev]
     devdict = sdict.servers["PyAlarm/" + inst]["PyAlarm"][dev]
     if "AlarmList" not in devdict.properties:
@@ -82,14 +82,14 @@ def xls_to_dict(xls_filename):
             # above skips row 0 (col headers)
             # look at all rows but only read those with entry in first col
             if sheet.row_values(line)[0] is not "":
-                print("IN LINE ", line, sheet.row_values(line)[0])
+                print(("IN LINE ", line, sheet.row_values(line)[0]))
                 # assume that if you get to a new device, it means a new section of vacuum
                 # in this case, need to make a final alarm which is or of all others
                 dev_config = sheet.row_values(line)
-                print(dev_config, dev_config[3].rsplit("/", 1)[0])
+                print((dev_config, dev_config[3].rsplit("/", 1)[0]))
                 if dev_config[1] != last_device or dev_config[0] == "end":
-                    print("START NEW SECTION", dev_config[1])
-                    print("---- ADDING TO JSON summary ", summary_condition, last_name)
+                    print(("START NEW SECTION", dev_config[1]))
+                    print(("---- ADDING TO JSON summary ", summary_condition, last_name))
                     if summary_condition != "":
                         add_device(json_dict, last_server, last_device, last_name.rsplit("_", 1)[0], summary_condition,
                                    "at least one vac. %s in section %s" % (nature, last_name.rsplit("__", 2)[0]),

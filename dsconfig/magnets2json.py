@@ -158,7 +158,7 @@ class LatticeFileItem:
             endname = "CRCOY-" + endnum
         elif "DI" in itemName:
             endname = "CRDI-" + endnum
-            print("dealing with endname  ", endname)
+            print(("dealing with endname  ", endname))
         elif "SX" in itemName:
             endname = "CRSX-" + endnum
         elif "SOL" in itemName:
@@ -260,7 +260,7 @@ class LatticeFileItem:
                 self.parameters["Tilt"] = ["90"]
             else:
                 self.parameters["Tilt"] = ["0"]
-        print("pjbyyy", self.parameters)
+        print(("pjbyyy", self.parameters))
 
     def add_device(self, sdict, adict, psdict,
                    name_parsing_string='(?P<system>[a-zA-Z0-9]+)\.(?P<location>[a-zA-Z0-9]+)\.(?P<subsystem>[a-zA-Z0-9]+)\.(?P<device>[a-zA-Z0-9]+)\.(?P<num>[0-9]+)'):
@@ -270,10 +270,10 @@ class LatticeFileItem:
         # prepare pattern for parsing name
         pattern = re.compile(name_parsing_string)
 
-        print("In add device for item: " + self.itemName + " as " + self.itemType, self.alpars)
+        print(("In add device for item: " + self.itemName + " as " + self.itemType, self.alpars))
         # only when we know class for certain element 
 
-        print("adict is ", adict)
+        print(("adict is ", adict))
         circuit_alarm_params = []
 
         # for case with no final number like I.TR1.MAG.DIE (no .1 etc at end)
@@ -293,15 +293,15 @@ class LatticeFileItem:
             parsed = False
             tryagain = False
             if name_items == None:
-                print("Warning: Item name in lattice file doesn't match the naming convention.", self.itemName)
+                print(("Warning: Item name in lattice file doesn't match the naming convention.", self.itemName))
                 tryagain = True
             else:
                 parsed = True
             if tryagain:
                 name_items = alt_pattern.search(self.itemName)
                 if name_items == None:
-                    print("Warning: Item name in lattice file STILL doesn't match the naming convention.",
-                          self.itemName)
+                    print(("Warning: Item name in lattice file STILL doesn't match the naming convention.",
+                          self.itemName))
                 else:
                     parsed = True
             if parsed:
@@ -323,7 +323,7 @@ class LatticeFileItem:
                     num2 = "01"
 
                 self.match_properties()
-                print("pjbxxx ", self.parameters)
+                print(("pjbxxx ", self.parameters))
 
                 # create device for json output
                 name = (system + "-" + location + '/' + subsystem + '/' + device + "-" + num2).encode('ascii', 'ignore')
@@ -332,7 +332,7 @@ class LatticeFileItem:
 
                 # hack for circuits
                 if "CIR" in self.itemName:
-                    print("orig name", self.itemName, name)
+                    print(("orig name", self.itemName, name))
 
                     # quad circuits named like CRQ
                     # correctors like CRCOX and CRCOY
@@ -348,13 +348,13 @@ class LatticeFileItem:
                     # e.g in G00 have COIX 1, 2, 3 and COHX 1 and 2, which would make COX 1, 2, 3 with COIX 1 and 2 being lost!
                     # increment number till unique
                     while name in cirlist:
-                        print("danger! already named this circuit!", self.itemName, name)
+                        print(("danger! already named this circuit!", self.itemName, name))
                         suffix = int(name.split("-")[2]) + 1
                         newnum2 = "%02d" % suffix
                         print(newnum2)
                         name = (name.rsplit("-", 1)[0]) + "-" + newnum2
                         print(name)
-                    print("new name ", name)
+                    print(("new name ", name))
                     cirlist.append(name)
                     print(cirlist)
                     devclass = "MagnetCircuit"
@@ -378,7 +378,7 @@ class LatticeFileItem:
                     if "DID" in compactnamecir:
                         compactnamecir = compactnamecir.replace("DID", "DI")
 
-                    print("circuit compact name is ", compactnamecir, name_l_cir)
+                    print(("circuit compact name is ", compactnamecir, name_l_cir))
 
                     # fill alarm info for circuits
                     #
@@ -397,11 +397,11 @@ class LatticeFileItem:
                                 compactnamecir[:-1] in key and key.count("_") > 5 and key not in already_added and
                                 "F" + num + "_" in key):
 
-                            print("key is", num, key)
+                            print(("key is", num, key))
 
                             already_added.append(key)
 
-                            print("FOUND ALARM INFO FOR CIR", compactnamecir, key, alarm_dict[key], section_cir)
+                            print(("FOUND ALARM INFO FOR CIR", compactnamecir, key, alarm_dict[key], section_cir))
                             pyattname = "I-" + section_cir + "/DIA/COOLING"
 
                             # for the magnets json file
@@ -418,9 +418,9 @@ class LatticeFileItem:
                                 self.alpars[pyalarm] = {}
                             self.config_alarms(pyalarm, alname, alsev, aldesc, pyattname, key)  # will fill self.alpars
 
-                print(
-                    "+++++++++++++++++ Creating device server : " + server + " for " + devclass + " (name= " + name + ")")
-                print("+++++++++ With properties : ", self.parameters)
+                print((
+                    "+++++++++++++++++ Creating device server : " + server + " for " + devclass + " (name= " + name + ")"))
+                print(("+++++++++ With properties : ", self.parameters))
 
                 # Dont actually write attributes to DB, only properties
                 # see if this class exists and append if so, or create
@@ -438,18 +438,18 @@ class LatticeFileItem:
                     del name_l[0]
                     del name_l[1]
                     # del name_l[2]
-                    print("pjb kkk", name_l)
+                    print(("pjb kkk", name_l))
                     compactfullname = "".join(name_l)
                     compactname = compactfullname.split("_")[0]
                     compactname_nonum = compactfullname.split("_")[0][:-1] + "_"
 
-                    print("-------------------- magnet not circuit", self.itemName, compactname)
+                    print(("-------------------- magnet not circuit", self.itemName, compactname))
 
                     # see what is the ps of the magnet
                     if name in POWER_SUPPLY_MAP:
                         powersupplyname = POWER_SUPPLY_MAP[name]
                     else:
-                        print("magnet not in PS map, skipping", name)
+                        print(("magnet not in PS map, skipping", name))
                         return
 
                         # !!!!!!!!!!! *********** create circuit device for each new ps ************!!!!!!!!!!!!
@@ -471,7 +471,7 @@ class LatticeFileItem:
                     # get alarm info from excel
                     pyalarm = system + "-" + location + '/MAG/ALARM'
 
-                    print("adict is again", adict)
+                    print(("adict is again", adict))
                     if adict is not None:
                         devdictalarm = adict.servers["%s/%s" % ("PyAlarm", "I-MAG")]["PyAlarm"][pyalarm]
                         print("init devdictalarm")
@@ -483,7 +483,7 @@ class LatticeFileItem:
 
                             pyattname = "I-" + section + "/DIA/COOLING"
 
-                            print("FOUND ALARM INFO FOR ", compactname, key, alarm_dict[key], pyattname, adict)
+                            print(("FOUND ALARM INFO FOR ", compactname, key, alarm_dict[key], pyattname, adict))
 
                             # for the magnets json file
                             if 'TemperatureInterlock' not in self.parameters:
@@ -511,10 +511,10 @@ class LatticeFileItem:
                         if compactname_nonum in key or (compactname[:-1] in key and key.count("_") > 5 and (
                                 "F" + num + "_" in key or "_" + num + "_" in key)):
                             # if compactname_nonum in key:
-                            print("mag key ", key, compactname_nonum, compactname, "F" + num + "_", "_" + num + "_")
+                            print(("mag key ", key, compactname_nonum, compactname, "F" + num + "_", "_" + num + "_"))
                             pyattname = "I-" + section + "/DIA/COOLING"
 
-                            print("FOUND MORE ALARM INFO FOR ", compactname, key, alarm_dict[key], pyattname, adict)
+                            print(("FOUND MORE ALARM INFO FOR ", compactname, key, alarm_dict[key], pyattname, adict))
 
                             # for the magnets json file
                             if 'TemperatureInterlock' not in self.parameters:
@@ -529,11 +529,11 @@ class LatticeFileItem:
 
                     # get calibration info from the excel
                     if self.itemName.split("_")[0] in calib_dict:
-                        print("FOUND CALIB INFO", self.itemName)
+                        print(("FOUND CALIB INFO", self.itemName))
                         # find max multipole expansions
                         dim = max(list(calib_dict[self.itemName.split("_")[0]].keys()), key=int)
 
-                        print("--- max order is", dim)
+                        print(("--- max order is", dim))
 
                         # create arrays of this dimensions, other dimension is 11
 
@@ -543,10 +543,10 @@ class LatticeFileItem:
 
                         # iterate over keys and add to the array
                         for key in calib_dict[self.itemName.split("_")[0]]:
-                            print('--- ', key, 'corresponds to', calib_dict[self.itemName.split("_")[0]][key])
+                            print(('--- ', key, 'corresponds to', calib_dict[self.itemName.split("_")[0]][key]))
                             currents = calib_dict[self.itemName.split("_")[0]][key][5:25]
                             fields = calib_dict[self.itemName.split("_")[0]][key][25:45]
-                            print('--- ', currents, fields)
+                            print(('--- ', currents, fields))
 
                             fieldsmatrix[key - 1] = fields
                             currentsmatrix[key - 1] = currents
@@ -555,14 +555,14 @@ class LatticeFileItem:
                             orientation = calib_dict[self.itemName.split("_")[0]][key][2]
                             # print "P, O", polarity, orientation
 
-                        print('--- ', fieldsmatrix)
-                        print('--- ', currentsmatrix)
+                        print(('--- ', fieldsmatrix))
+                        print(('--- ', currentsmatrix))
 
                         # now trim the matrices (lists)
                         maxlength = 20
                         for i, val in enumerate(fieldsmatrix[dim - 1]):
                             if val == '':
-                                print(i, val)
+                                print((i, val))
                                 maxlength = i
                                 break
                         print(maxlength)
@@ -571,8 +571,8 @@ class LatticeFileItem:
                             del fieldsmatrix[i][maxlength:]
                             del currentsmatrix[i][maxlength:]
 
-                        print('Now--- ', fieldsmatrix)
-                        print('Now--- ', currentsmatrix)
+                        print(('Now--- ', fieldsmatrix))
+                        print(('Now--- ', currentsmatrix))
 
                         magnetcircuit.parameters['ExcitationCurveCurrents'] = currentsmatrix
                         magnetcircuit.parameters['ExcitationCurveFields'] = fieldsmatrix
@@ -590,14 +590,14 @@ class LatticeFileItem:
                     endname = self.handle_circuit_name(self.itemName, endnum)
                     cname = cname.rsplit("/", 1)[0] + "/" + endname
 
-                    print("cname is ", cname, name, powersupplyname, circuit_ps_list)
+                    print(("cname is ", cname, name, powersupplyname, circuit_ps_list))
 
                     while cname in cirlist:
-                        print("danger2! already named this circuit!", cname)
+                        print(("danger2! already named this circuit!", cname))
                         suffix = int(cname.split("-")[2]) + 1
                         newnum2 = "%02d" % suffix
                         cname = (cname.rsplit("-", 1)[0]) + "-" + newnum2
-                    print("new name ", cname)
+                    print(("new name ", cname))
 
                     # only add one circuit device per ps
                     if powersupplyname not in circuit_ps_list:
@@ -605,12 +605,12 @@ class LatticeFileItem:
                         magnetcircuit.add_device(sdict, adict, psdict)
                         circuit_ps_list[powersupplyname] = cname
 
-                        print("adding circuit name ", magnetcircuit.itemName, cname, circuit_ps_list)
+                        print(("adding circuit name ", magnetcircuit.itemName, cname, circuit_ps_list))
                         self.parameters['CircuitProxies'] = [cname]
 
                     else:
                         # if we aleady made this circuit device, add it to this magnet properties
-                        print("!!!ALART!!! already added a circuit device for ", self.itemName, name, system, location)
+                        print(("!!!ALART!!! already added a circuit device for ", self.itemName, name, system, location))
 
                         if system == "R3":
                             system = "I"
@@ -620,7 +620,7 @@ class LatticeFileItem:
                         self.parameters['CircuitProxies'] = [circuit_ps_list[powersupplyname]]
 
                         # need to get the name of the circuit device from the ps dict though
-                        print("exiting circuit device is", circuit_ps_list[powersupplyname])
+                        print(("exiting circuit device is", circuit_ps_list[powersupplyname]))
 
                         # print "current mags ",  system+"-"+location
                         # print "current mags 2",  sdict.servers
@@ -629,17 +629,17 @@ class LatticeFileItem:
                             sdict.servers["%s/%s" % ("MagnetCircuit", system + "-" + location)]["MagnetCircuit"][
                                 circuit_ps_list[powersupplyname]].properties
                         # for circuits json
-                        print("cir name from ps ", circuit_ps_list[powersupplyname], psdict)
+                        print(("cir name from ps ", circuit_ps_list[powersupplyname], psdict))
                         ps_current_mags = psdict.Circuits[circuit_ps_list[powersupplyname]].Properties
-                        print("current mags ", current_mags['MagnetProxies'])
+                        print(("current mags ", current_mags['MagnetProxies']))
                         if name in current_mags['MagnetProxies']:
-                            print("circuit already has magnet ", name)
+                            print(("circuit already has magnet ", name))
                         else:
                             ps_current_mags['MagnetProxies'].append(name)
                             current_mags['MagnetProxies'].append(name)
 
-                        print("magnets on cir ", current_mags['ExcitationCurveFields'], current_mags['MagnetProxies'],
-                              len(current_mags['MagnetProxies']))
+                        print(("magnets on cir ", current_mags['ExcitationCurveFields'], current_mags['MagnetProxies'],
+                              len(current_mags['MagnetProxies'])))
                         # need to average the currents, even if already done so in excel (depends on field order)
                         if 'ExcitationCurveFields' in current_mags:
 
@@ -649,11 +649,11 @@ class LatticeFileItem:
                             assoc_curr_m = current_mags['ExcitationCurveCurrents']
                             this_curr_m = currentsmatrix
 
-                            print("field matrix assoc   is ", assoc_field_m)
-                            print("field matrix current is ", this_field_m)
+                            print(("field matrix assoc   is ", assoc_field_m))
+                            print(("field matrix current is ", this_field_m))
 
-                            print("current matrix assoc   is ", assoc_curr_m)
-                            print("current matrix current is ", this_curr_m)
+                            print(("current matrix assoc   is ", assoc_curr_m))
+                            print(("current matrix current is ", this_curr_m))
 
                             for i in range(dim):
                                 print(i)
@@ -671,12 +671,12 @@ class LatticeFileItem:
                                 newCurrents = [(x * (len(current_mags['MagnetProxies']) - 1) + y) / len(
                                     current_mags['MagnetProxies']) for y, x in zip(this_curr_m[i], assoc_curr_m[i])]
 
-                            print("new fields   ", newFields)
-                            print("new currents ", newCurrents)
+                            print(("new fields   ", newFields))
+                            print(("new currents ", newCurrents))
                             current_mags['ExcitationCurveFields'][i] = newFields
-                            print("updated: ", current_mags['ExcitationCurveFields'])
+                            print(("updated: ", current_mags['ExcitationCurveFields']))
                             current_mags['ExcitationCurveCurrents'][i] = newCurrents
-                            print("updated: ", current_mags['ExcitationCurveCurrents'])
+                            print(("updated: ", current_mags['ExcitationCurveCurrents']))
 
 
                 else:
@@ -769,7 +769,7 @@ if __name__ == '__main__':
         elif inFileName == '':
             inFileName = par
 
-    print(inFileName, doCalib)
+    print((inFileName, doCalib))
 
     if doAlarms or doCalib:
         import xlrd
@@ -781,13 +781,13 @@ if __name__ == '__main__':
         sheet = xls.sheet_by_name('Sheet1')
         rows = [sheet.row_values(i) for i in range(sheet.nrows)]
         column_names = rows[0]
-        print("cols ", column_names)
+        print(("cols ", column_names))
         for row in enumerate(rows[1:]):
             if row[1][0] == "":
                 continue
-            print(row[1][0], row[1][1])
+            print((row[1][0], row[1][1]))
             alarm_dict[row[1][0]] = row[1][1]
-        print("DICT IS ", alarm_dict)
+        print(("DICT IS ", alarm_dict))
 
         # make dict just for alarms! for pyalarm
         json_dict_alarms = SuperDict()
@@ -806,10 +806,10 @@ if __name__ == '__main__':
             sheet = xls.sheet_by_name(name)
             rows = [sheet.row_values(i) for i in range(sheet.nrows)]
             column_names = rows[7]
-            print("cols ", column_names)
+            print(("cols ", column_names))
 
             for row in enumerate(rows[9:]):
-                print(row[1])
+                print((row[1]))
                 if row[1][2] == "":
                     continue
                 # this is like 
@@ -824,13 +824,13 @@ if __name__ == '__main__':
                 else:
                     if row[1][7] is not "":
                         # we found more curves for the same magnet 
-                        print("found another entry", row[1][2], row[1][7])
+                        print(("found another entry", row[1][2], row[1][7]))
                         data_key = int(row[1][7])
                         data_list = row[1][3:48]
                         data_dict = {data_key: data_list}
                         calib_dict[row[1][2].strip()][data_key] = data_list
 
-        print("DICT IS ", calib_dict)
+        print(("DICT IS ", calib_dict))
 
     # create a parser for the file        
     parser = ElegantLatticeParser(inFileName)
@@ -850,7 +850,7 @@ if __name__ == '__main__':
 
     print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ")
     print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ")
-    print(json_dict.servers)
+    print((json_dict.servers))
 
     outfile = open('magnets.json', 'w')
 
@@ -867,11 +867,11 @@ if __name__ == '__main__':
                     for key in json_dict['servers'][item]["MagnetCircuit"][c]["properties"]:
                         if key == "ExcitationCurveCurrents":
                             ls = json_dict['servers'][item]["MagnetCircuit"][c]["properties"][key]
-                            print(key, [str(x) for x in ls])
+                            print((key, [str(x) for x in ls]))
                             json_dict['servers'][item]["MagnetCircuit"][c]["properties"][key] = [str(x) for x in ls]
                         if key == "ExcitationCurveFields":
                             ls = json_dict['servers'][item]["MagnetCircuit"][c]["properties"][key]
-                            print(key, [str(x) for x in ls])
+                            print((key, [str(x) for x in ls]))
                             json_dict['servers'][item]["MagnetCircuit"][c]["properties"][key] = [str(x) for x in ls]
 
     json.dump(json_dict, outfile, indent=4)

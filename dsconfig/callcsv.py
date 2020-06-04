@@ -21,7 +21,7 @@ def special_update(d, u):
     """
     if not (isinstance(d, Mapping) and isinstance(u, Mapping)):
         return d if d is not None else u
-    for k, v in u.items():
+    for k, v in list(u.items()):
         d[k] = special_update(d.get(k), v)
     return d
 
@@ -154,7 +154,7 @@ def process_call_list(lst, skip=False, verbose=True):
         prototype += ')'
         # Print prototype
         if verbose:
-            print("Executing: " + prototype)
+            print(("Executing: " + prototype))
         # Execute
         try:
             module = import_module(module_name)
@@ -260,7 +260,7 @@ def main(desc=None, module_name=None, function=None):
                 break
         else:
             msg = "'{0}' not found in {1}"
-            print(msg.format(prototype, get_call_list(input_file)))
+            print((msg.format(prototype, get_call_list(input_file))))
             return
     # Generate json file
     if module_name and function:

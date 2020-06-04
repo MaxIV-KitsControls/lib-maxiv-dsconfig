@@ -20,7 +20,7 @@ class SuperDict(defaultdict):
 
 
 def add_device(sdict, inst, dev, al_name, al_cond, al_desc, al_sev, al_rec):
-    print(inst, dev, al_name, al_cond, al_desc, al_sev, al_rec)
+    print((inst, dev, al_name, al_cond, al_desc, al_sev, al_rec))
     devdict = sdict.servers["PyAlarm/" + inst]["PyAlarm"][dev]
     if "AlarmList" not in devdict.properties:
         devdict.properties["AlarmList"] = []
@@ -44,7 +44,7 @@ def xls_to_dict(xls_filename):
         # above skips row 0 (col headers)
         # look at all rows but only read those with entry in first col
         if sheet.row_values(line)[0] is not "":
-            print("IN LINE ", line, sheet.row_values(line)[0])
+            print(("IN LINE ", line, sheet.row_values(line)[0]))
             dev_config = sheet.row_values(line)
             add_device(json_dict, *dev_config[:7])
     return json_dict
@@ -53,7 +53,7 @@ def xls_to_dict(xls_filename):
 def main():
     import sys
     data = xls_to_dict(sys.argv[1])
-    print(json.dumps(data, indent=4))
+    print((json.dumps(data, indent=4)))
     outfile = open('pyalarm_config.json', 'w')
     json.dump(data, outfile, indent=4)
 

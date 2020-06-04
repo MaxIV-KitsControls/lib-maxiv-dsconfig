@@ -73,7 +73,7 @@ def merge(d, u):
     """
     Recursively 'merge' a Mapping into another
     """
-    for k, v in u.items():
+    for k, v in list(u.items()):
         if isinstance(v, Mapping):
             if k in d:
                 merge(d[k], v)

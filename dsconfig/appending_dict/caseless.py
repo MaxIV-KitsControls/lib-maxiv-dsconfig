@@ -45,7 +45,7 @@ class CaselessDictionary(MutableMapping):
     def __init__(self, *args, **kwargs):
         self.__dict__["_dict"] = {}
         temp_dict = dict(*args, **kwargs)
-        for key, value in temp_dict.items():
+        for key, value in list(temp_dict.items()):
             if isinstance(key, str):
                 key = CaselessString.make_caseless(key)
             self._dict[key] = value

@@ -111,7 +111,7 @@ class AppendingDictTestCase(unittest.TestCase):
         ad = AppendingDict()
         ad["a"]["b"]["c"] = 1
         ad["a"]["b"]["c"] = 2
-        print(type(ad["a"]["b"]))
+        print((type(ad["a"]["b"])))
         self.assertDictEqual(ad, {"a": {"b": {"c": ['1', '2']}}})
 
     def test_initial_setting_with_dict(self):

@@ -325,7 +325,7 @@ def get_devices_by_name_and_class(dbproxy, name, clss="*"):
 
 def nwise(it, n):
     # [s_0, s_1, ...] => [(s_0, ..., s_(n-1)), (s_n, ... s_(2n-1)), ...]
-    return zip(*[islice(it, i, None, n) for i in range(n)])
+    return list(zip(*[islice(it, i, None, n) for i in range(n)]))
 
 
 def maybe_upper(s, upper=False):

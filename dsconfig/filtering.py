@@ -9,12 +9,12 @@ def filter_nested_dict(node, pattern, depth, level=0, invert=False):
     at the given depth.
     """
     if level == depth:
-        return dict((key, value) for key, value in node.items()
+        return dict((key, value) for key, value in list(node.items())
                     if (not invert and pattern.match(key)) or
                     (invert and not pattern.match(key)))
     else:
         dupe_node = {}
-        for key, val in node.items():
+        for key, val in list(node.items()):
             cur_node = filter_nested_dict(val, pattern, depth, level + 1,
                                           invert)
             if cur_node:
