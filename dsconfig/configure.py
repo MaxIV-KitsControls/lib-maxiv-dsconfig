@@ -1,19 +1,21 @@
-"""Functionality for configuring a Tango DB from a dsconfig file"""
+"""
+Functionality for configuring a Tango DB from a dsconfig file
+"""
 
 from collections import defaultdict
 from functools import partial
 
-import PyTango
-from appending_dict.caseless import CaselessDictionary
+import tango
 
-from utils import ObjectWrapper
-from tangodb import SPECIAL_ATTRIBUTE_PROPERTIES, is_protected
+from .appending_dict.caseless import CaselessDictionary
+from .tangodb import SPECIAL_ATTRIBUTE_PROPERTIES, is_protected
+from .utils import ObjectWrapper
 
 
 def check_attribute_property(propname):
     # Is this too strict? Do we ever need non-standard attr props?
     if (not propname.startswith("_")
-        and propname not in SPECIAL_ATTRIBUTE_PROPERTIES):
+            and propname not in SPECIAL_ATTRIBUTE_PROPERTIES):
         raise KeyError("Bad attribute property name: %s" % propname)
     return True
 
@@ -39,8 +41,8 @@ def update_properties(db, parent, db_props, new_props,
         # For attribute properties we need to go one step deeper into
         # the dict, since each attribute can have several properties.
         # A little messy, but at least it's consistent.
-        for attr, props in new_props.items():
-            for prop, value in props.items():
+        for attr, props in list(new_props.items()):
+            for prop, value in list(props.items()):
                 if ignore_case:
                     orig = CaselessDictionary(caseless_db_props.get(attr, {})).get(prop)
                 else:
@@ -49,7 +51,7 @@ def update_properties(db, parent, db_props, new_props,
                                                 or check_attribute_property(prop)):
                     added_props[attr][prop] = value
         removed_props = defaultdict(dict)
-        for attr, props in db_props.items():
+        for attr, props in list(db_props.items()):
             for prop in props:
                 if ignore_case:
                     new = CaselessDictionary(new_props.get(attr, {})).get(prop)
@@ -60,12 +62,12 @@ def update_properties(db, parent, db_props, new_props,
                     removed_props[attr][prop] = value
     else:
         added_props = {}
-        for prop, value in new_props.items():
+        for prop, value in list(new_props.items()):
             old_value = caseless_db_props.get(prop, [])
             if value and value != old_value:
                 added_props[prop] = value
         removed_props = {}
-        for prop, value in db_props.items():
+        for prop, value in list(db_props.items()):
             new_value = caseless_new_props.get(prop)
             if (new_value is None and not is_protected(prop)) or new_value == []:
                 # empty list forces removal of "protected" properties
@@ -89,22 +91,23 @@ def update_properties(db, parent, db_props, new_props,
 
 def update_server(db, server_name, server_dict, db_dict,
                   update=False, ignore_case=False,
-                  difactory=PyTango.DbDevInfo, strict_attr_props=True):
-
-    """Creates/removes devices for a given server. Optionally
-    ignores removed devices, only adding new and updating old ones."""
+                  difactory=tango.DbDevInfo, strict_attr_props=True):
+    """
+    Creates/removes devices for a given server. Optionally
+    ignores removed devices, only adding new and updating old ones.
+    """
 
     if ignore_case:
         db_dict = CaselessDictionary(db_dict)
 
-    for class_name, cls in server_dict.items():  # classes
+    for class_name, cls in list(server_dict.items()):  # classes
         if ignore_case:
             cls = CaselessDictionary(cls)
         removed_devices = [dev for dev in db_dict.get(class_name, {})
                            if dev not in cls
                            # never remove dservers
                            and not class_name.lower() == "dserver"]
-        added_devices = cls.items()
+        added_devices = list(cls.items())
         if not update:
             for device_name in removed_devices:
                 db.delete_device(device_name)
@@ -131,8 +134,9 @@ def update_server(db, server_name, server_dict, db_dict,
 def update_device_or_class(db, name, db_dict, new_dict,
                            cls=False, update=False, ignore_case=False,
                            strict_attr_props=True):
-
-    "Configure a device or a class"
+    """
+    Configure a device or a class
+    """
 
     # Note: if the "properties" key is missing, we'll just ignore any
     # existing properties in the DB. Ditto for attribute_properties.
@@ -167,8 +171,8 @@ update_class = partial(update_device_or_class, cls=True)
 
 def configure(data, dbdata, update=False, ignore_case=False,
               strict_attr_props=True):
-
-    """Takes an input data dict and the relevant current DB data.  Returns
+    """
+    Takes an input data dict and the relevant current DB data.  Returns
     the DB calls needed to bring the Tango DB to the state described
     by 'data'.  The 'update' flag means that servers/devices are not
     removed, only added or changed. If the 'ignore_case' flag is True,
@@ -182,8 +186,8 @@ def configure(data, dbdata, update=False, ignore_case=False,
 
     db = ObjectWrapper()
 
-    for servername, serverdata in data.get("servers", {}).items():
-        for instname, instdata in serverdata.items():
+    for servername, serverdata in list(data.get("servers", {}).items()):
+        for instname, instdata in list(serverdata.items()):
             dbinstdata = (dbdata.get("servers", {})
                           .get(servername, {})
                           .get(instname, {}))
@@ -192,7 +196,7 @@ def configure(data, dbdata, update=False, ignore_case=False,
                 instdata, dbinstdata, update, ignore_case,
                 strict_attr_props=strict_attr_props)
 
-    for classname, classdata in data.get("classes", {}).items():
+    for classname, classdata in list(data.get("classes", {}).items()):
         dbclassdata = dbdata.get("classes", {}).get(classname, {})
         update_class(db, classname, dbclassdata, classdata, update=update)
 

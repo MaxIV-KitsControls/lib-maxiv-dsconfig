@@ -1,20 +1,17 @@
 "Various functionality for dealing with the TANGO database"
 
 from collections import defaultdict
-from difflib import unified_diff
-from itertools import izip, islice
+from itertools import islice
 
-import PyTango
-
-from appending_dict import AppendingDict, SetterDict, CaselessDictionary
+import tango
 from dsconfig.utils import green, red, yellow
 
+from .appending_dict import AppendingDict, SetterDict, CaselessDictionary
 
 # These are special properties that we'll ignore for now
 PROTECTED_PROPERTIES = [
     "polled_attr", "logging_level", "logging_target"
 ]
-
 
 SPECIAL_ATTRIBUTE_PROPERTIES = [
     "label", "format", "unit", "standard_unit", "display_unit",
@@ -30,16 +27,16 @@ SPECIAL_ATTRIBUTE_PROPERTIES = [
 
 def get_devices_from_dict(dbdict, name=None):
     return [(server_name, instance_name, class_name, device_name)
-            for server_name, server in dbdict.items()
-            for instance_name, instance in server.items()
-            for class_name, clss in instance.items()
+            for server_name, server in list(dbdict.items())
+            for instance_name, instance in list(server.items())
+            for class_name, clss in list(instance.items())
             for device_name in clss
             if name is None or device_name.lower() == name.lower()]
 
 
 def get_servers_from_dict(dbdict):
     servers = set()
-    for server, children in dbdict.get("servers", {}).items():
+    for server, children in list(dbdict.get("servers", {}).items()):
         if "/" in server:
             servers.add(server)
         else:
@@ -49,9 +46,11 @@ def get_servers_from_dict(dbdict):
 
 
 def is_protected(prop, attr=False):
-    """There are certain properties that need special treatment as they
+    """
+    There are certain properties that need special treatment as they
     are handled in particular ways by Tango. In general, we don't want to
-    remove these if they exist, but we do allow overwriting them."""
+    remove these if they exist, but we do allow overwriting them.
+    """
     if attr:
         # Attribute config properties
         return prop.startswith("_") or prop in SPECIAL_ATTRIBUTE_PROPERTIES
@@ -60,7 +59,6 @@ def is_protected(prop, attr=False):
 
 
 def present_calls(indata, dbdata, dbcalls):
-
     # WIP!
 
     def add_device(devname, devinfo):
@@ -74,8 +72,9 @@ def present_calls(indata, dbdata, dbcalls):
 
 
 def summarise_calls(dbcalls, dbdata):
-
-    "A brief summary of the operations performed by a list of DB calls"
+    """
+    A brief summary of the operations performed by a list of DB calls
+    """
 
     methods = [
         "add_device",
@@ -109,7 +108,7 @@ def summarise_calls(dbcalls, dbdata):
             n = len(args[1])
             devices[method].add(args[0].upper())
         elif "attribute_property" in method:
-            n = sum(len(ps) for attr, ps in args[1].items())
+            n = sum(len(ps) for attr, ps in list(args[1].items()))
             devices[method].add(args[0].upper())
         elif "property" in method:
             n = len(args[1])
@@ -155,16 +154,17 @@ def summarise_calls(dbcalls, dbdata):
 
 
 def get_device(db, devname, data, skip_protected=True):
-
-    """Returns all relevant DB information about a given device:
-    alias (if any), properties, attribute properties"""
+    """
+    Returns all relevant DB information about a given device:
+    alias (if any), properties, attribute properties
+    """
 
     dev = {}
 
     try:
         alias = db.get_alias_from_device(devname)
         dev["alias"] = alias
-    except PyTango.DevFailed:
+    except tango.DevFailed:
         pass
 
     # Properties
@@ -172,7 +172,7 @@ def get_device(db, devname, data, skip_protected=True):
     db_props = db.get_device_property_list(devname, "*")
     if db_props:
         props = db.get_device_property(devname, list(db_props))
-        for prop, value in props.items():
+        for prop, value in list(props.items()):
             # We'll ignore "protected" properties unless they are present
             # in the input data (in that case we want to show that
             # they are changed)
@@ -195,11 +195,11 @@ def get_device(db, devname, data, skip_protected=True):
     if attr_props:
         attribute_properties = {}
         dbprops = db.get_device_attribute_property(devname,
-                                                   attr_props.keys())
-        for attr, props in dbprops.items():
+                                                   list(attr_props.keys()))
+        for attr, props in list(dbprops.items()):
             attr_props = dict(
                 (prop, [str(v) for v in values])
-                for prop, values in props.items()
+                for prop, values in list(props.items())
                 # Again, ignore attr_props that are not present in the
                 # input data, as we most likely don't want to remove those
                 if (not (skip_protected and is_protected(prop, True))
@@ -214,8 +214,8 @@ def get_device(db, devname, data, skip_protected=True):
 
 
 def get_dict_from_db(db, data, narrow=False, skip_protected=True):
-
-    """Takes a data dict, checks if any if the definitions are already
+    """
+    Takes a data dict, checks if any if the definitions are already
     in the DB and returns a dict describing them.
 
     By default it includes all devices for each server+class, use the
@@ -235,16 +235,16 @@ def get_dict_from_db(db, data, narrow=False, skip_protected=True):
             if devinfo.ds_full_name.lower() != srvname.lower():
                 moved_devices[devinfo.ds_full_name].append((clss, device))
 
-        except PyTango.DevFailed:
+        except tango.DevFailed:
             pass
 
     # Servers
-    for srvr, insts in data.get("servers", {}).items():
-        for inst, classes in insts.items():
-            for clss, devs in classes.items():
+    for srvr, insts in list(data.get("servers", {}).items()):
+        for inst, classes in list(insts.items()):
+            for clss, devs in list(classes.items()):
                 devs = CaselessDictionary(devs)
                 if narrow:
-                    devices = devs.keys()
+                    devices = list(devs.keys())
                 else:
                     srv_full_name = "%s/%s" % (srvr, inst)
                     devices = db.get_device_name(srv_full_name, clss)
@@ -254,9 +254,9 @@ def get_dict_from_db(db, data, narrow=False, skip_protected=True):
                     dbdict.servers[srvr][inst][clss][device] = db_props
 
     # Classes
-    for class_name, cls in data.get("classes", {}).items():
-        props = cls.get("properties", {}).keys()
-        for prop, value in db.get_class_property(class_name, props).items():
+    for class_name, cls in list(data.get("classes", {}).items()):
+        props = list(cls.get("properties", {}).keys())
+        for prop, value in list(db.get_class_property(class_name, props).items()):
             if value:
                 value = [str(v) for v in value]
                 dbdict.classes[class_name].properties[prop] = value
@@ -264,20 +264,22 @@ def get_dict_from_db(db, data, narrow=False, skip_protected=True):
         attr_props = cls.get("attribute_properties")
         if attr_props:
             dbprops = db.get_class_attribute_property(class_name,
-                                                      attr_props.keys())
-            for attr, props in dbprops.items():
+                                                      list(attr_props.keys()))
+            for attr, props in list(dbprops.items()):
                 props = dict((prop, [str(v) for v in values])
-                             for prop, values in props.items())
+                             for prop, values in list(props.items()))
                 dbdict.classes[class_name].attribute_properties[attr] = props
 
     return dbdict.to_dict(), moved_devices
 
 
 def find_empty_servers(db, data):
-    "Find any servers in the data that contain no devices, and remove them"
+    """
+    Find any servers in the data that contain no devices, and remove them
+    """
     servers = ["%s/%s" % (srv, inst)
-               for srv, insts in data["servers"].items()
-               for inst in insts.keys()]
+               for srv, insts in list(data["servers"].items())
+               for inst in list(insts.keys())]
     return [server for server in servers
             if all(d.lower().startswith('dserver/')
                    for d in db.get_device_class_list(server))]
@@ -290,7 +292,7 @@ def get_device_property_values(dbproxy, device, name="*",
     _, result = dbproxy.command_inout("DbMySqlSelect",
                                       query % (device, name.replace("*", "%")))
     data = defaultdict(list)
-    for prop, row in izip(result[::2], result[1::2]):
+    for prop, row in zip(result[::2], result[1::2]):
         if prop != "__SubDevices" or include_subdevices:
             data[prop].append(row)
     return data
@@ -300,9 +302,9 @@ def get_device_attribute_property_values(dbproxy, device, name="*"):
     query = ("SELECT attribute, name, value FROM property_attribute_device "
              "WHERE device = '%s' AND name LIKE '%s'")
     _, result = dbproxy.command_inout("DbMySqlSelect",
-        query % (device, name.replace("*", "%")))
+                                      query % (device, name.replace("*", "%")))
     data = AppendingDict()
-    for attr, prop, row in izip(result[::3], result[1::3], result[2::3]):
+    for attr, prop, row in zip(result[::3], result[1::3], result[2::3]):
         data[attr][prop] = row
     return data
 
@@ -317,13 +319,13 @@ def get_devices_by_name_and_class(dbproxy, name, clss="*"):
     query = ("SELECT name FROM device WHERE name LIKE '%s' "
              "AND class LIKE '%s'")
     _, result = dbproxy.command_inout("DbMySqlSelect",
-        query % (name.replace("*", "%"), clss.replace("*", "%")))
+                                      query % (name.replace("*", "%"), clss.replace("*", "%")))
     return result
 
 
 def nwise(it, n):
-    "[s_0, s_1, ...] => [(s_0, ..., s_(n-1)), (s_n, ... s_(2n-1)), ...]"
-    return izip(*[islice(it, i, None, n) for i in xrange(n)])
+    # [s_0, s_1, ...] => [(s_0, ..., s_(n-1)), (s_n, ... s_(2n-1)), ...]
+    return list(zip(*[islice(it, i, None, n) for i in range(n)]))
 
 
 def maybe_upper(s, upper=False):
@@ -356,7 +358,7 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
     # good to increase the timeout a bit.
     # TODO: maybe instead use automatic retry and increase timeout
     # each time?
-    dbproxy.set_timeout_millis(timeout*1000)
+    dbproxy.set_timeout_millis(timeout * 1000)
 
     if properties:
         # Get all relevant device properties
@@ -372,9 +374,7 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
         _, result = dbproxy.command_inout("DbMySqlSelect",
                                           query % (server, clss, device))
         for d, p, v in nwise(result, 3):
-            # the properties are encoded in latin-1; we want utf-8
-            decoded_value = v.decode('iso-8859-1').encode('utf8')
-            devices[maybe_upper(d, uppercase_devices)].properties[p] = decoded_value
+            devices[maybe_upper(d, uppercase_devices)].properties[p] = v
 
     if attribute_properties:
         # Get all relevant attribute properties
@@ -390,9 +390,7 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
         _, result = dbproxy.command_inout("DbMySqlSelect", query % (server, clss, device))
         for d, a, p, v in nwise(result, 4):
             dev = devices[maybe_upper(d, uppercase_devices)]
-            # the properties are encoded in latin-1; we want utf-8
-            decoded_value = v.decode('iso-8859-1').encode('utf8')
-            dev.attribute_properties[a][p] = decoded_value
+            dev.attribute_properties[a][p] = v
 
     devices = devices.to_dict()
 
@@ -430,7 +428,7 @@ def get_classes_properties(dbproxy, server='*', cls_properties=True,
     # Mysql wildcards
     server = server.replace("*", "%")
     # Change device proxy timeout
-    dbproxy.set_timeout_millis(timeout*1000)
+    dbproxy.set_timeout_millis(timeout * 1000)
     # Classes output dict
     classes = AppendingDict()
     # Get class properties
@@ -448,9 +446,7 @@ def get_classes_properties(dbproxy, server='*', cls_properties=True,
         _, result = dbproxy.command_inout("DbMySqlSelect", querry % (server))
         # Build the output based on: class, property: value
         for c, p, v in nwise(result, 3):
-            # the properties are encoded in latin-1; we want utf-8
-            decoded_value = v.decode('iso-8859-1').encode('utf8')
-            classes[c].properties[p] = decoded_value
+            classes[c].properties[p] = v
     # Get class attribute properties
     if cls_attribute_properties:
         querry = (

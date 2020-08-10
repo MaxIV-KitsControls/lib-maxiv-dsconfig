@@ -168,6 +168,6 @@ class FilterTestCase(TestCase):
         filtered = filter_config(data, ["device:.*test/3", "device:^a/"],
                                  SERVERS_LEVELS)
         import json
-        print(json.dumps(filtered, indent=4))
-        print(json.dumps(expected, indent=4))
+        print((json.dumps(filtered, indent=4)))
+        print((json.dumps(expected, indent=4)))
         self.assertEqual(filtered, expected)

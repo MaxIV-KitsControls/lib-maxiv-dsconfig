@@ -1,10 +1,11 @@
-"""A caseless dictionary implementation."""
+"""
+A caseless dictionary implementation.
+"""
 
 from collections import MutableMapping
 
 
 class CaselessDictionary(MutableMapping):
-
     """
     A dictionary-like object which ignores but preserves the case of strings.
 
@@ -44,8 +45,8 @@ class CaselessDictionary(MutableMapping):
     def __init__(self, *args, **kwargs):
         self.__dict__["_dict"] = {}
         temp_dict = dict(*args, **kwargs)
-        for key, value in temp_dict.iteritems():
-            if isinstance(key, basestring):
+        for key, value in list(temp_dict.items()):
+            if isinstance(key, str):
                 key = CaselessString.make_caseless(key)
             self._dict[key] = value
 
@@ -72,12 +73,13 @@ class CaselessDictionary(MutableMapping):
         return [str(k) for k in self._dict]
 
     def items(self):
-        return zip(self.keys(), self.values())
+        return list(zip(list(self.keys()), list(self.values())))
 
 
 class CaselessString(object):
-
-    """A mixin to make a string subclass case-insensitive in dict lookups."""
+    """
+    A mixin to make a string subclass case-insensitive in dict lookups.
+    """
 
     def __hash__(self):
         return hash(self.lower())
@@ -90,7 +92,7 @@ class CaselessString(object):
 
     @classmethod
     def make_caseless(cls, string):
-        if isinstance(string, unicode):
+        if isinstance(string, str):
             return CaselessUnicode(string)
         return CaselessStr(string)
 
@@ -99,5 +101,5 @@ class CaselessStr(CaselessString, str):
     pass
 
 
-class CaselessUnicode(CaselessString, unicode):
+class CaselessUnicode(CaselessString, str):
     pass

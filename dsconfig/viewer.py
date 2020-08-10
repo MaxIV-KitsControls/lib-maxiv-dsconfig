@@ -8,9 +8,9 @@ editing features.
 """
 
 import urwid
+from urwidtrees.decoration import CollapsibleIndentedTree
 from urwidtrees.tree import Tree
 from urwidtrees.widgets import TreeBox
-from urwidtrees.decoration import CollapsibleIndentedTree
 
 
 class FocusableText(urwid.WidgetWrap):
@@ -20,7 +20,7 @@ class FocusableText(urwid.WidgetWrap):
         child = get_path(path, data)
         if isinstance(txt, int):  # we're in a list
             # TODO: support containers inside lists
-            a = urwid.Text(str(txt)+":")
+            a = urwid.Text(str(txt) + ":")
             if isinstance(child, dict):
                 b = urwid.Text("<object>")
             else:
@@ -68,10 +68,10 @@ class MyTree(Tree):
         node = get_path(path, self.data)
         if node:
             if isinstance(node, dict):
-                children = node.keys()
+                children = list(node.keys())
                 return [path + (child,) for child in sorted(children)]
             elif isinstance(node, list):
-                children = range(len(node))
+                children = list(range(len(node)))
                 return [path + (child,) for child in children]
         return []
 
@@ -121,7 +121,9 @@ class MyTree(Tree):
 class MyTreeBox(TreeBox):
 
     def keypress(self, size, key):
-        "Spicing up the keybindings!"
+        """
+        Spicing up the keybindings!
+        """
         # if key == "delete":
         #     _, path = self.get_focus()
         #     self.set_focus(path[:-1])
@@ -149,7 +151,6 @@ palette = [
     ('connectors', 'light red', 'light gray', ''),
 ]
 
-
 if __name__ == "__main__":
 
     import json
@@ -159,6 +160,8 @@ if __name__ == "__main__":
     # make ctrl+C exit properly, without breaking the terminal
     def exit_handler(signum, frame):
         raise urwid.ExitMainLoop()
+
+
     signal.signal(signal.SIGINT, exit_handler)
 
     # redirecting stdin breaks things. This was supposed to help
