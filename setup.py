@@ -21,7 +21,6 @@ setup(
     # Scripts
     entry_points={
         "console_scripts": ["xls2json = dsconfig.excel:main",
-                            "csv2json = dsconfig.callcsv:main",
                             "json2tango = dsconfig.json2tango:main"]
     }
 )
