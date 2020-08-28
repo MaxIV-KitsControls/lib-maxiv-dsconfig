@@ -1,4 +1,5 @@
 from collections import defaultdict, Mapping
+
 from .caseless import CaselessDictionary
 
 
@@ -32,7 +33,7 @@ class SetterDict(CaselessDictionary, defaultdict):
         self.__dict__["_factory"] = factory
         CaselessDictionary.__init__(self)
         defaultdict.__init__(self, factory)
-        for k, v in value.items():
+        for k, v in list(value.items()):
             self[k] = v
 
     def __getitem__(self, key):
@@ -56,9 +57,11 @@ class SetterDict(CaselessDictionary, defaultdict):
         return self.__setitem__(key, value)
 
     def to_dict(self):
-        """Returns a ordinary dict version of itself"""
+        """
+        Returns a ordinary dict version of itself
+        """
         result = {}
-        for key, value in self.items():
+        for key, value in list(self.items()):
             if isinstance(value, SetterDict):
                 result[key] = value.to_dict()
             else:
@@ -67,8 +70,10 @@ class SetterDict(CaselessDictionary, defaultdict):
 
 
 def merge(d, u):
-    "Recursively 'merge' a Mapping into another"
-    for k, v in u.iteritems():
+    """
+    Recursively 'merge' a Mapping into another
+    """
+    for k, v in list(u.items()):
         if isinstance(v, Mapping):
             if k in d:
                 merge(d[k], v)
@@ -86,8 +91,8 @@ def list_of_strings(value):
 
 
 class AppendingDict(SetterDict):
-
-    """An extra weird SetterDict where assignment adds items instead of
+    """
+    An extra weird SetterDict where assignment adds items instead of
     overwriting. It also allows setting nested values using dicts (or
     any Mapping). Scalar values are converted into lists of strings.
 

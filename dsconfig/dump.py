@@ -8,19 +8,19 @@ $ python -m dsconfig.dump device:sys/tg_test/1 device:sys/tg_test/2
 
 """
 
-from tangodb import get_servers_with_filters, get_classes_properties
-from appending_dict import SetterDict
-import PyTango
+import tango
+
+from .appending_dict import SetterDict
+from .tangodb import get_servers_with_filters, get_classes_properties
 
 
 def get_db_data(db, patterns=None, class_properties=False, **options):
-
     # dump TANGO database into JSON. Optionally filter which things to include
     # (currently only "positive" filters are possible; you can say which
     # servers/classes/devices to include, but you can't exclude selectively)
     # By default, dserver devices aren't included!
 
-    dbproxy = PyTango.DeviceProxy(db.dev_name())
+    dbproxy = tango.DeviceProxy(db.dev_name())
     data = SetterDict()
 
     if not patterns:
@@ -40,13 +40,12 @@ def get_db_data(db, patterns=None, class_properties=False, **options):
             servers = get_servers_with_filters(dbproxy, **kwargs)
             data.servers.update(servers)
             if class_properties:
-                classes = get_classes_properties(dbproxy,  server=pattern)
+                classes = get_classes_properties(dbproxy, server=pattern)
                 data.classes.update(classes)
     return data.to_dict()
 
 
 def main():
-
     import json
     from optparse import OptionParser
 
@@ -74,14 +73,14 @@ def main():
 
     options, args = parser.parse_args()
 
-    db = PyTango.Database()
+    db = tango.Database()
     dbdata = get_db_data(db, args,
                          properties=options.properties,
                          class_properties=options.class_properties,
                          attribute_properties=options.attribute_properties,
                          aliases=options.aliases, dservers=options.dservers,
                          subdevices=options.subdevices)
-    print json.dumps(dbdata, ensure_ascii=False, indent=4, sort_keys=True)
+    print((json.dumps(dbdata, ensure_ascii=False, indent=4, sort_keys=True)))
 
 
 if __name__ == "__main__":

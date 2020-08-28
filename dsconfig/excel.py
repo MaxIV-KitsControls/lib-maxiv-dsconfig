@@ -3,17 +3,18 @@ Routines for reading an Excel file containing server, class and device definitio
 producing a file in the TangoDB JSON format.
 """
 
-from datetime import datetime
 import json
 import os
 import re
 import sys
-#from traceback import format_exc
+from datetime import datetime
 
-from utils import find_device
-from appending_dict import AppendingDict
-from utils import CaselessDict
-from tangodb import SPECIAL_ATTRIBUTE_PROPERTIES
+from .appending_dict import AppendingDict
+from .tangodb import SPECIAL_ATTRIBUTE_PROPERTIES
+from .utils import CaselessDict
+from .utils import find_device
+
+# from traceback import format_exc
 
 MODE_MAPPING = CaselessDict({"ATTR": "DynamicAttributes",
                              "CMD": "DynamicCommands",
@@ -23,9 +24,11 @@ MODE_MAPPING = CaselessDict({"ATTR": "DynamicAttributes",
 TYPE_MAPPING = CaselessDict({"INT": int,
                              "FLOAT": float})
 
-def get_properties(row):
 
-    "Find property definitions on a row"
+def get_properties(row):
+    """
+    Find property definitions on a row
+    """
 
     prop_dict = AppendingDict()
 
@@ -42,7 +45,7 @@ def get_properties(row):
                 name, value = prop.split("=")
                 # need to decode the string, otherwise any linebreaks
                 # will be escaped.
-                value = value.decode("string-escape")
+                value = str(value) # .decode("string-escape")
                 # Support inline multiline properties using "\n"
                 prop_dict[name.strip()] = [v.strip()
                                            for v in value.split("\n")]
@@ -54,7 +57,7 @@ def get_properties(row):
     # as floats. If the number must be inserterd as an int, use the "(INT)"
     # modifier. There does not seem to be a way to force a numeric cell to
     # be interpreted as a string.
-    for col_name, value in row.items():
+    for col_name, value in list(row.items()):
         match = re.match("property(?:\((.*)\))?:(.*)", col_name, re.IGNORECASE)
         if match and (value is not None):  # protect against zero, false...
             type_, name = match.groups()
@@ -62,7 +65,7 @@ def get_properties(row):
                 convert = TYPE_MAPPING[type_]
                 values = [convert(value)]
             else:
-                value = str(value).decode("string-escape")
+                value = str(value)
                 values = [v.strip() for v in value.split("\n")]
             prop_dict[name] = values
 
@@ -70,7 +73,6 @@ def get_properties(row):
 
 
 def get_attribute_properties(row):
-
     if "attribute" in row:
         attribute = row["attribute"]
         prop_dict = AppendingDict()
@@ -83,13 +85,12 @@ def get_attribute_properties(row):
                     if name not in SPECIAL_ATTRIBUTE_PROPERTIES:
                         raise ValueError(
                             "'%s' is not a valid attribute property" % name)
-                    value = value.decode("string-escape")  # for linebreaks
                     prop_dict[name.strip()] = [v.strip()
                                                for v in value.split("\n")]
             except ValueError:
                 raise ValueError("could not parse AttributeProperties")
 
-        for col_name, value in row.items():
+        for col_name, value in list(row.items()):
             match = re.match("attrprop:(.*)", col_name, re.IGNORECASE)
             if match and value:
                 name, = match.groups()
@@ -97,7 +98,7 @@ def get_attribute_properties(row):
                 if name not in SPECIAL_ATTRIBUTE_PROPERTIES:
                     raise ValueError("'%s' it not a valid attribute property"
                                      % name)
-                value = str(value).decode("string-escape")
+                value = str(value)
                 values = [v.strip() for v in value.split("\n")]
                 prop_dict[name] = values
 
@@ -105,7 +106,9 @@ def get_attribute_properties(row):
 
 
 def get_dynamic(row):
-    "Find dynamic definitions on a row"
+    """
+    Find dynamic definitions on a row
+    """
 
     prop_dict = AppendingDict()
     try:
@@ -127,17 +130,22 @@ def get_dynamic(row):
 
 
 def make_db_name(name):
-    "convert a Space Separated Name into a lowercase, underscore_separated_name"
+    """
+    Convert a Space Separated Name into a lowercase, underscore_separated_name
+    """
     return name.strip().lower().replace(" ", "_")
 
 
 def check_formula(formula):
-    "Syntax check a dynamic formula."
+    """
+    Syntax check a dynamic formula.
+    """
     compile(formula, "<stdin>", "single")
 
 
 def check_device_format(devname):
-    """Verify that a device name is of the correct form (three parts
+    """
+    Verify that a device name is of the correct form (three parts
     separated by slashes, only letters, numbers, dashes and
     underscores allowed.)  Note: We could put more logic here to make
     device names conform to a standard.
@@ -148,14 +156,17 @@ def check_device_format(devname):
 
 
 def format_server_instance(row):
-    "Format a server/instance string"
+    """
+    Format a server/instance string
+    """
     # TODO: handle numeric instance names? They tend to turn up as floats...
     return "%s/%s" % (row["server"], row["instance"])
 
 
 def convert(rows, definitions, skip=True, dynamic=False, config=False):
-
-    "Update a dict of definitions from data"
+    """
+    Update a dict of definitions from data
+    """
 
     errors = []
     column_names = rows[0]
@@ -188,8 +199,8 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
                     # full device definition
                     # target is "lazily" evaluated, so that we don't create
                     # an empty dict if it turns out there are no members
-                    target = lambda: definitions.servers[row["server"]][row["instance"]]\
-                             [row["class"]][row["device"]]
+                    target = lambda: definitions.servers[row["server"]][row["instance"]] \
+                        [row["class"]][row["device"]]
                 else:
                     # don't know if the device is already defined
                     target = lambda: find_device(definitions, row["device"])[0]
@@ -214,7 +225,7 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
                     target().properties = props
 
         except KeyError as ke:
-            #handle_error(i, "insufficient data (%s)" % ke)
+            # handle_error(i, "insufficient data (%s)" % ke)
             pass
         except ValueError as ve:
             handle_error(i, "Error: %s" % ve)
@@ -229,15 +240,16 @@ def convert(rows, definitions, skip=True, dynamic=False, config=False):
 
 def print_errors(errors):
     if errors:
-        print >> sys.stderr, "%d lines skipped" % len(errors)
+        print("%d lines skipped" % len(errors), file=sys.stderr)
         for err in errors:
             line, msg = err
-            print >> sys.stderr, "%d: %s" % (line + 1, msg)
+            print("%d: %s" % (line + 1, msg), file=sys.stderr)
 
 
 def xls_to_dict(xls_filename, pages=None, skip=False):
-
-    """Make JSON out of an XLS sheet of device definitions."""
+    """
+    Make JSON out of an XLS sheet of device definitions.
+    """
 
     import xlrd
 
@@ -256,10 +268,10 @@ def xls_to_dict(xls_filename, pages=None, skip=False):
 
     for page in pages:
 
-        print >>sys.stderr, "\nPage: %s" % page
+        print("\nPage: %s" % page, file=sys.stderr)
         sheet = xls.sheet_by_name(page)
         rows = [sheet.row_values(i)
-                for i in xrange(sheet.nrows)]
+                for i in range(sheet.nrows)]
         if not rows:
             continue  # ignore empty pages
         errors = convert(rows, definitions, skip=skip,
@@ -271,19 +283,21 @@ def xls_to_dict(xls_filename, pages=None, skip=False):
 
 
 def get_stats(defs):
-    "Calculate some numbers"
+    """
+    Calculate some numbers
+    """
 
     servers = set()
     instances = set()
     classes = set()
     devices = set()
 
-    for server, instances in defs.servers.items():
+    for server, instances in list(defs.servers.items()):
         servers.add(server)
         instances.update(instances)
-        for clsname, devs in instances.items():
+        for clsname, devs in list(instances.items()):
             classes.add(clsname)
-            for devname, dev in devs.items():
+            for devname, dev in list(devs.items()):
                 devices.add(devname)
 
     return {"servers": len(servers), "instances": len(instances),
@@ -320,15 +334,15 @@ def main():
     data.update(metadata)
 
     if not options.test:
-        print json.dumps(data, indent=4)
+        print(json.dumps(data, indent=4))
         outfile = open('config.json', 'w')
         json.dump(data, outfile, indent=4)
 
     stats = get_stats(data)
 
-    print >>sys.stderr, ("\n"
-        "Total: %(servers)d servers, %(instances)d instances, "
-        "%(classes)d classes and %(devices)d devices defined.") % stats
+    print(("\n"
+           "Total: %(servers)d servers, %(instances)d instances, "
+           "%(classes)d classes and %(devices)d devices defined.") % stats, file=sys.stderr)
 
 
 if __name__ == "__main__":

@@ -5,24 +5,175 @@ to get to the state described by the file. These commands can also
 optionally be run.
 """
 
+import json
 import sys
 import time
-import json
 from optparse import OptionParser
 from tempfile import NamedTemporaryFile
 
-import PyTango
+import tango
+from dsconfig.appending_dict.caseless import CaselessDictionary
 from dsconfig.configure import configure
+from dsconfig.dump import get_db_data
 from dsconfig.filtering import filter_config
 from dsconfig.formatting import (CLASSES_LEVELS, SERVERS_LEVELS, load_json,
                                  normalize_config, validate_json,
                                  clean_metadata)
-from dsconfig.tangodb import summarise_calls, get_devices_from_dict
-from dsconfig.dump import get_db_data
-from dsconfig.utils import green, red, yellow, progressbar, no_colors
-from dsconfig.utils import SUCCESS, ERROR, CONFIG_APPLIED, CONFIG_NOT_APPLIED
 from dsconfig.output import show_actions
-from dsconfig.appending_dict.caseless import CaselessDictionary
+from dsconfig.tangodb import summarise_calls, get_devices_from_dict
+from dsconfig.utils import SUCCESS, ERROR, CONFIG_APPLIED, CONFIG_NOT_APPLIED
+from dsconfig.utils import green, red, yellow, progressbar, no_colors
+
+
+def json_to_tango(options, args):
+
+    if options.no_colors:
+        no_colors()
+
+    if len(args) == 0:
+        data = load_json(sys.stdin)
+    else:
+        json_file = args[0]
+        with open(json_file) as f:
+            data = load_json(f)
+
+    # Normalization - making the config conform to standard
+    data = normalize_config(data)
+
+    # remove any metadata at the top level (should we use this for something?)
+    data = clean_metadata(data)
+
+    # Optional validation of the JSON file format.
+    if options.validate:
+        validate_json(data)
+
+    # filtering
+    try:
+        if options.include:
+            data["servers"] = filter_config(
+                data.get("servers", {}), options.include, SERVERS_LEVELS)
+        if options.exclude:
+            data["servers"] = filter_config(
+                data.get("servers", {}), options.exclude, SERVERS_LEVELS, invert=True)
+        if options.include_classes:
+            data["classes"] = filter_config(
+                data.get("classes", {}), options.include_classes, CLASSES_LEVELS)
+        if options.exclude_classes:
+            data["classes"] = filter_config(
+                data.get("classes", {}), options.exclude_classes, CLASSES_LEVELS,
+                invert=True)
+    except ValueError as e:
+        print(red("Filter error:\n%s" % e), file=sys.stderr)
+        sys.exit(ERROR)
+
+    if not any(k in data for k in ("devices", "servers", "classes")):
+        sys.exit(ERROR)
+
+    if options.input:
+        print(json.dumps(data, indent=4))
+        return
+
+    # check if there is anything in the DB that will be changed or removed
+    db = tango.Database()
+    if options.dbdata:
+        with open(options.dbdata) as f:
+            original = json.loads(f.read())
+        collisions = {}
+    else:
+        original = get_db_data(db, dservers=True, class_properties=True)
+        if "servers" in data:
+            devices = CaselessDictionary({
+                dev: (srv, inst, cls)
+                for srv, inst, cls, dev
+                in get_devices_from_dict(data["servers"])
+            })
+        else:
+            devices = CaselessDictionary({})
+        orig_devices = CaselessDictionary({
+            dev: (srv, inst, cls)
+            for srv, inst, cls, dev
+            in get_devices_from_dict(original["servers"])
+        })
+        collisions = {}
+        for dev, (srv, inst, cls) in list(devices.items()):
+            if dev in orig_devices:
+                server = "{}/{}".format(srv, inst)
+                osrv, oinst, ocls = orig_devices[dev]
+                origserver = "{}/{}".format(osrv, oinst)
+                if server.lower() != origserver.lower():
+                    collisions.setdefault(origserver, []).append((ocls, dev))
+
+    # get the list of DB calls needed
+    dbcalls = configure(data, original,
+                        update=options.update,
+                        ignore_case=not options.case_sensitive,
+                        strict_attr_props=not options.nostrictcheck)
+
+    # Print out a nice diff
+    if options.verbose:
+        show_actions(original, dbcalls)
+
+    # perform the db operations (if we're supposed to)
+    if options.write and dbcalls:
+        for i, (method, args, kwargs) in enumerate(dbcalls):
+            if options.sleep:
+                time.sleep(options.sleep)
+            if options.verbose:
+                progressbar(i, len(dbcalls), 20)
+            getattr(db, method)(*args, **kwargs)
+        print()
+
+    # optionally dump some information to stdout
+    if options.output:
+        print(json.dumps(original, indent=4))
+    if options.dbcalls:
+        print("Tango database calls:", file=sys.stderr)
+        for method, args, kwargs in dbcalls:
+            print(method, args, file=sys.stderr)
+
+    # Check for moved devices and remove empty servers
+    empty = set()
+    for srvname, devs in list(collisions.items()):
+        if options.verbose:
+            srv, inst = srvname.split("/")
+            for cls, dev in devs:
+                print(red("MOVED (because of collision):"), dev, file=sys.stderr)
+                print("    Server: ", "{}/{}".format(srv, inst), file=sys.stderr)
+                print("    Class: ", cls, file=sys.stderr)
+        if len(db.get_device_class_list(srvname)) == 2:  # just dserver
+            empty.add(srvname)
+            if options.write:
+                db.delete_server(srvname)
+
+    # finally print out a brief summary of what was done
+    if dbcalls:
+        print()
+        print("Summary:", file=sys.stderr)
+        print("\n".join(summarise_calls(dbcalls, original)), file=sys.stderr)
+        if collisions:
+            servers = len(collisions)
+            devices = sum(len(devs) for devs in list(collisions.values()))
+            print(red("Move %d devices from %d servers." %
+                      (devices, servers)), file=sys.stderr)
+        if empty and options.verbose:
+            print(red("Removed %d empty servers." % len(empty)), file=sys.stderr)
+
+        if options.write:
+            print(red("\n*** Data was written to the Tango DB ***"), file=sys.stderr)
+            with NamedTemporaryFile(prefix="dsconfig-", suffix=".json",
+                                    delete=False) as f:
+                f.write(json.dumps(original, indent=4).encode())
+                print(("The previous DB data was saved to %s" %
+                       f.name), file=sys.stderr)
+            sys.exit(CONFIG_APPLIED)
+        else:
+            print(yellow(
+                "\n*** Nothing was written to the Tango DB (use -w) ***"), file=sys.stderr)
+            sys.exit(CONFIG_NOT_APPLIED)
+
+    else:
+        print(green("\n*** No changes needed in Tango DB ***"), file=sys.stderr)
+        sys.exit(SUCCESS)
 
 
 def main():
@@ -78,154 +229,7 @@ def main():
 
     options, args = parser.parse_args()
 
-    if options.no_colors:
-        no_colors()
-
-    if len(args) == 0:
-        data = load_json(sys.stdin)
-    else:
-        json_file = args[0]
-        with open(json_file) as f:
-            data = load_json(f)
-
-    # Normalization - making the config conform to standard
-    data = normalize_config(data)
-
-    # remove any metadata at the top level (should we use this for something?)
-    data = clean_metadata(data)
-
-    # Optional validation of the JSON file format.
-    if options.validate:
-        validate_json(data)
-
-    # filtering
-    try:
-        if options.include:
-            data["servers"] = filter_config(
-                data.get("servers", {}), options.include, SERVERS_LEVELS)
-        if options.exclude:
-            data["servers"] = filter_config(
-                data.get("servers", {}), options.exclude, SERVERS_LEVELS, invert=True)
-        if options.include_classes:
-            data["classes"] = filter_config(
-                data.get("classes", {}), options.include_classes, CLASSES_LEVELS)
-        if options.exclude_classes:
-            data["classes"] = filter_config(
-                data.get("classes", {}), options.exclude_classes, CLASSES_LEVELS,
-                invert=True)
-    except ValueError as e:
-        print >>sys.stderr, red("Filter error:\n%s" % e)
-        sys.exit(ERROR)
-
-    if not any(k in data for k in ("devices", "servers", "classes")):
-        sys.exit(ERROR)
-
-
-    if options.input:
-        print json.dumps(data, indent=4)
-        return
-
-    # check if there is anything in the DB that will be changed or removed
-    db = PyTango.Database()
-    if options.dbdata:
-        with open(options.dbdata) as f:
-            original = json.loads(f.read())
-        collisions = {}
-    else:
-        original = get_db_data(db, dservers=True, class_properties=True)
-        if "servers" in data:
-            devices = CaselessDictionary({
-                dev: (srv, inst, cls)
-                for srv, inst, cls, dev
-                in get_devices_from_dict(data["servers"])
-            })
-        else:
-            devices = CaselessDictionary({})
-        orig_devices = CaselessDictionary({
-            dev: (srv, inst, cls)
-            for srv, inst, cls, dev
-            in get_devices_from_dict(original["servers"])
-        })
-        collisions = {}
-        for dev, (srv, inst, cls) in devices.items():
-            if dev in orig_devices:
-                server = "{}/{}".format(srv, inst)
-                osrv, oinst, ocls = orig_devices[dev]
-                origserver = "{}/{}".format(osrv, oinst)
-                if server.lower() != origserver.lower():
-                    collisions.setdefault(origserver, []).append((ocls, dev))
-
-    # get the list of DB calls needed
-    dbcalls = configure(data, original,
-                        update=options.update,
-                        ignore_case=not options.case_sensitive,
-                        strict_attr_props=not options.nostrictcheck)
-
-    # Print out a nice diff
-    if options.verbose:
-        show_actions(original, dbcalls)
-
-    # perform the db operations (if we're supposed to)
-    if options.write and dbcalls:
-        for i, (method, args, kwargs) in enumerate(dbcalls):
-            if options.sleep:
-                time.sleep(options.sleep)
-            if options.verbose:
-                progressbar(i, len(dbcalls), 20)
-            getattr(db, method)(*args, **kwargs)
-        print
-
-    # optionally dump some information to stdout
-    if options.output:
-        print json.dumps(original, indent=4)
-    if options.dbcalls:
-        print >>sys.stderr, "Tango database calls:"
-        for method, args, kwargs in dbcalls:
-            print >>sys.stderr, method, args
-
-    # Check for moved devices and remove empty servers
-    empty = set()
-    for srvname, devs in collisions.items():
-        if options.verbose:
-            srv, inst = srvname.split("/")
-            for cls, dev in devs:
-                print >>sys.stderr, red("MOVED (because of collision):"), dev
-                print >>sys.stderr, "    Server: ", "{}/{}".format(srv, inst)
-                print >>sys.stderr, "    Class: ", cls
-        if len(db.get_device_class_list(srvname)) == 2:  # just dserver
-            empty.add(srvname)
-            if options.write:
-                db.delete_server(srvname)
-
-    # finally print out a brief summary of what was done
-    if dbcalls:
-        print
-        print >>sys.stderr, "Summary:"
-        print >>sys.stderr, "\n".join(summarise_calls(dbcalls, original))
-        if collisions:
-            servers = len(collisions)
-            devices = sum(len(devs) for devs in collisions.values())
-            print >>sys.stderr, red("Move %d devices from %d servers." %
-                                    (devices, servers))
-        if empty and options.verbose:
-            print >>sys.stderr, red("Removed %d empty servers." % len(empty))
-
-        if options.write:
-            print >>sys.stderr, red("\n*** Data was written to the Tango DB ***")
-            with NamedTemporaryFile(prefix="dsconfig-", suffix=".json",
-                                    delete=False) as f:
-                f.write(json.dumps(original, indent=4))
-                print >>sys.stderr, ("The previous DB data was saved to %s" %
-                                     f.name)
-            sys.exit(CONFIG_APPLIED)
-        else:
-            print >>sys.stderr, yellow(
-                "\n*** Nothing was written to the Tango DB (use -w) ***")
-            sys.exit(CONFIG_NOT_APPLIED)
-
-    else:
-        print >>sys.stderr, green("\n*** No changes needed in Tango DB ***")
-        sys.exit(SUCCESS)
+    json_to_tango(options, args)
 
 
 if __name__ == "__main__":
