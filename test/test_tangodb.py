@@ -1,6 +1,6 @@
 import PyTango
 import pytest
-from dsconfig.tangodb import get_dict_from_db
+from dsconfig.tangodb import get_dict_from_db, get_servers_with_filters
 from dsconfig.utils import ObjectWrapper, find_device
 from unittest.mock import Mock, MagicMock, create_autospec
 
@@ -54,3 +54,29 @@ def test_get_dict_from_db():
 
     db = make_db(dbdata)
     print(get_dict_from_db(db, indata))
+
+
+def test_get_props_with_mixed_case():
+    db = create_autospec(PyTango.Database)
+    query_results = [
+        (None, [
+            "a/b/c", "prop1", "prop1 line 1",
+            "A/B/C", "prop1", "prop1 line 2",
+            "A/B/C", "prop1", "prop1 line 3",
+            "A/B/C", "prop2", "prop2 line 1",
+            "A/B/C", "prop2", "prop2 line 2",
+        ]),
+        (None, [
+            "TangoTest/1", "TangoTest", "A/B/C", "some_alias"
+        ])
+    ]
+    db.command_inout = Mock(side_effect=query_results)
+    data = get_servers_with_filters(attribute_properties=False, dbproxy=db)
+    data = data.to_dict()
+    assert data["TangoTest"]["1"]["TangoTest"]["A/B/C"]["properties"]["prop1"] == [
+        "prop1 line 1",
+        "prop1 line 2",
+        "prop1 line 3"]
+    assert data["TangoTest"]["1"]["TangoTest"]["A/B/C"]["properties"]["prop2"] == [
+        "prop2 line 1",
+        "prop2 line 2"]

@@ -374,7 +374,7 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
         _, result = dbproxy.command_inout("DbMySqlSelect",
                                           query % (server, clss, device))
         for d, p, v in nwise(result, 3):
-            devices[maybe_upper(d, uppercase_devices)].properties[p] = v
+            devices[d.upper()].properties[p] = v
 
     if attribute_properties:
         # Get all relevant attribute properties
@@ -389,7 +389,7 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
             query += " AND class != 'DServer'"
         _, result = dbproxy.command_inout("DbMySqlSelect", query % (server, clss, device))
         for d, a, p, v in nwise(result, 4):
-            dev = devices[maybe_upper(d, uppercase_devices)]
+            dev = devices[d.upper()]
             dev.attribute_properties[a][p] = v
 
     devices = devices.to_dict()
@@ -412,7 +412,7 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
             # Malformed server name? It can happen!
             continue
         devname = maybe_upper(d, uppercase_devices)
-        device = devices.get(devname, {})
+        device = devices.get(devname.upper(), {})
         if a and aliases:
             device["alias"] = a
         servers[srv][inst][c][devname] = device
