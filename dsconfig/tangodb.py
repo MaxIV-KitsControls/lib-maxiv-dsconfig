@@ -27,16 +27,16 @@ SPECIAL_ATTRIBUTE_PROPERTIES = [
 
 def get_devices_from_dict(dbdict, name=None):
     return [(server_name, instance_name, class_name, device_name)
-            for server_name, server in list(dbdict.items())
-            for instance_name, instance in list(server.items())
-            for class_name, clss in list(instance.items())
+            for server_name, server in dbdict.items()
+            for instance_name, instance in server.items()
+            for class_name, clss in instance.items()
             for device_name in clss
             if name is None or device_name.lower() == name.lower()]
 
 
 def get_servers_from_dict(dbdict):
     servers = set()
-    for server, children in list(dbdict.get("servers", {}).items()):
+    for server, children in dbdict.get("servers", {}).items():
         if "/" in server:
             servers.add(server)
         else:
@@ -108,7 +108,7 @@ def summarise_calls(dbcalls, dbdata):
             n = len(args[1])
             devices[method].add(args[0].upper())
         elif "attribute_property" in method:
-            n = sum(len(ps) for attr, ps in list(args[1].items()))
+            n = sum(len(ps) for attr, ps in args[1].items())
             devices[method].add(args[0].upper())
         elif "property" in method:
             n = len(args[1])
@@ -172,7 +172,7 @@ def get_device(db, devname, data, skip_protected=True):
     db_props = db.get_device_property_list(devname, "*")
     if db_props:
         props = db.get_device_property(devname, list(db_props))
-        for prop, value in list(props.items()):
+        for prop, value in props.items():
             # We'll ignore "protected" properties unless they are present
             # in the input data (in that case we want to show that
             # they are changed)
@@ -199,7 +199,7 @@ def get_device(db, devname, data, skip_protected=True):
         for attr, props in list(dbprops.items()):
             attr_props = dict(
                 (prop, [str(v) for v in values])
-                for prop, values in list(props.items())
+                for prop, values in props.items()
                 # Again, ignore attr_props that are not present in the
                 # input data, as we most likely don't want to remove those
                 if (not (skip_protected and is_protected(prop, True))
@@ -240,8 +240,8 @@ def get_dict_from_db(db, data, narrow=False, skip_protected=True):
 
     # Servers
     for srvr, insts in list(data.get("servers", {}).items()):
-        for inst, classes in list(insts.items()):
-            for clss, devs in list(classes.items()):
+        for inst, classes in insts.items():
+            for clss, devs in classes.items():
                 devs = CaselessDictionary(devs)
                 if narrow:
                     devices = list(devs.keys())
@@ -254,9 +254,9 @@ def get_dict_from_db(db, data, narrow=False, skip_protected=True):
                     dbdict.servers[srvr][inst][clss][device] = db_props
 
     # Classes
-    for class_name, cls in list(data.get("classes", {}).items()):
+    for class_name, cls in data.get("classes", {}).items():
         props = list(cls.get("properties", {}).keys())
-        for prop, value in list(db.get_class_property(class_name, props).items()):
+        for prop, value in db.get_class_property(class_name, props).items():
             if value:
                 value = [str(v) for v in value]
                 dbdict.classes[class_name].properties[prop] = value
@@ -265,9 +265,9 @@ def get_dict_from_db(db, data, narrow=False, skip_protected=True):
         if attr_props:
             dbprops = db.get_class_attribute_property(class_name,
                                                       list(attr_props.keys()))
-            for attr, props in list(dbprops.items()):
+            for attr, props in dbprops.items():
                 props = dict((prop, [str(v) for v in values])
-                             for prop, values in list(props.items()))
+                             for prop, values in props.items())
                 dbdict.classes[class_name].attribute_properties[attr] = props
 
     return dbdict.to_dict(), moved_devices
@@ -278,7 +278,7 @@ def find_empty_servers(db, data):
     Find any servers in the data that contain no devices, and remove them
     """
     servers = ["%s/%s" % (srv, inst)
-               for srv, insts in list(data["servers"].items())
+               for srv, insts in data["servers"].items()
                for inst in list(insts.keys())]
     return [server for server in servers
             if all(d.lower().startswith('dserver/')
