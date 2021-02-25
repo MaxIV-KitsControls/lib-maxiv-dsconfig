@@ -55,15 +55,3 @@ class TestImmutableDict(unittest.TestCase):
         test_dict = ImmutableDict({'key1': 'value1'})
         with self.assertRaises(TypeError):
             test_dict['key2'] = 'value2'
-
-
-def test_print_diff(capsys):
-    test_str = ('[{"op": "remove", "path": "/a"}, {"op": "add", "path": "/c", "value": 4}'
-                ', {"op": "replace", "path": "/b", "value": 3}]')
-    print(test_str)
-    print(str(print_diff({'a': 1, 'b': 2}, {'b': 3, 'c': 4})))
-    assert test_str == str(print_diff({'a': 1, 'b': 2}, {'b': 3, 'c': 4}))
-    captured = capsys.readouterr()
-    assert "REMOVE:\n > a" in captured.out
-    assert "ADD:\n > c" in captured.out
-    assert "REPLACE:\n > b" in captured.out
