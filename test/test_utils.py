@@ -1,6 +1,6 @@
 import pytest
 import unittest
-from mock import Mock
+from unittest.mock import Mock
 
 from dsconfig.tangodb import is_protected
 from dsconfig.utils import progressbar, CaselessDict, ImmutableDict
