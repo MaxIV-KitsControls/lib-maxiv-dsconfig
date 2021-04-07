@@ -26,7 +26,7 @@ class SetterDictTestCase(unittest.TestCase):
     def test_init_tiny(self):
         TINY_DICT = {"a": 1}
         sd = SetterDict(TINY_DICT)
-        self.assertDictEqual(sd, TINY_DICT)
+        self.assertDictEqual(sd.to_dict(), TINY_DICT)
 
     def test_init_flat(self):
         FLAT_DICT = {"a": 1, "b": 2, "c": 3}

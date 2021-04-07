@@ -1,5 +1,5 @@
 from os.path import dirname, abspath, join
-from mock import MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 from dsconfig.json2tango import json_to_tango
 

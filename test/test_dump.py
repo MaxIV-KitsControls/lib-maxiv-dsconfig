@@ -1,6 +1,6 @@
 import json
 
-from mock import MagicMock, patch
+from unittest.mock import MagicMock, patch
 from os.path import dirname, abspath, join
 
 from .test_tangodb import make_db
