@@ -287,9 +287,10 @@ def find_empty_servers(db, data):
 
 def get_device_property_values(dbproxy, device, name="*",
                                include_subdevices=False):
-    query = ("SELECT name, value FROM property_device "
+    query = ("SELECT name, value "
+             "FROM property_device "
              "WHERE device = '%s' AND name LIKE '%s' "
-             "ORDER BY property_device.count ASC")
+             "ORDER BY count ASC")
     _, result = dbproxy.command_inout("DbMySqlSelect",
                                       query % (device, name.replace("*", "%")))
     data = defaultdict(list)
@@ -300,9 +301,10 @@ def get_device_property_values(dbproxy, device, name="*",
 
 
 def get_device_attribute_property_values(dbproxy, device, name="*"):
-    query = ("SELECT attribute, name, value FROM property_attribute_device "
+    query = ("SELECT attribute, name, value "
+             "FROM property_attribute_device "
              "WHERE device = '%s' AND name LIKE '%s' "
-             "ORDER BY property_attribute_device.count ASC")
+             "ORDER BY count ASC")
     _, result = dbproxy.command_inout("DbMySqlSelect",
                                       query % (device, name.replace("*", "%")))
     data = AppendingDict()
