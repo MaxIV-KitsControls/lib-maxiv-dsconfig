@@ -288,7 +288,8 @@ def find_empty_servers(db, data):
 def get_device_property_values(dbproxy, device, name="*",
                                include_subdevices=False):
     query = ("SELECT name, value FROM property_device "
-             "WHERE device = '%s' AND name LIKE '%s'")
+             "WHERE device = '%s' AND name LIKE '%s' "
+             "ORDER BY property_device.count ASC")
     _, result = dbproxy.command_inout("DbMySqlSelect",
                                       query % (device, name.replace("*", "%")))
     data = defaultdict(list)
@@ -300,7 +301,8 @@ def get_device_property_values(dbproxy, device, name="*",
 
 def get_device_attribute_property_values(dbproxy, device, name="*"):
     query = ("SELECT attribute, name, value FROM property_attribute_device "
-             "WHERE device = '%s' AND name LIKE '%s'")
+             "WHERE device = '%s' AND name LIKE '%s' "
+             "ORDER BY property_attribute_device.count ASC")
     _, result = dbproxy.command_inout("DbMySqlSelect",
                                       query % (device, name.replace("*", "%")))
     data = AppendingDict()
@@ -371,6 +373,7 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
             query += " AND class != 'DServer'"
         if not subdevices:
             query += " AND property_device.name != '__SubDevices'"
+        query += " ORDER BY property_device.count ASC"
         _, result = dbproxy.command_inout("DbMySqlSelect",
                                           query % (server, clss, device))
         for d, p, v in nwise(result, 3):
@@ -387,6 +390,7 @@ def get_servers_with_filters(dbproxy, server="*", clss="*", device="*",
             " WHERE server LIKE '%s' AND class LIKE '%s' AND device LIKE '%s'")
         if not dservers:
             query += " AND class != 'DServer'"
+        query += " ORDER BY property_attribute_device.count ASC"
         _, result = dbproxy.command_inout("DbMySqlSelect", query % (server, clss, device))
         for d, a, p, v in nwise(result, 4):
             dev = devices[d.upper()]
@@ -442,7 +446,8 @@ def get_classes_properties(dbproxy, server='*', cls_properties=True,
             "ON property_class.class = device.class "
             "WHERE server like '%s' "
             "AND device.class != 'DServer' "
-            "AND device.class != 'TangoAccessControl'")
+            "AND device.class != 'TangoAccessControl' "
+            "ORDER BY property_class.count ASC")
         _, result = dbproxy.command_inout("DbMySqlSelect", querry % (server))
         # Build the output based on: class, property: value
         for c, p, v in nwise(result, 3):
@@ -459,7 +464,8 @@ def get_classes_properties(dbproxy, server='*', cls_properties=True,
             "ON property_attribute_class.class = device.class "
             "WHERE server like '%s' "
             "AND device.class != 'DServer' "
-            "AND device.class != 'TangoAccessControl'")
+            "AND device.class != 'TangoAccessControl' "
+            "ORDER BY property_attribute_class.count ASC")
         _, result = dbproxy.command_inout("DbMySqlSelect", querry % (server))
         # Build output: class, attribute, property: value
         for c, a, p, v in nwise(result, 4):
