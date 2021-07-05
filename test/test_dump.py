@@ -10,38 +10,52 @@ from dsconfig.dump import get_db_data
 query1 = ("SELECT device, property_device.name, property_device.value FROM "
           "property_device INNER JOIN device ON property_device.device = device.name "
           "WHERE server LIKE '%' AND class LIKE '%' AND device LIKE '%' AND "
-          "class != 'DServer' AND property_device.name != '__SubDevices'")
+          "class != 'DServer' AND property_device.name != '__SubDevices' "
+          "ORDER BY property_device.count ASC")
+          
 query2 = ("SELECT device, attribute, property_attribute_device.name, "
           "property_attribute_device.value FROM property_attribute_device INNER JOIN "
           "device ON property_attribute_device.device = device.name WHERE server "
-          "LIKE '%' AND class LIKE '%' AND device LIKE '%' AND class != 'DServer'")
+          "LIKE '%' AND class LIKE '%' AND device LIKE '%' AND class != 'DServer' "
+          "ORDER BY property_attribute_device.count ASC")
+          
 query3 = ("SELECT server, class, name, alias FROM device WHERE server LIKE '%' AND "
           "class LIKE '%' AND name LIKE '%' AND class != 'DServer'")
+          
 query4 = ("select DISTINCT property_class.class, property_class.name, "
           "property_class.value FROM property_class INNER JOIN device ON "
           "property_class.class = device.class WHERE server like '%' AND "
-          "device.class != 'DServer' AND device.class != 'TangoAccessControl'")
+          "device.class != 'DServer' AND device.class != 'TangoAccessControl' "
+          "ORDER BY property_class.count ASC")
+          
 query5 = ("select DISTINCT  property_attribute_class.class, "
           "property_attribute_class.attribute, property_attribute_class.name, "
           "property_attribute_class.value FROM property_attribute_class INNER JOIN "
           "device ON property_attribute_class.class = device.class WHERE server "
           "like '%' AND device.class != 'DServer' AND "
-          "device.class != 'TangoAccessControl'")
+          "device.class != 'TangoAccessControl' "
+          "ORDER BY property_attribute_class.count ASC")
+          
 query6 = ("select DISTINCT  property_attribute_class.class, "
           "property_attribute_class.attribute, property_attribute_class.name, "
           "property_attribute_class.value FROM property_attribute_class INNER JOIN "
           "device ON property_attribute_class.class = device.class WHERE server "
           "like 'SOMEDEVICE' AND device.class != 'DServer' AND "
-          "device.class != 'TangoAccessControl'")
+          "device.class != 'TangoAccessControl' "
+          "ORDER BY property_attribute_class.count ASC")
+          
 query7 = ("select DISTINCT property_class.class, property_class.name, "
           "property_class.value FROM property_class INNER JOIN device ON "
           "property_class.class = device.class WHERE server like 'SOMEDEVICE' AND "
-          "device.class != 'DServer' AND device.class != 'TangoAccessControl'")
+          "device.class != 'DServer' AND device.class != 'TangoAccessControl' "
+          "ORDER BY property_class.count ASC")
+          
 query8 = ("SELECT device, attribute, property_attribute_device.name, "
           "property_attribute_device.value FROM property_attribute_device INNER JOIN "
           "device ON property_attribute_device.device = device.name WHERE server "
           "LIKE 'SOMESERVER' AND class LIKE '%' AND device LIKE '%' AND "
-          "class != 'DServer'")
+          "class != 'DServer' "
+          "ORDER BY property_attribute_device.count ASC")
 
 
 def test_db_dump():
