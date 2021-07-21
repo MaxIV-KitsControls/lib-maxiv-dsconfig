@@ -11,7 +11,7 @@ setup(
     # Requirements
     python_requires='~=3.6',
     setup_requires=["setuptools", "pytest-runner"],
-    install_requires=["jsonpatch>=1.13", "jsonschema", "xlrd", "PyTango"],
+    install_requires=["jsonpatch>=1.13", "jsonschema", "xlrd", "pytango"],
     tests_require=["pytest", "pytest-cov", "Faker", "mock"],
     # Resources
     package_data={
